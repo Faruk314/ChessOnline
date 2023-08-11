@@ -13,7 +13,7 @@ interface Props {
 }
 
 const WhitePawns = ({ cellNumber }: Props) => {
-  const { players } = useContext(GameContext);
+  const { players, highlight, playerTurnIndex } = useContext(GameContext);
 
   const pawnMapping = [
     { index: 0, image: whiteRook },
@@ -40,7 +40,13 @@ const WhitePawns = ({ cellNumber }: Props) => {
       {players[1].pawnPositions.slice(8, 17).map((position) => {
         if (position === cellNumber) {
           return (
-            <button key={position}>
+            <button
+              onClick={() =>
+                players[playerTurnIndex!].color === "white" &&
+                highlight(cellNumber, -1)
+              }
+              key={position}
+            >
               <img src={whitePawn} alt="" />
             </button>
           );

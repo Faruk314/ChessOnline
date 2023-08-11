@@ -1,4 +1,6 @@
 import { IPlayer } from "../../types/types";
+import { blackStartingPositions } from "../constants/constants";
+import { whiteStartingPositions } from "../constants/constants";
 
 export class Player {
   pawnPositions: number[] = [];
@@ -10,15 +12,11 @@ export class Player {
 
       switch (color) {
         case "black":
-          this.pawnPositions = [
-            11, 12, 13, 14, 15, 16, 17, 18, 21, 22, 23, 24, 25, 26, 27, 28,
-          ];
+          this.pawnPositions = [...blackStartingPositions];
 
           break;
         default:
-          this.pawnPositions = [
-            88, 87, 86, 85, 84, 83, 82, 81, 78, 77, 76, 75, 74, 73, 72, 71,
-          ];
+          this.pawnPositions = [...whiteStartingPositions];
 
           break;
       }

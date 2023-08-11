@@ -6,9 +6,8 @@ import WhitePawns from "./WhitePawns";
 
 const Board = () => {
   const [board, setBoard] = useState<number[][]>([]);
-  const { players } = useContext(GameContext);
-
-  console.log(players[0]?.pawnPositions.slice(0, 9), "players");
+  const { players, highlightedPawn, availablePositions, movePawn } =
+    useContext(GameContext);
 
   useEffect(() => {
     const createBoard = () => {
@@ -31,33 +30,44 @@ const Board = () => {
 
   return (
     <section className="flex items-center justify-center h-[100vh]">
-      {board.map((row, rowIndex) => (
-        <div key={rowIndex} className="">
-          {row.map((cell, cellIndex) => {
-            const cellNumber = parseInt(`${cell}${rowIndex + 1}`);
-            return (
-              <div
-                key={cellIndex}
-                className={classNames(
-                  "w-20 h-20 flex items-center justify-center",
-                  {
-                    "bg-green-700":
-                      (cell % 2 !== 0 && (rowIndex + 1) % 2 === 0) ||
-                      (cell % 2 === 0 && (rowIndex + 1) % 2 !== 0),
-                    "bg-green-200":
-                      (cell % 2 !== 0 && (rowIndex + 1) % 2 !== 0) ||
-                      (cell % 2 === 0 && (rowIndex + 1) % 2 === 0),
-                  }
-                )}
-              >
-                <BlackPawns cellNumber={cellNumber} />
+      <div className="flex border border-black rounded-md">
+        {board.map((row, rowIndex) => (
+          <div key={rowIndex} className="">
+            {row.map((cell, cellIndex) => {
+              const cellNumber = parseInt(`${cell}${rowIndex + 1}`);
+              return (
+                <div
+                  key={cellIndex}
+                  className={classNames(
+                    "w-20 h-20 flex items-center justify-center",
+                    {
+                      "bg-red-500":
+                        (cell % 2 !== 0 && (rowIndex + 1) % 2 === 0) ||
+                        (cell % 2 === 0 && (rowIndex + 1) % 2 !== 0),
+                      "bg-white":
+                        (cell % 2 !== 0 && (rowIndex + 1) % 2 !== 0) ||
+                        (cell % 2 === 0 && (rowIndex + 1) % 2 === 0),
+                      "border-4 border-black": highlightedPawn === cellNumber,
+                    }
+                  )}
+                >
+                  {`${cell}${rowIndex + 1}`}
+                  {availablePositions.includes(cellNumber) && (
+                    <button
+                      onClick={() => movePawn(cellNumber)}
+                      className="w-5 h-5 bg-black rounded-full"
+                    ></button>
+                  )}
 
-                <WhitePawns cellNumber={cellNumber} />
-              </div>
-            );
-          })}
-        </div>
-      ))}
+                  <BlackPawns cellNumber={cellNumber} />
+
+                  <WhitePawns cellNumber={cellNumber} />
+                </div>
+              );
+            })}
+          </div>
+        ))}
+      </div>
     </section>
   );
 };

@@ -12,7 +12,7 @@ interface Props {
 }
 
 const BlackPawns = ({ cellNumber }: Props) => {
-  const { players } = useContext(GameContext);
+  const { players, highlight, playerTurnIndex } = useContext(GameContext);
 
   const pawnMapping = [
     { index: 0, image: blackRook },
@@ -30,7 +30,11 @@ const BlackPawns = ({ cellNumber }: Props) => {
       {pawnMapping.map(
         ({ index, image }) =>
           players[0].pawnPositions[index] === cellNumber && (
-            <button key={index}>
+            <button
+              className="z-10"
+              onClick={() => highlight(cellNumber, index)}
+              key={index}
+            >
               <img src={image} alt="" />
             </button>
           )
@@ -39,7 +43,13 @@ const BlackPawns = ({ cellNumber }: Props) => {
       {players[0].pawnPositions.slice(8).map((position) => {
         if (position === cellNumber) {
           return (
-            <button key={position}>
+            <button
+              onClick={() =>
+                players[playerTurnIndex!].color === "black" &&
+                highlight(cellNumber, -1)
+              }
+              key={position}
+            >
               <img src={blackPawn} alt="" />
             </button>
           );
