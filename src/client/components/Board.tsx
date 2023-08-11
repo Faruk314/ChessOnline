@@ -3,6 +3,7 @@ import classNames from "classnames";
 import { GameContext } from "../context/GameContext";
 import BlackPawns from "./BlackPawns";
 import WhitePawns from "./WhitePawns";
+import Pawns from "./Pawns";
 
 const Board = () => {
   const [board, setBoard] = useState<number[][]>([]);
@@ -59,9 +60,8 @@ const Board = () => {
                     ></button>
                   )}
 
-                  <BlackPawns cellNumber={cellNumber} />
-
-                  <WhitePawns cellNumber={cellNumber} />
+                  <Pawns cellNumber={cellNumber} pawnsColor="black" />
+                  <Pawns cellNumber={cellNumber} pawnsColor="white" />
                 </div>
               );
             })}
