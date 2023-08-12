@@ -1,14 +1,18 @@
 import React, { useContext, useEffect, useState } from "react";
 import classNames from "classnames";
 import { GameContext } from "../context/GameContext";
-import BlackPawns from "./BlackPawns";
-import WhitePawns from "./WhitePawns";
 import Pawns from "./Pawns";
+import Promotion from "../modals/Promotion";
 
 const Board = () => {
   const [board, setBoard] = useState<number[][]>([]);
-  const { players, highlightedPawn, availablePositions, movePawn } =
-    useContext(GameContext);
+  const {
+    highlightedPawn,
+    availablePositions,
+    movePawn,
+    players,
+    playerTurnIndex,
+  } = useContext(GameContext);
 
   useEffect(() => {
     const createBoard = () => {
@@ -68,6 +72,15 @@ const Board = () => {
           </div>
         ))}
       </div>
+      {players[playerTurnIndex!].promotionPawnIndex > -1 &&
+        players[playerTurnIndex!].color === "white" && (
+          <Promotion color="white" />
+        )}
+
+      {players[playerTurnIndex!].promotionPawnIndex > -1 &&
+        players[playerTurnIndex!].color === "black" && (
+          <Promotion color="black" />
+        )}
     </section>
   );
 };

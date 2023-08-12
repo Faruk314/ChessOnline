@@ -9,12 +9,15 @@ import { Player } from "../classes/Player";
 import {
   whiteStartingPositions,
   blackStartingPositions,
+  whitePromotionPositions,
+  blackPromotionPositions,
 } from "../constants/constants";
 
 interface GameContextProps {
   players: Player[];
   highlight: (position: number, pawnIndex: number) => void;
   movePawn: (position: number) => void;
+  promotePawn: (pawnIndex: number) => void;
   highlightedPawn: number | null;
   availablePositions: number[];
   playerTurnIndex: number | null;
@@ -24,6 +27,7 @@ export const GameContext = createContext<GameContextProps>({
   players: [],
   highlight: (position, pawnIndex) => {},
   movePawn: (position) => {},
+  promotePawn: (pawnIndex) => {},
   highlightedPawn: null,
   availablePositions: [],
   playerTurnIndex: null,
@@ -34,6 +38,8 @@ export const GameContextProvider = ({ children }: any) => {
   const [highlightedPawn, setHighlightedPawn] = useState<number | null>(null);
   const [playerTurnIndex, setPlayerTurnIndex] = useState<number | null>(null);
   const [availablePositions, setAvailablePositions] = useState<number[]>([]);
+
+  console.log(players, "players");
 
   useEffect(() => {
     const initGame = () => {
@@ -96,6 +102,48 @@ export const GameContextProvider = ({ children }: any) => {
     }
   };
 
+  const promotePawn = (pawnIndex: number) => {
+    const updatedPlayers = [...players];
+    const promotionPawnIndex =
+      updatedPlayers[playerTurnIndex!].promotionPawnIndex;
+
+    //this means its a queen
+    if (pawnIndex === 0) {
+      updatedPlayers[playerTurnIndex!].promotedPawns.push({
+        index: promotionPawnIndex,
+        name: "queen",
+      });
+    }
+
+    //knight
+    if (pawnIndex === 1) {
+      updatedPlayers[playerTurnIndex!].promotedPawns.push({
+        index: promotionPawnIndex,
+        name: "knight",
+      });
+    }
+
+    //rook
+    if (pawnIndex === 2) {
+      updatedPlayers[playerTurnIndex!].promotedPawns.push({
+        index: promotionPawnIndex,
+        name: "rook",
+      });
+    }
+
+    //bishop
+    if (pawnIndex === 3) {
+      updatedPlayers[playerTurnIndex!].promotedPawns.push({
+        index: promotionPawnIndex,
+        name: "bishop",
+      });
+    }
+
+    updatedPlayers[playerTurnIndex!].promotionPawnIndex = -1;
+    switchTurns();
+    setPlayers(updatedPlayers);
+  };
+
   const highlightPawn = (
     row: string,
     col: string,
@@ -127,8 +175,6 @@ export const GameContextProvider = ({ children }: any) => {
       const leftDiagonal = parseInt(firstPosition) - 1;
       const rightDiagonal = parseInt(firstPosition) + 1;
 
-      console.log(rightDiagonal, "righ");
-
       const pawnInStartingPosition = whiteStartingPositions.includes(position);
 
       findAvailablePawnPositions(
@@ -143,6 +189,8 @@ export const GameContextProvider = ({ children }: any) => {
   };
 
   const highlight = (position: number, pawnIndex: number) => {
+    console.log(pawnIndex, "pawnIndex");
+
     const playerTurn = players[playerTurnIndex!];
     const opponent = players.find(
       (player) => player.color !== playerTurn.color
@@ -153,9 +201,8 @@ export const GameContextProvider = ({ children }: any) => {
     const row = splited[0];
     const col = splited[1];
 
-    //if pawn index is -1 then its a regular pawn
-    pawnIndex === -1 &&
-      highlightPawn(row, col, opponent!, playerTurn, position);
+    //if pawn index is >=8 then its a regular pawn
+    pawnIndex >= 8 && highlightPawn(row, col, opponent!, playerTurn, position);
 
     setHighlightedPawn(position);
   };
@@ -163,6 +210,9 @@ export const GameContextProvider = ({ children }: any) => {
   const movePawn = (position: number) => {
     //find pawn index based on its position
     const playerTurn = players[playerTurnIndex!];
+    const opponentIndex = players.findIndex(
+      (player) => player.color !== playerTurn.color
+    );
     const updatedPlayers = players;
 
     const pawnIndex = playerTurn?.pawnPositions.findIndex(
@@ -171,9 +221,33 @@ export const GameContextProvider = ({ children }: any) => {
 
     if (pawnIndex === -1) return;
 
+    //check if there is an opponents pawn on that field
+    const opponentPawnIndex =
+      players[opponentIndex]?.pawnPositions.indexOf(position);
+
     updatedPlayers[playerTurnIndex!].pawnPositions[pawnIndex] = position;
 
-    switchTurns();
+    if (opponentPawnIndex > -1)
+      updatedPlayers[opponentIndex].pawnPositions.splice(opponentPawnIndex, 1);
+
+    let isPromotion: boolean = false;
+    let promotionPawnIndex: number = -1;
+
+    //find if the promotion is possible
+    if (playerTurn.color === "white")
+      isPromotion = blackPromotionPositions.includes(position);
+
+    if (playerTurn.color === "black")
+      isPromotion = whitePromotionPositions.includes(position);
+
+    if (isPromotion) {
+      promotionPawnIndex = playerTurn.pawnPositions.indexOf(position);
+      updatedPlayers[playerTurnIndex!].promotionPawnIndex = promotionPawnIndex;
+    }
+
+    console.log(promotionPawnIndex, "promotionPawnIndex");
+
+    if (!isPromotion) switchTurns();
     setPlayers(updatedPlayers);
     setAvailablePositions([]);
     setHighlightedPawn(null);
@@ -185,6 +259,7 @@ export const GameContextProvider = ({ children }: any) => {
     highlightedPawn,
     availablePositions,
     movePawn,
+    promotePawn,
     playerTurnIndex,
   };
 

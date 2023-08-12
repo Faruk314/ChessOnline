@@ -33,6 +33,14 @@ const Pawns = ({ cellNumber, pawnsColor }: Props) => {
           { index: 5, image: blackBishop },
           { index: 7, image: blackRook },
           { index: 6, image: blackKnight },
+          { index: 8, image: blackPawn },
+          { index: 9, image: blackPawn },
+          { index: 10, image: blackPawn },
+          { index: 11, image: blackPawn },
+          { index: 12, image: blackPawn },
+          { index: 13, image: blackPawn },
+          { index: 14, image: blackPawn },
+          { index: 15, image: blackPawn },
         ]
       : [
           { index: 0, image: whiteRook },
@@ -43,6 +51,13 @@ const Pawns = ({ cellNumber, pawnsColor }: Props) => {
           { index: 5, image: whiteBishop },
           { index: 7, image: whiteRook },
           { index: 6, image: whiteKnight },
+          { index: 8, image: whitePawn },
+          { index: 9, image: whitePawn },
+          { index: 10, image: whitePawn },
+          { index: 11, image: whitePawn },
+          { index: 12, image: whitePawn },
+          { index: 13, image: whitePawn },
+          { index: 14, image: whitePawn },
         ];
 
   const pawnPositions =
@@ -50,11 +65,52 @@ const Pawns = ({ cellNumber, pawnsColor }: Props) => {
       ? players[0].pawnPositions
       : players[1].pawnPositions;
 
+  const promotedPawns = players.find(
+    (player) => player.color === pawnsColor
+  )?.promotedPawns;
+
+  const getImageForPromotedPiece = (pieceName: string, color: string) => {
+    if (color === "black") {
+      switch (pieceName) {
+        case "queen":
+          return blackQueen;
+        case "knight":
+          return blackKnight;
+        case "rook":
+          return blackRook;
+        case "bishop":
+          return blackBishop;
+        default:
+          return "";
+      }
+    } else if (color === "white") {
+      switch (pieceName) {
+        case "queen":
+          return whiteQueen;
+        case "knight":
+          return whiteKnight;
+        case "rook":
+          return whiteRook;
+        case "bishop":
+          return whiteBishop;
+        default:
+          return "";
+      }
+    }
+  };
+
+  promotedPawns?.forEach((promotedPawn) => {
+    pawnMapping[promotedPawn.index] = {
+      index: promotedPawn.index,
+      image: getImageForPromotedPiece(promotedPawn.name, pawnsColor)!,
+    };
+  });
+
   return (
     <div>
-      {pawnMapping.map(
-        ({ index, image }) =>
-          pawnPositions[index] === cellNumber && (
+      {pawnMapping.map(({ index, image }) => {
+        if (pawnPositions[index] === cellNumber) {
+          return (
             <button
               className="z-10"
               onClick={() => highlight(cellNumber, index)}
@@ -62,21 +118,7 @@ const Pawns = ({ cellNumber, pawnsColor }: Props) => {
             >
               <img src={image} alt="" />
             </button>
-          )
-      )}
-
-      {pawnPositions.slice(8).map((position) => {
-        if (position === cellNumber) {
-          return (
-            <button onClick={() => highlight(cellNumber, -1)} key={position}>
-              <img
-                src={pawnsColor === "black" ? blackPawn : whitePawn}
-                alt=""
-              />
-            </button>
           );
-        } else {
-          return null;
         }
       })}
     </div>
