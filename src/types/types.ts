@@ -1,8 +1,4 @@
-export interface IPlayer {
-  color: string;
-}
-
-export interface PromotedPawn {
-  index: number;
-  name: string;
+export interface Position {
+  row: number;
+  col: number;
 }
