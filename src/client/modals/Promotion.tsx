@@ -15,34 +15,7 @@ interface Props {
 }
 
 const Promotion = ({ color }: Props) => {
-  const { promotePawn } = useContext(GameContext);
-
-  const pawns =
-    color === "black"
-      ? [
-          { index: 0, image: blackQueen },
-          { index: 1, image: blackKnight },
-          { index: 2, image: blackRook },
-          { index: 3, image: blackBishop },
-        ]
-      : [
-          { index: 0, image: whiteQueen },
-          { index: 1, image: whiteKnight },
-          { index: 2, image: whiteRook },
-          { index: 3, image: whiteBishop },
-        ];
-
-  return (
-    <div className="fixed p-2 border border-black bottom-10">
-      <div className="flex">
-        {pawns.map((pawn) => (
-          <button onClick={() => promotePawn(pawn.index)} key={pawn.index}>
-            <img src={pawn.image} alt="" className="" />
-          </button>
-        ))}
-      </div>
-    </div>
-  );
+  return <div className="fixed p-2 border border-black bottom-10"></div>;
 };
 
 export default Promotion;
