@@ -7,15 +7,21 @@ import React, {
 } from "react";
 import { Player } from "../classes/Player";
 import { Piece } from "../classes/Piece";
-import { PieceType } from "../../types/types";
 import { createPawn, createRook } from "../classes/Piece";
+import { Square } from "../../types/types";
 
-interface GameContextProps {}
+interface GameContextProps {
+  board: Square[][];
+}
 
-export const GameContext = createContext<GameContextProps>({});
+export const GameContext = createContext<GameContextProps>({
+  board: [],
+});
 
 export const GameContextProvider = ({ children }: any) => {
-  const [board, setBoard] = useState<Piece | null[][]>([]);
+  const [board, setBoard] = useState<Square[][]>([]);
+  const [players, setPlayers] = useState<Player[]>([]);
+  const [playerTurn, setPlayerTurn] = useState<Player | null>(null);
 
   useEffect(() => {
     const initGame = () => {
@@ -63,15 +69,17 @@ export const GameContextProvider = ({ children }: any) => {
         }
       }
 
-      console.log(board, "board");
-
-      console.log(whitePlayer);
+      setBoard(board);
+      setPlayers([whitePlayer, blackPlayer]);
+      setPlayerTurn(whitePlayer);
     };
 
     initGame();
   }, []);
 
-  const contextValue: GameContextProps = {};
+  const contextValue: GameContextProps = {
+    board,
+  };
 
   return (
     <GameContext.Provider value={contextValue}>{children}</GameContext.Provider>
