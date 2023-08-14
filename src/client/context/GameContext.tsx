@@ -7,26 +7,36 @@ import React, {
 } from "react";
 import { Player } from "../classes/Player";
 import { Piece } from "../classes/Piece";
-import { createPawn, createRook } from "../classes/Piece";
-import { Square } from "../../types/types";
+import { createPawn } from "../classes/Piece";
+import { Square, Position } from "../../types/types";
 
 interface GameContextProps {
   board: Square[][];
+  highlight: (piece: Piece) => void;
+  availablePositions: number[];
+  movePiece: (row: number, col: number) => void;
+  playerTurn: Player | null;
 }
 
 export const GameContext = createContext<GameContextProps>({
   board: [],
+  highlight: (piece) => {},
+  availablePositions: [],
+  movePiece: (row, col) => {},
+  playerTurn: null,
 });
 
 export const GameContextProvider = ({ children }: any) => {
   const [board, setBoard] = useState<Square[][]>([]);
   const [players, setPlayers] = useState<Player[]>([]);
   const [playerTurn, setPlayerTurn] = useState<Player | null>(null);
+  const [availablePositions, setAvailablePositions] = useState<number[]>([]);
+  const [activePiece, setActivePiece] = useState<Piece | null>(null);
 
   useEffect(() => {
     const initGame = () => {
-      const whitePlayer = new Player();
-      const blackPlayer = new Player();
+      const whitePlayer = new Player("white");
+      const blackPlayer = new Player("black");
 
       //Create board
       const board = new Array(8).fill(null).map(() => new Array(8).fill(null));
@@ -40,8 +50,8 @@ export const GameContextProvider = ({ children }: any) => {
             if (col === 0 || col === 7)
               board[row][col] = createPawn(row, col, "white", "rook");
 
-            board[row][3] = createPawn(row, col, "white", "king");
-            board[row][4] = createPawn(row, col, "white", "queen");
+            board[row][4] = createPawn(row, col, "white", "king");
+            board[row][3] = createPawn(row, col, "white", "queen");
 
             if (col === 1 || col === 6)
               board[row][col] = createPawn(row, col, "white", "knight");
@@ -57,8 +67,8 @@ export const GameContextProvider = ({ children }: any) => {
             if (col === 0 || col === 7)
               board[row][col] = createPawn(row, col, "black", "rook");
 
-            board[row][3] = createPawn(row, col, "black", "king");
-            board[row][4] = createPawn(row, col, "black", "queen");
+            board[row][4] = createPawn(row, col, "black", "king");
+            board[row][3] = createPawn(row, col, "black", "queen");
 
             if (col === 1 || col === 6)
               board[row][col] = createPawn(row, col, "black", "knight");
@@ -77,8 +87,95 @@ export const GameContextProvider = ({ children }: any) => {
     initGame();
   }, []);
 
+  const switchTurns = () => {
+    const nextPlayer = players.find(
+      (player) => player.color !== playerTurn?.color
+    );
+
+    setPlayerTurn(nextPlayer!);
+  };
+
+  const highlightPawn = (piece: Piece) => {
+    let firstPos: number | null = null;
+    let secondPos: number | null = null;
+    let leftDiagonal: number | null = null;
+    let rightDiagonal: number | null = null;
+    let row = piece.position.row;
+    let col = piece.position.col;
+
+    if (piece.color === "white") {
+      firstPos = parseInt(`${row - 1}${col}`);
+      setAvailablePositions([firstPos]);
+
+      if (row === 6) {
+        secondPos = parseInt(`${row - 2}${col}`);
+        setAvailablePositions([firstPos, secondPos]);
+      }
+
+      if (board[row - 1][col + 1]) {
+        rightDiagonal = parseInt(`${row - 1}${col + 1}`);
+        setAvailablePositions((prev) => [...prev, rightDiagonal!]);
+      }
+
+      if (board[row - 1][col - 1]) {
+        leftDiagonal = parseInt(`${row - 1}${col + 1}`);
+
+        setAvailablePositions((prev) => [...prev, leftDiagonal!]);
+      }
+    }
+
+    console.log(piece);
+
+    if (piece.color === "black") {
+      firstPos = parseInt(`${row + 1}${col}`);
+      setAvailablePositions([firstPos]);
+
+      if (row === 1) {
+        secondPos = parseInt(`${row + 2}${col}`);
+        setAvailablePositions([firstPos, secondPos]);
+      }
+
+      if (board[row + 1][col + 1]) {
+        rightDiagonal = parseInt(`${row + 1}${col + 1}`);
+        setAvailablePositions((prev) => [...prev, rightDiagonal!]);
+      }
+
+      if (board[row + 1][col - 1]) {
+        leftDiagonal = parseInt(`${row + 1}${col - 1}`);
+        setAvailablePositions((prev) => [...prev, leftDiagonal!]);
+      }
+    }
+
+    setActivePiece(piece);
+  };
+
+  const movePiece = (row: number, col: number) => {
+    const updatedBoard = [...board];
+
+    if (!activePiece) return;
+
+    updatedBoard[activePiece.position.row][activePiece.position.col] = null;
+    activePiece.position.row = row;
+    activePiece.position.col = col;
+    updatedBoard[row][col] = activePiece;
+
+    switchTurns();
+    setAvailablePositions([]);
+    setBoard(updatedBoard);
+  };
+
+  const highlight = (piece: Piece) => {
+    console.log(piece);
+
+    if (piece.type === "pawn") highlightPawn(piece);
+  };
+
   const contextValue: GameContextProps = {
     board,
+    highlight,
+    availablePositions,
+    movePiece,
+    playerTurn,
   };
 
   return (

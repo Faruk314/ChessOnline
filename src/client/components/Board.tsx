@@ -16,7 +16,8 @@ import blackKnight from "../assets/images/knight_b.png";
 import blackRook from "../assets/images/rook_b.png";
 
 const Board = () => {
-  const { board } = useContext(GameContext);
+  const { board, highlight, availablePositions, movePiece, playerTurn } =
+    useContext(GameContext);
 
   return (
     <section className="flex items-center justify-center h-[100vh]">
@@ -35,8 +36,21 @@ const Board = () => {
                   }
                 )}
               >
+                {availablePositions.includes(
+                  parseInt(`${rowIndex}${cellIndex}`)
+                ) && (
+                  <div
+                    onClick={() => movePiece(rowIndex, cellIndex)}
+                    className="w-5 h-5 bg-black rounded-full"
+                  ></div>
+                )}
+                {`${rowIndex}${cellIndex}`}
                 {cell?.color === "white" ? (
-                  <button>
+                  <button
+                    onClick={() =>
+                      playerTurn?.color === "white" && highlight(cell)
+                    }
+                  >
                     {cell.type === "pawn" && <img src={whitePawn} />}
                     {cell.type === "king" && <img src={whiteKing} />}
                     {cell.type === "queen" && <img src={whiteQueen} />}
@@ -45,7 +59,11 @@ const Board = () => {
                     {cell.type === "rook" && <img src={whiteRook} />}
                   </button>
                 ) : (
-                  <button>
+                  <button
+                    onClick={() =>
+                      playerTurn?.color === "black" && highlight(cell!)
+                    }
+                  >
                     {cell?.type === "pawn" && <img src={blackPawn} />}
                     {cell?.type === "king" && <img src={blackKing} />}
                     {cell?.type === "queen" && <img src={blackQueen} />}
