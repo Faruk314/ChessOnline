@@ -43,7 +43,7 @@ export const GameContextProvider = ({ children }: any) => {
 
       for (let row = 0; row < 8; row++) {
         for (let col = 0; col < 8; col++) {
-          if (row === 6)
+          if (row === 6 && col === 2)
             board[row][col] = createPawn(row, col, "white", "pawn");
 
           if (row === 7) {
@@ -145,12 +145,49 @@ export const GameContextProvider = ({ children }: any) => {
         setAvailablePositions((prev) => [...prev, leftDiagonal!]);
       }
     }
+  };
 
-    setActivePiece(piece);
+  const highlightRook = (piece: Piece) => {
+    const currentRow = piece.position.row;
+    const currentCol = piece.position.col;
+
+    const validMoves: number[] = [];
+
+    const directions = [
+      { row: -1, col: 0 }, // Up
+      { row: 1, col: 0 }, // Down
+      { row: 0, col: -1 }, // Left
+      { row: 0, col: 1 }, // Right
+    ];
+
+    directions.forEach((direction) => {
+      let r = currentRow + direction.row;
+      let c = currentCol + direction.col;
+
+      while (r >= 0 && r < 8 && c >= 0 && c < 8) {
+        if (!board[r][c]) {
+          validMoves.push(parseInt(`${r}${c}`));
+        } else {
+          if (
+            (board[r][c]?.color === "black" && playerTurn?.color === "white") ||
+            (board[r][c]?.color === "white" && playerTurn?.color === "black")
+          ) {
+            validMoves.push(parseInt(`${r}${c}`));
+          }
+          break;
+        }
+        r += direction.row;
+        c += direction.col;
+      }
+    });
+    console.log(validMoves);
+    setAvailablePositions(validMoves);
   };
 
   const movePiece = (row: number, col: number) => {
     const updatedBoard = [...board];
+
+    console.log(row, "row");
 
     if (!activePiece) return;
 
@@ -165,9 +202,11 @@ export const GameContextProvider = ({ children }: any) => {
   };
 
   const highlight = (piece: Piece) => {
-    console.log(piece);
-
     if (piece.type === "pawn") highlightPawn(piece);
+
+    if (piece.type === "rook") highlightRook(piece);
+
+    setActivePiece(piece);
   };
 
   const contextValue: GameContextProps = {
