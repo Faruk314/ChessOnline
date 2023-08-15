@@ -8,7 +8,7 @@ import React, {
 import { Player } from "../classes/Player";
 import { Piece } from "../classes/Piece";
 import { createPawn } from "../classes/Piece";
-import { Square, Position } from "../../types/types";
+import { Square } from "../../types/types";
 
 interface GameContextProps {
   board: Square[][];
@@ -124,8 +124,6 @@ export const GameContextProvider = ({ children }: any) => {
       }
     }
 
-    console.log(piece);
-
     if (piece.color === "black") {
       firstPos = parseInt(`${row + 1}${col}`);
       setAvailablePositions([firstPos]);
@@ -152,8 +150,7 @@ export const GameContextProvider = ({ children }: any) => {
     const currentCol = piece.position.col;
 
     const validMoves: number[] = [];
-
-    const directions = [
+    let directions = [
       { row: -1, col: 0 }, // Up
       { row: 1, col: 0 }, // Down
       { row: 0, col: -1 }, // Left
@@ -163,6 +160,9 @@ export const GameContextProvider = ({ children }: any) => {
     directions.forEach((direction) => {
       let r = currentRow + direction.row;
       let c = currentCol + direction.col;
+
+      // r 5
+      // c 7
 
       while (r >= 0 && r < 8 && c >= 0 && c < 8) {
         if (!board[r][c]) {
@@ -181,6 +181,39 @@ export const GameContextProvider = ({ children }: any) => {
       }
     });
     console.log(validMoves);
+    setAvailablePositions(validMoves);
+  };
+
+  const highlightKnight = (piece: Piece) => {
+    const currentRow = piece.position.row;
+    const currentCol = piece.position.col;
+
+    const validMoves: number[] = [];
+
+    const knightMoves = [
+      { row: -2, col: -1 },
+      { row: -2, col: 1 },
+      { row: -1, col: -2 },
+      { row: -1, col: 2 },
+      { row: 1, col: -2 },
+      { row: 1, col: 2 },
+      { row: 2, col: -1 },
+      { row: 2, col: 1 },
+    ];
+
+    knightMoves.forEach((move) => {
+      const r = currentRow + move.row;
+      const c = currentCol + move.col;
+
+      if (r >= 0 && r < 8 && c >= 0 && c < 8) {
+        if (!board[r][c] || board[r][c]?.color !== playerTurn?.color) {
+          validMoves.push(parseInt(`${r}${c}`));
+        }
+      }
+    });
+
+    console.log(validMoves, "vlaid");
+
     setAvailablePositions(validMoves);
   };
 
@@ -205,6 +238,8 @@ export const GameContextProvider = ({ children }: any) => {
     if (piece.type === "pawn") highlightPawn(piece);
 
     if (piece.type === "rook") highlightRook(piece);
+
+    if (piece.type === "knight") highlightKnight(piece);
 
     setActivePiece(piece);
   };
