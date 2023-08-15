@@ -47,11 +47,12 @@ export const GameContextProvider = ({ children }: any) => {
             board[row][col] = createPawn(row, col, "white", "pawn");
 
           if (row === 7) {
-            if (col === 0 || col === 7)
+            if (col === 0 || col === 7) {
               board[row][col] = createPawn(row, col, "white", "rook");
+            }
 
-            board[row][4] = createPawn(row, col, "white", "king");
-            board[row][3] = createPawn(row, col, "white", "queen");
+            board[row][4] = createPawn(row, 4, "white", "king");
+            board[row][3] = createPawn(row, 3, "white", "queen");
 
             if (col === 1 || col === 6)
               board[row][col] = createPawn(row, col, "white", "knight");
@@ -64,11 +65,12 @@ export const GameContextProvider = ({ children }: any) => {
             board[row][col] = createPawn(row, col, "black", "pawn");
 
           if (row === 0) {
-            if (col === 0 || col === 7)
+            if (col === 0 || col === 7) {
               board[row][col] = createPawn(row, col, "black", "rook");
+            }
 
-            board[row][4] = createPawn(row, col, "black", "king");
-            board[row][3] = createPawn(row, col, "black", "queen");
+            board[row][4] = createPawn(row, 4, "black", "king");
+            board[row][3] = createPawn(row, 3, "black", "queen");
 
             if (col === 1 || col === 6)
               board[row][col] = createPawn(row, col, "black", "knight");
@@ -233,9 +235,6 @@ export const GameContextProvider = ({ children }: any) => {
       let r = currentRow + direction.row;
       let c = currentCol + direction.col;
 
-      // r 5
-      // c 7
-
       while (r >= 0 && r < 8 && c >= 0 && c < 8) {
         if (!board[r][c]) {
           validMoves.push(parseInt(`${r}${c}`));
@@ -250,6 +249,40 @@ export const GameContextProvider = ({ children }: any) => {
         }
         r += direction.row;
         c += direction.col;
+      }
+    });
+
+    setAvailablePositions(validMoves);
+  };
+
+  const highlightKing = (piece: Piece) => {
+    const currentRow = piece.position.row;
+    const currentCol = piece.position.col;
+    let validMoves: number[] = [];
+
+    let kingMoves = [
+      { row: -1, col: 0 }, //up
+      { row: 1, col: 0 }, //down
+      { row: 0, col: -1 }, //left
+      { row: 0, col: 1 }, //right
+      { row: -1, col: -1 }, //upper left diagonal
+      { row: -1, col: 1 }, //upper right diagonal
+      { row: 1, col: -1 }, //bottom left diagonal
+      { row: 1, col: 1 }, //bottom right diagonal
+    ];
+
+    console.log(parseInt(`${currentRow}${currentCol}`), "current");
+
+    kingMoves.forEach((move) => {
+      const r = currentRow + move.row;
+      const c = currentCol + move.col;
+
+      if (r >= 0 && r < 8 && c >= 0 && c < 8) {
+        if (!board[r][c] || board[r][c]?.color !== playerTurn?.color) {
+          console.log(r, c);
+
+          validMoves.push(parseInt(`${r}${c}`));
+        }
       }
     });
 
@@ -274,6 +307,8 @@ export const GameContextProvider = ({ children }: any) => {
   };
 
   const highlight = (piece: Piece) => {
+    console.log(piece.type, "type", piece.position);
+
     if (piece.type === "pawn") highlightPawn(piece);
 
     if (piece.type === "rook") highlightRook(piece);
@@ -281,6 +316,8 @@ export const GameContextProvider = ({ children }: any) => {
     if (piece.type === "knight") highlightKnight(piece);
 
     if (piece.type === "bishop") highlightBishop(piece);
+
+    if (piece.type === "king") highlightKing(piece);
 
     setActivePiece(piece);
   };
