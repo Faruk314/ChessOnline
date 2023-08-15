@@ -289,6 +289,48 @@ export const GameContextProvider = ({ children }: any) => {
     setAvailablePositions(validMoves);
   };
 
+  const highlightQueen = (piece: Piece) => {
+    const currentRow = piece.position.row;
+    const currentCol = piece.position.col;
+    let validMoves: number[] = [];
+
+    let positions = [
+      { row: -1, col: 0 }, //up
+      { row: 1, col: 0 }, //down
+      { row: 0, col: -1 }, //left
+      { row: 0, col: 1 }, //right
+      { row: -1, col: -1 }, //upper left diagonal
+      { row: -1, col: 1 }, //upper right diagonal
+      { row: 1, col: -1 }, //bottom left diagonal
+      { row: 1, col: 1 }, //bottom right diagonal
+    ];
+
+    positions.forEach((position) => {
+      let r = currentRow + position.row;
+      let c = currentCol + position.col;
+
+      while (r >= 0 && r < 8 && c >= 0 && c < 8) {
+        if (!board[r][c]) {
+          validMoves.push(parseInt(`${r}${c}`));
+        } else {
+          if (
+            (board[r][c]?.color === "black" && playerTurn?.color === "white") ||
+            (board[r][c]?.color === "white" && playerTurn?.color === "black")
+          ) {
+            validMoves.push(parseInt(`${r}${c}`));
+          }
+
+          break;
+        }
+
+        r += position.row;
+        c += position.col;
+      }
+    });
+
+    setAvailablePositions(validMoves);
+  };
+
   const movePiece = (row: number, col: number) => {
     const updatedBoard = [...board];
 
@@ -318,6 +360,8 @@ export const GameContextProvider = ({ children }: any) => {
     if (piece.type === "bishop") highlightBishop(piece);
 
     if (piece.type === "king") highlightKing(piece);
+
+    if (piece.type === "queen") highlightQueen(piece);
 
     setActivePiece(piece);
   };
