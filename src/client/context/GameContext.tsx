@@ -8,12 +8,12 @@ import React, {
 import { Player } from "../classes/Player";
 import { Piece } from "../classes/Piece";
 import { createPawn } from "../classes/Piece";
-import { Square } from "../../types/types";
+import { Square, Position } from "../../types/types";
 
 interface GameContextProps {
   board: Square[][];
   highlight: (piece: Piece) => void;
-  availablePositions: number[];
+  availablePositions: Position[];
   movePiece: (row: number, col: number) => void;
   playerTurn: Player | null;
   isCheck: boolean;
@@ -36,7 +36,7 @@ export const GameContextProvider = ({ children }: any) => {
   const [board, setBoard] = useState<Square[][]>([]);
   const [players, setPlayers] = useState<Player[]>([]);
   const [playerTurn, setPlayerTurn] = useState<Player | null>(null);
-  const [availablePositions, setAvailablePositions] = useState<number[]>([]);
+  const [availablePositions, setAvailablePositions] = useState<Position[]>([]);
   const [activePiece, setActivePiece] = useState<Piece | null>(null);
   const [isCheck, setIsCheck] = useState(false);
   const [isPromotion, setIsPromotion] = useState(false);
@@ -51,41 +51,45 @@ export const GameContextProvider = ({ children }: any) => {
 
       for (let row = 0; row < 8; row++) {
         for (let col = 0; col < 8; col++) {
-          if (row === 6 && col === 2)
-            board[row][col] = createPawn(row, col, "white", "pawn");
-
-          if (row === 7) {
-            if (col === 0 || col === 7) {
-              board[row][col] = createPawn(row, col, "white", "rook");
-            }
-
-            board[row][4] = createPawn(row, 4, "white", "king");
-            board[row][3] = createPawn(row, 3, "white", "queen");
-
-            if (col === 1 || col === 6)
-              board[row][col] = createPawn(row, col, "white", "knight");
-
-            if (col === 2 || col === 5)
-              board[row][col] = createPawn(row, col, "white", "bishop");
-          }
-
-          if (row === 1)
-            board[row][col] = createPawn(row, col, "black", "pawn");
-
-          if (row === 0) {
-            if (col === 0 || col === 7) {
-              board[row][col] = createPawn(row, col, "black", "rook");
-            }
-
+          if (row === 0 && col === 4)
             board[row][4] = createPawn(row, 4, "black", "king");
-            board[row][3] = createPawn(row, 3, "black", "queen");
 
-            if (col === 1 || col === 6)
-              board[row][col] = createPawn(row, col, "black", "knight");
+          if (row === 6 && col === 6)
+            board[row][col] = createPawn(row, col, "white", "king");
 
-            if (col === 2 || col === 5)
-              board[row][col] = createPawn(row, col, "black", "bishop");
-          }
+          if (row === 7 && col === 4)
+            board[row][col] = createPawn(row, col, "white", "bishop");
+
+          if (row === 7 && col === 6)
+            board[row][col] = createPawn(row, col, "white", "queen");
+
+          //importnant
+          // if (row === 6 && (col === 2 || col === 1))
+          //   board[row][col] = createPawn(row, col, "white", "pawn");
+          // if (row === 7) {
+          //   if (col === 0 || col === 7) {
+          //     board[row][col] = createPawn(row, col, "white", "rook");
+          //   }
+          //   board[row][4] = createPawn(row, 4, "white", "king");
+          //   board[row][3] = createPawn(row, 3, "white", "queen");
+          //   if (col === 1 || col === 6)
+          //     board[row][col] = createPawn(row, col, "white", "knight");
+          //   if (col === 2 || col === 5)
+          //     board[row][col] = createPawn(row, col, "white", "bishop");
+          // }
+          // if (row === 1)
+          //   board[row][col] = createPawn(row, col, "black", "pawn");
+          // if (row === 0) {
+          //   if (col === 0 || col === 7) {
+          //     board[row][col] = createPawn(row, col, "black", "rook");
+          //   }
+          //   board[row][4] = createPawn(row, 4, "black", "king");
+          //   board[row][3] = createPawn(row, 3, "black", "queen");
+          //   if (col === 1 || col === 6)
+          //     board[row][col] = createPawn(row, col, "black", "knight");
+          //   if (col === 2 || col === 5)
+          //     board[row][col] = createPawn(row, col, "black", "bishop");
+          // }
         }
       }
 
@@ -127,60 +131,68 @@ export const GameContextProvider = ({ children }: any) => {
   };
 
   const highlightPawn = (piece: Piece) => {
-    let firstPos: number | null = null;
-    let secondPos: number | null = null;
-    let leftDiagonal: number | null = null;
-    let rightDiagonal: number | null = null;
+    let firstPos: Position | null = null;
+    let secondPos: Position | null = null;
+    let leftDiagonal: Position | null = null;
+    let rightDiagonal: Position | null = null;
     let row = piece.position.row;
     let col = piece.position.col;
+    let validMoves: Position[] = [];
 
     if (piece.color === "white") {
-      firstPos = parseInt(`${row - 1}${col}`);
-      !board[row - 1][col] && setAvailablePositions([firstPos]);
+      firstPos = { row: row - 1, col: col };
+
+      !board[row - 1][col] && validMoves.push(firstPos);
 
       if (row === 6) {
-        secondPos = parseInt(`${row - 2}${col}`);
-        setAvailablePositions([firstPos, secondPos]);
+        secondPos = { row: row - 2, col: col };
+        validMoves = [firstPos, secondPos];
       }
 
       if (board[row - 1][col + 1]) {
-        rightDiagonal = parseInt(`${row - 1}${col + 1}`);
-        setAvailablePositions((prev) => [...prev, rightDiagonal!]);
+        rightDiagonal = { row: row - 1, col: col + 1 };
+        validMoves.push(rightDiagonal);
       }
 
       if (board[row - 1][col - 1]) {
-        leftDiagonal = parseInt(`${row - 1}${col + 1}`);
+        leftDiagonal = { row: row - 1, col: col - 1 };
 
-        setAvailablePositions((prev) => [...prev, leftDiagonal!]);
+        validMoves.push(leftDiagonal);
       }
     }
 
     if (piece.color === "black") {
-      firstPos = parseInt(`${row + 1}${col}`);
-      !board[row - 1][col] && setAvailablePositions([firstPos]);
+      firstPos = { row: row + 1, col: col };
+
+      !board[row - 1][col] && validMoves.push(firstPos);
 
       if (row === 1) {
-        secondPos = parseInt(`${row + 2}${col}`);
-        setAvailablePositions([firstPos, secondPos]);
+        secondPos = { row: row + 2, col: col };
+
+        validMoves = [firstPos, secondPos];
       }
 
       if (board[row + 1][col + 1]) {
-        rightDiagonal = parseInt(`${row + 1}${col + 1}`);
-        setAvailablePositions((prev) => [...prev, rightDiagonal!]);
+        rightDiagonal = { row: row + 1, col: col + 1 };
+
+        validMoves.push(rightDiagonal);
       }
 
       if (board[row + 1][col - 1]) {
-        leftDiagonal = parseInt(`${row + 1}${col - 1}`);
-        setAvailablePositions((prev) => [...prev, leftDiagonal!]);
+        leftDiagonal = { row: row + 1, col: col - 1 };
+
+        validMoves.push(leftDiagonal);
       }
     }
+
+    return validMoves;
   };
 
   const highlightRook = (piece: Piece) => {
     const currentRow = piece.position.row;
     const currentCol = piece.position.col;
 
-    const validMoves: number[] = [];
+    const validMoves: Position[] = [];
     let directions = [
       { row: -1, col: 0 }, // Up
       { row: 1, col: 0 }, // Down
@@ -197,13 +209,13 @@ export const GameContextProvider = ({ children }: any) => {
 
       while (r >= 0 && r < 8 && c >= 0 && c < 8) {
         if (!board[r][c]) {
-          validMoves.push(parseInt(`${r}${c}`));
+          validMoves.push({ row: r, col: c });
         } else {
           if (
             (board[r][c]?.color === "black" && playerTurn?.color === "white") ||
             (board[r][c]?.color === "white" && playerTurn?.color === "black")
           ) {
-            validMoves.push(parseInt(`${r}${c}`));
+            validMoves.push({ row: r, col: c });
           }
           break;
         }
@@ -211,15 +223,15 @@ export const GameContextProvider = ({ children }: any) => {
         c += direction.col;
       }
     });
-    console.log(validMoves);
-    setAvailablePositions(validMoves);
+
+    return validMoves;
   };
 
   const highlightKnight = (piece: Piece) => {
     const currentRow = piece.position.row;
     const currentCol = piece.position.col;
 
-    const validMoves: number[] = [];
+    const validMoves: Position[] = [];
 
     const knightMoves = [
       { row: -2, col: -1 },
@@ -238,20 +250,18 @@ export const GameContextProvider = ({ children }: any) => {
 
       if (r >= 0 && r < 8 && c >= 0 && c < 8) {
         if (!board[r][c] || board[r][c]?.color !== playerTurn?.color) {
-          validMoves.push(parseInt(`${r}${c}`));
+          validMoves.push({ row: r, col: c });
         }
       }
     });
 
-    console.log(validMoves, "vlaid");
-
-    setAvailablePositions(validMoves);
+    return validMoves;
   };
 
   const highlightBishop = (piece: Piece) => {
     const currentRow = piece.position.row;
     const currentCol = piece.position.col;
-    const validMoves: number[] = [];
+    const validMoves: Position[] = [];
 
     let directions = [
       { row: -1, col: -1 }, // Upper left diagonal
@@ -266,13 +276,13 @@ export const GameContextProvider = ({ children }: any) => {
 
       while (r >= 0 && r < 8 && c >= 0 && c < 8) {
         if (!board[r][c]) {
-          validMoves.push(parseInt(`${r}${c}`));
+          validMoves.push({ row: r, col: c });
         } else {
           if (
             (board[r][c]?.color === "black" && playerTurn?.color === "white") ||
             (board[r][c]?.color === "white" && playerTurn?.color === "black")
           ) {
-            validMoves.push(parseInt(`${r}${c}`));
+            validMoves.push({ row: r, col: c });
           }
           break;
         }
@@ -281,13 +291,13 @@ export const GameContextProvider = ({ children }: any) => {
       }
     });
 
-    setAvailablePositions(validMoves);
+    return validMoves;
   };
 
   const highlightKing = (piece: Piece) => {
     const currentRow = piece.position.row;
     const currentCol = piece.position.col;
-    let validMoves: number[] = [];
+    let validMoves: Position[] = [];
 
     let kingMoves = [
       { row: -1, col: 0 }, //up
@@ -308,20 +318,18 @@ export const GameContextProvider = ({ children }: any) => {
 
       if (r >= 0 && r < 8 && c >= 0 && c < 8) {
         if (!board[r][c] || board[r][c]?.color !== playerTurn?.color) {
-          console.log(r, c);
-
-          validMoves.push(parseInt(`${r}${c}`));
+          validMoves.push({ row: r, col: c });
         }
       }
     });
 
-    setAvailablePositions(validMoves);
+    return validMoves;
   };
 
   const highlightQueen = (piece: Piece) => {
     const currentRow = piece.position.row;
     const currentCol = piece.position.col;
-    let validMoves: number[] = [];
+    let validMoves: Position[] = [];
 
     let positions = [
       { row: -1, col: 0 }, //up
@@ -340,13 +348,13 @@ export const GameContextProvider = ({ children }: any) => {
 
       while (r >= 0 && r < 8 && c >= 0 && c < 8) {
         if (!board[r][c]) {
-          validMoves.push(parseInt(`${r}${c}`));
+          validMoves.push({ row: r, col: c });
         } else {
           if (
             (board[r][c]?.color === "black" && playerTurn?.color === "white") ||
             (board[r][c]?.color === "white" && playerTurn?.color === "black")
           ) {
-            validMoves.push(parseInt(`${r}${c}`));
+            validMoves.push({ row: r, col: c });
           }
 
           break;
@@ -357,7 +365,32 @@ export const GameContextProvider = ({ children }: any) => {
       }
     });
 
-    setAvailablePositions(validMoves);
+    return validMoves;
+  };
+
+  const determineCheck = () => {
+    let availablePositions: Position[] = [];
+
+    switch (activePiece?.type) {
+      case "pawn":
+        availablePositions = highlightPawn(activePiece);
+        break;
+      case "knight":
+        availablePositions = highlightKnight(activePiece);
+        break;
+      case "queen":
+        availablePositions = highlightQueen(activePiece);
+        break;
+      case "bishop":
+        availablePositions = highlightBishop(activePiece);
+        break;
+      case "rook":
+        availablePositions = highlightRook(activePiece);
+        break;
+      case "king":
+        availablePositions = highlightKing(activePiece);
+        break;
+    }
   };
 
   const movePiece = (row: number, col: number) => {
@@ -381,6 +414,7 @@ export const GameContextProvider = ({ children }: any) => {
     }
 
     //determine if it is a check
+    determineCheck();
 
     //determine if its a check mate
 
@@ -390,17 +424,17 @@ export const GameContextProvider = ({ children }: any) => {
   };
 
   const highlight = (piece: Piece) => {
-    if (piece.type === "pawn") highlightPawn(piece);
+    if (piece.type === "pawn") setAvailablePositions(highlightPawn(piece));
 
-    if (piece.type === "rook") highlightRook(piece);
+    if (piece.type === "rook") setAvailablePositions(highlightRook(piece));
 
-    if (piece.type === "knight") highlightKnight(piece);
+    if (piece.type === "knight") setAvailablePositions(highlightKnight(piece));
 
-    if (piece.type === "bishop") highlightBishop(piece);
+    if (piece.type === "bishop") setAvailablePositions(highlightBishop(piece));
 
-    if (piece.type === "king") highlightKing(piece);
+    if (piece.type === "king") setAvailablePositions(highlightKing(piece));
 
-    if (piece.type === "queen") highlightQueen(piece);
+    if (piece.type === "queen") setAvailablePositions(highlightQueen(piece));
 
     setActivePiece(piece);
   };

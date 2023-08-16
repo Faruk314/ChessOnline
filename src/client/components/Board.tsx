@@ -33,14 +33,14 @@ const Board = () => {
           return (
             <div key={rowIndex} className="flex">
               {row.map((cell, cellIndex) => {
-                const possiblePosition = availablePositions.includes(
-                  parseInt(`${rowIndex}${cellIndex}`)
+                const isAvailablePosition = availablePositions.some(
+                  (pos) => pos.row === rowIndex && pos.col === cellIndex
                 );
 
                 return (
                   <div
                     onClick={() =>
-                      possiblePosition && movePiece(rowIndex, cellIndex)
+                      isAvailablePosition && movePiece(rowIndex, cellIndex)
                     }
                     key={cellIndex}
                     className={classNames(
@@ -51,7 +51,7 @@ const Board = () => {
                             (cellIndex + 1) % 2 === 0) ||
                           ((rowIndex + 1) % 2 === 0 &&
                             (cellIndex + 1) % 2 !== 0),
-                        "bg-green-300 cursor-pointer": possiblePosition,
+                        "bg-green-300 cursor-pointer": isAvailablePosition,
                       }
                     )}
                   >
