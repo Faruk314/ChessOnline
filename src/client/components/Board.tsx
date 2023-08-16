@@ -14,10 +14,17 @@ import blackPawn from "../assets/images/pawn_b.png";
 import blackBishop from "../assets/images/bishop_b .png";
 import blackKnight from "../assets/images/knight_b.png";
 import blackRook from "../assets/images/rook_b.png";
+import Promotion from "../modals/Promotion";
 
 const Board = () => {
-  const { board, highlight, availablePositions, movePiece, playerTurn } =
-    useContext(GameContext);
+  const {
+    board,
+    highlight,
+    availablePositions,
+    movePiece,
+    playerTurn,
+    isPromotion,
+  } = useContext(GameContext);
 
   return (
     <section className="flex items-center justify-center h-[100vh]">
@@ -77,6 +84,8 @@ const Board = () => {
           </div>
         ))}
       </div>
+
+      {isPromotion && <Promotion />}
     </section>
   );
 };

@@ -16,6 +16,9 @@ interface GameContextProps {
   availablePositions: number[];
   movePiece: (row: number, col: number) => void;
   playerTurn: Player | null;
+  isCheck: boolean;
+  isPromotion: boolean;
+  promotePawn: (type: string) => void;
 }
 
 export const GameContext = createContext<GameContextProps>({
@@ -24,6 +27,9 @@ export const GameContext = createContext<GameContextProps>({
   availablePositions: [],
   movePiece: (row, col) => {},
   playerTurn: null,
+  isCheck: false,
+  isPromotion: false,
+  promotePawn: (type) => {},
 });
 
 export const GameContextProvider = ({ children }: any) => {
@@ -32,6 +38,8 @@ export const GameContextProvider = ({ children }: any) => {
   const [playerTurn, setPlayerTurn] = useState<Player | null>(null);
   const [availablePositions, setAvailablePositions] = useState<number[]>([]);
   const [activePiece, setActivePiece] = useState<Piece | null>(null);
+  const [isCheck, setIsCheck] = useState(false);
+  const [isPromotion, setIsPromotion] = useState(false);
 
   useEffect(() => {
     const initGame = () => {
@@ -95,6 +103,27 @@ export const GameContextProvider = ({ children }: any) => {
     );
 
     setPlayerTurn(nextPlayer!);
+  };
+
+  const promotePawn = (type: string) => {
+    const row = activePiece?.position.row;
+    const col = activePiece?.position.col;
+    const color = activePiece?.color;
+
+    if (type === "queen")
+      board[row!][col!] = createPawn(row!, col!, color!, "queen");
+
+    if (type === "knight")
+      board[row!][col!] = createPawn(row!, col!, color!, "knight");
+
+    if (type === "rook")
+      board[row!][col!] = createPawn(row!, col!, color!, "rook");
+
+    if (type === "bishop")
+      board[row!][col!] = createPawn(row!, col!, color!, "bishop");
+
+    setIsPromotion(false);
+    switchTurns();
   };
 
   const highlightPawn = (piece: Piece) => {
@@ -333,6 +362,7 @@ export const GameContextProvider = ({ children }: any) => {
 
   const movePiece = (row: number, col: number) => {
     const updatedBoard = [...board];
+    let promotion = false;
 
     console.log(row, "row");
 
@@ -343,7 +373,18 @@ export const GameContextProvider = ({ children }: any) => {
     activePiece.position.col = col;
     updatedBoard[row][col] = activePiece;
 
-    switchTurns();
+    //determine if it is a promotion
+    if (activePiece.type === "pawn" && (row === 7 || row === 0)) {
+      console.log("promotion");
+      setIsPromotion(true);
+      promotion = true;
+    }
+
+    //determine if it is a check
+
+    //determine if its a check mate
+
+    if (!promotion) switchTurns();
     setAvailablePositions([]);
     setBoard(updatedBoard);
   };
@@ -372,6 +413,9 @@ export const GameContextProvider = ({ children }: any) => {
     availablePositions,
     movePiece,
     playerTurn,
+    isCheck,
+    isPromotion,
+    promotePawn,
   };
 
   return (

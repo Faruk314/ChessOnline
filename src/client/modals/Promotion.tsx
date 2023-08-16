@@ -9,13 +9,42 @@ import whiteKnight from "../assets/images/knight_w.png";
 import whiteBishop from "../assets/images/bishop_w.png";
 import whiteQueen from "../assets/images/queen_w.png";
 import { GameContext } from "../context/GameContext";
+import classNames from "classnames";
 
-interface Props {
-  color: string;
-}
+const Promotion = () => {
+  const { playerTurn, promotePawn } = useContext(GameContext);
 
-const Promotion = ({ color }: Props) => {
-  return <div className="fixed p-2 border border-black bottom-10"></div>;
+  const promotionPieces =
+    playerTurn?.color === "black"
+      ? [
+          { type: "queen", image: blackQueen },
+          { type: "knight", image: blackKnight },
+          { type: "rook", image: blackRook },
+          { type: "bishop", image: blackBishop },
+        ]
+      : [
+          { type: "queen", image: whiteQueen },
+          { type: "knight", image: whiteKnight },
+          { type: "rook", image: whiteRook },
+          { type: "bishop", image: whiteBishop },
+        ];
+
+  return (
+    <div
+      className={classNames("fixed p-2 border border-black", {
+        "bottom-10": playerTurn?.color === "black",
+        "top-10": playerTurn?.color === "white",
+      })}
+    >
+      <div className="flex">
+        {promotionPieces.map((piece, index) => (
+          <button onClick={() => promotePawn(piece.type)} key={index}>
+            <img src={piece.image} alt="" />
+          </button>
+        ))}
+      </div>
+    </div>
+  );
 };
 
 export default Promotion;
