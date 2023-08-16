@@ -136,7 +136,7 @@ export const GameContextProvider = ({ children }: any) => {
 
     if (piece.color === "white") {
       firstPos = parseInt(`${row - 1}${col}`);
-      setAvailablePositions([firstPos]);
+      !board[row - 1][col] && setAvailablePositions([firstPos]);
 
       if (row === 6) {
         secondPos = parseInt(`${row - 2}${col}`);
@@ -157,7 +157,7 @@ export const GameContextProvider = ({ children }: any) => {
 
     if (piece.color === "black") {
       firstPos = parseInt(`${row + 1}${col}`);
-      setAvailablePositions([firstPos]);
+      !board[row - 1][col] && setAvailablePositions([firstPos]);
 
       if (row === 1) {
         secondPos = parseInt(`${row + 2}${col}`);
@@ -390,8 +390,6 @@ export const GameContextProvider = ({ children }: any) => {
   };
 
   const highlight = (piece: Piece) => {
-    console.log(piece.type, "type", piece.position);
-
     if (piece.type === "pawn") highlightPawn(piece);
 
     if (piece.type === "rook") highlightRook(piece);
