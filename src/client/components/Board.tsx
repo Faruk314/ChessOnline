@@ -24,10 +24,12 @@ const Board = () => {
     movePiece,
     playerTurn,
     isPromotion,
+    isCheck,
   } = useContext(GameContext);
 
   return (
     <section className="flex items-center justify-center h-[100vh]">
+      {isCheck && <span className="absolute top-10">Check</span>}
       <div>
         {board.map((row, rowIndex) => {
           return (
@@ -51,7 +53,7 @@ const Board = () => {
                             (cellIndex + 1) % 2 === 0) ||
                           ((rowIndex + 1) % 2 === 0 &&
                             (cellIndex + 1) % 2 !== 0),
-                        "bg-green-300 cursor-pointer": isAvailablePosition,
+                        "cursor-pointer green": isAvailablePosition,
                       }
                     )}
                   >
