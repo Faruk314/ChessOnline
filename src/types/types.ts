@@ -7,8 +7,3 @@ export interface Position {
   col: number;
   direction?: string;
 }
-
-export interface CheckInfo {
-  availablePos: Position[];
-  king: Square;
-}
