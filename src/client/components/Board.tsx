@@ -15,6 +15,7 @@ import blackBishop from "../assets/images/bishop_b .png";
 import blackKnight from "../assets/images/knight_b.png";
 import blackRook from "../assets/images/rook_b.png";
 import Promotion from "../modals/Promotion";
+import Checkmate from "../modals/Checkmate";
 
 const Board = () => {
   const {
@@ -24,12 +25,12 @@ const Board = () => {
     movePiece,
     playerTurn,
     isPromotion,
-    isCheck,
+    checkmate,
   } = useContext(GameContext);
 
   return (
     <section className="flex items-center justify-center h-[100vh]">
-      {isCheck && <span className="absolute top-10">Check</span>}
+      {checkmate && <Checkmate />}
       <div>
         {board.map((row, rowIndex) => {
           return (
