@@ -9,6 +9,7 @@ import { Player } from "../classes/Player";
 import { Piece } from "../classes/Piece";
 import { createPawn } from "../classes/Piece";
 import { Square, Position } from "../../types/types";
+import _, { cloneDeep } from "lodash";
 
 interface GameContextProps {
   board: Square[][];
@@ -43,8 +44,6 @@ export const GameContextProvider = ({ children }: any) => {
   const [checkPositions, setCheckPositions] = useState<Position[]>([]);
   const [checkmate, setCheckmate] = useState(false);
 
-  console.log(checkPositions, "checkPositions");
-
   useEffect(() => {
     const initGame = () => {
       const whitePlayer = new Player("white");
@@ -55,73 +54,118 @@ export const GameContextProvider = ({ children }: any) => {
 
       for (let row = 0; row < 8; row++) {
         for (let col = 0; col < 8; col++) {
-          if (row === 2 && col === 5) {
-            board[row][col] = createPawn(row, col, "black", "pawn");
-          }
-
-          if (row === 0 && col === 6) {
-            board[row][col] = createPawn(row, col, "black", "king");
-          }
-
-          if (row === 1 && col === 4) {
-            board[row][col] = createPawn(row, col, "black", "bishop");
-          }
-
+          //checkmate situation 1
+          // if (row === 7 && col === 0) {
+          //   board[row][col] = createPawn(row, col, "white", "rook");
+          // }
+          // if (row === 0 && col === 3) {
+          //   board[row][col] = createPawn(row, col, "black", "king");
+          // }
+          // if (row === 1 && col === 5) {
+          //   board[row][col] = createPawn(row, col, "white", "rook");
+          // }
+          //checkmate situation 2
+          // if (row === 0 && col === 7) {
+          //   board[row][col] = createPawn(row, col, "black", "king");
+          // }
+          // if (row === 1 && col === 6) {
+          //   board[row][col] = createPawn(row, col, "black", "pawn");
+          // }
+          // if (row === 1 && col === 7) {
+          //   board[row][col] = createPawn(row, col, "black", "pawn");
+          // }
+          // if (row === 5 && col === 0) {
+          //   board[row][col] = createPawn(row, col, "white", "queen");
+          // }
+          //checkmate situation 3
+          // if (row === 7 && col === 0) {
+          //   board[row][col] = createPawn(row, col, "white", "queen");
+          // }
+          // if (row === 0 && col === 3) {
+          //   board[row][col] = createPawn(row, col, "black", "king");
+          // }
+          // if (row === 1 && col === 5) {
+          //   board[row][col] = createPawn(row, col, "white", "queen");
+          // }
+          //checkmate situation 4
+          // if (row === 0 && col === 0) {
+          //   board[row][col] = createPawn(row, col, "black", "king");
+          // }
+          // if (row === 2 && col === 1) {
+          //   board[row][col] = createPawn(row, col, "white", "king");
+          // }
+          // if (row === 2 && col === 3) {
+          //   board[row][col] = createPawn(row, col, "white", "bishop");
+          // }
+          // if (row === 1 && col === 7) {
+          //   board[row][col] = createPawn(row, col, "white", "bishop");
+          // }
+          //checkmate situation 5
+          // if (row === 5 && col === 0) {
+          //   board[row][col] = createPawn(row, col, "white", "queen");
+          // }
+          // if (row === 1 && col === 6) {
+          //   board[row][col] = createPawn(row, col, "black", "pawn");
+          // }
           // if (row === 2 && col === 6) {
+          //   board[row][col] = createPawn(row, col, "black", "pawn");
+          // }
+          // if (row === 0 && col === 7) {
+          //   board[row][col] = createPawn(row, col, "black", "king");
+          // }
+          // if (row === 1 && col === 4) {
+          //   board[row][col] = createPawn(row, col, "white", "knight");
+          // }
+          //checkmate situation 6
+          // if (row === 0 && col === 3) {
+          //   board[row][col] = createPawn(row, col, "black", "queen");
+          // }
+          // if (row === 0 && col === 4) {
+          //   board[row][col] = createPawn(row, col, "black", "king");
+          // }
+          // if (row === 0 && col === 5) {
           //   board[row][col] = createPawn(row, col, "black", "rook");
           // }
-
-          if (row === 3 && col === 2) {
-            board[row][col] = createPawn(row, col, "white", "queen");
-          }
-
-          if (row === 3 && col === 4) {
-            board[row][col] = createPawn(row, col, "white", "queen");
-          }
-
-          if (row === 7 && col === 2) {
-            board[row][col] = createPawn(row, col, "white", "queen");
-          }
-
-          if (row === 2 && col === 7) {
-            board[row][col] = createPawn(row, col, "white", "rook");
-          }
-
-          if (row === 4 && col === 6) {
-            board[row][col] = createPawn(row, col, "black", "queen");
-          }
-
-          // if (row === 0 && col === 6) {
-          //   board[row][col] = createPawn(row, col, "black", "bishop");
+          // if (row === 1 && col === 3) {
+          //   board[row][col] = createPawn(row, col, "black", "pawn");
+          // }
+          // if (row === 1 && col === 4) {
+          //   board[row][col] = createPawn(row, col, "black", "knight");
+          // }
+          // if (row === 1 && col === 5) {
+          //   board[row][col] = createPawn(row, col, "black", "pawn");
+          // }
+          // if (row === 4 && col === 2) {
+          //   board[row][col] = createPawn(row, col, "white", "knight");
           // }
 
           //importnant
-          // if (row === 6 && (col === 2 || col === 1))
-          //   board[row][col] = createPawn(row, col, "white", "pawn");
-          // if (row === 7) {
-          //   if (col === 0 || col === 7) {
-          //     board[row][col] = createPawn(row, col, "white", "rook");
-          //   }
-          //   board[row][4] = createPawn(row, 4, "white", "king");
-          //   board[row][3] = createPawn(row, 3, "white", "queen");
-          //   if (col === 1 || col === 6)
-          //     board[row][col] = createPawn(row, col, "white", "knight");
-          //   if (col === 2 || col === 5)
-          //     board[row][col] = createPawn(row, col, "white", "bishop");
-          // }
-          // if (row === 1)
-          //   board[row][col] = createPawn(row, col, "black", "pawn");
-          // if (row === 0) {
-          //   if (col === 0 || col === 7) {
-          //     board[row][col] = createPawn(row, col, "black", "rook");
-          //   }
-          //   board[row][4] = createPawn(row, 4, "black", "king");
-          //   board[row][3] = createPawn(row, 3, "black", "queen");
-          //   if (col === 1 || col === 6)
-          //     board[row][col] = createPawn(row, col, "black", "knight");
-          //   if (col === 2 || col === 5)
-          //     board[row][col] = createPawn(row, col, "black", "bishop");
-          // }
+          if (row === 6 && (col === 2 || col === 1))
+            board[row][col] = createPawn(row, col, "white", "pawn");
+          if (row === 7) {
+            if (col === 0 || col === 7) {
+              board[row][col] = createPawn(row, col, "white", "rook");
+            }
+            board[row][4] = createPawn(row, 4, "white", "king");
+            board[row][3] = createPawn(row, 3, "white", "queen");
+            if (col === 1 || col === 6)
+              board[row][col] = createPawn(row, col, "white", "knight");
+            if (col === 2 || col === 5)
+              board[row][col] = createPawn(row, col, "white", "bishop");
+          }
+          if (row === 1)
+            board[row][col] = createPawn(row, col, "black", "pawn");
+          if (row === 0) {
+            if (col === 0 || col === 7) {
+              board[row][col] = createPawn(row, col, "black", "rook");
+            }
+            board[row][4] = createPawn(row, 4, "black", "king");
+            board[row][3] = createPawn(row, 3, "black", "queen");
+            if (col === 1 || col === 6)
+              board[row][col] = createPawn(row, col, "black", "knight");
+            if (col === 2 || col === 5)
+              board[row][col] = createPawn(row, col, "black", "bishop");
+          }
         }
       }
 
@@ -162,56 +206,87 @@ export const GameContextProvider = ({ children }: any) => {
     switchTurns();
   };
 
-  const highlightPawn = (piece: Piece, stop: boolean | undefined) => {
+  const highlightPawn = (piece: Piece, stop: boolean, newBoard: Square[][]) => {
     let firstPos: Position | null = null;
     let secondPos: Position | null = null;
     let leftDiagonal: Position | null = null;
     let rightDiagonal: Position | null = null;
-    let row = piece.position.row;
-    let col = piece.position.col;
+    let currentRow = piece.position.row;
+    let currentCol = piece.position.col;
     let validMoves: Position[] = [];
+    let board = _.cloneDeep(newBoard);
 
     if (piece.color === "white") {
-      firstPos = { row: row - 1, col: col, direction: "up" };
+      firstPos = { row: currentRow - 1, col: currentCol, direction: "up" };
 
-      !board[row - 1][col] && validMoves.push(firstPos);
+      !board[currentRow - 1][currentCol] && validMoves.push(firstPos);
 
-      if (row === 6) {
-        secondPos = { row: row - 2, col: col, direction: "down" };
-        validMoves = [firstPos, secondPos];
+      if (currentRow === 6 && board[currentRow - 1][currentCol] === null) {
+        secondPos = { row: currentRow - 2, col: currentCol, direction: "down" };
+        validMoves = [secondPos];
       }
 
-      if (board[row - 1][col + 1]) {
-        rightDiagonal = { row: row - 1, col: col + 1, direction: "rd" };
+      if (
+        board[currentRow - 1][currentCol + 1] !== null &&
+        board[currentRow - 1][currentCol + 1]?.color !== piece.color
+      ) {
+        rightDiagonal = {
+          row: currentRow - 1,
+          col: currentCol + 1,
+          direction: "rd",
+        };
         validMoves.push(rightDiagonal);
       }
 
-      if (board[row - 1][col - 1]) {
-        leftDiagonal = { row: row - 1, col: col - 1, direction: "ld" };
+      if (
+        board[currentRow - 1][currentCol - 1] !== null &&
+        board[currentRow - 1][currentCol - 1]?.color !== piece.color
+      ) {
+        leftDiagonal = {
+          row: currentRow - 1,
+          col: currentCol - 1,
+          direction: "ld",
+        };
 
         validMoves.push(leftDiagonal);
       }
     }
 
     if (piece.color === "black") {
-      firstPos = { row: row + 1, col: col, direction: "up" };
+      firstPos = { row: currentRow + 1, col: currentCol, direction: "up" };
 
-      !board[row - 1][col] && validMoves.push(firstPos);
-
-      if (row === 1) {
-        secondPos = { row: row + 2, col: col, direction: "down" };
-
-        validMoves = [firstPos, secondPos];
+      if (board[currentRow + 1][currentCol] === null) {
+        validMoves.push(firstPos);
       }
 
-      if (board[row + 1][col + 1]) {
-        rightDiagonal = { row: row + 1, col: col + 1, direction: "rd" };
+      if (currentRow === 1 && board[currentRow + 1][currentCol] === null) {
+        secondPos = { row: currentRow + 2, col: currentCol, direction: "down" };
+
+        validMoves = [secondPos];
+      }
+
+      if (
+        board[currentRow + 1][currentCol + 1] !== null &&
+        board[currentRow + 1][currentCol + 1]?.color !== piece.color
+      ) {
+        rightDiagonal = {
+          row: currentRow + 1,
+          col: currentCol + 1,
+          direction: "rd",
+        };
 
         validMoves.push(rightDiagonal);
       }
 
-      if (board[row + 1][col - 1]) {
-        leftDiagonal = { row: row + 1, col: col - 1, direction: "ld" };
+      if (
+        board[currentRow + 1][currentCol - 1] !== null &&
+        board[currentRow + 1][currentCol - 1]?.color !== piece.color
+      ) {
+        leftDiagonal = {
+          row: currentRow + 1,
+          col: currentCol - 1,
+          direction: "ld",
+        };
 
         validMoves.push(leftDiagonal);
       }
@@ -222,47 +297,14 @@ export const GameContextProvider = ({ children }: any) => {
     return validMoves;
   };
 
-  const highlightRook = (piece: Piece, stop: boolean | undefined) => {
+  const highlightKnight = (
+    piece: Piece,
+    stop: boolean,
+    newBoard: Square[][]
+  ) => {
     const currentRow = piece.position.row;
     const currentCol = piece.position.col;
-
-    let validMoves: Position[] = [];
-    let directions = [
-      { row: -1, col: 0, direction: "up" },
-      { row: 1, col: 0, direction: "down" },
-      { row: 0, col: -1, direction: "left" },
-      { row: 0, col: 1, direction: "right" },
-    ];
-
-    directions.forEach((direction) => {
-      let r = currentRow + direction.row;
-      let c = currentCol + direction.col;
-
-      while (r >= 0 && r < 8 && c >= 0 && c < 8) {
-        if (!board[r][c]) {
-          validMoves.push({ row: r, col: c, direction: direction.direction });
-        } else {
-          if (
-            (board[r][c]?.color === "black" && playerTurn?.color === "white") ||
-            (board[r][c]?.color === "white" && playerTurn?.color === "black")
-          ) {
-            validMoves.push({ row: r, col: c, direction: direction.direction });
-          }
-          break;
-        }
-        r += direction.row;
-        c += direction.col;
-      }
-    });
-
-    if (!stop) validMoves = getValidCheckMoves(validMoves, piece);
-
-    return validMoves;
-  };
-
-  const highlightKnight = (piece: Piece, stop: boolean | undefined) => {
-    const currentRow = piece.position.row;
-    const currentCol = piece.position.col;
+    let board = _.cloneDeep(newBoard);
 
     let validMoves: Position[] = [];
 
@@ -290,15 +332,18 @@ export const GameContextProvider = ({ children }: any) => {
 
     if (!stop) validMoves = getValidCheckMoves(validMoves, piece);
 
-    console.log(validMoves, "knightValidMoves");
-
     return validMoves;
   };
 
-  const highlightBishop = (piece: Piece) => {
+  const highlightBishop = (
+    piece: Piece,
+    stop: boolean,
+    newBoard: Square[][]
+  ) => {
     const currentRow = piece.position.row;
     const currentCol = piece.position.col;
     let validMoves: Position[] = [];
+    let board = _.cloneDeep(newBoard);
 
     let directions = [
       { row: -1, col: -1, direction: "uld" }, //upper left diagonal
@@ -328,91 +373,12 @@ export const GameContextProvider = ({ children }: any) => {
       }
     });
 
-    validMoves = getValidCheckMoves(validMoves, piece);
-
-    return validMoves;
-  };
-
-  const getAttackedPositions = (board: Square[][]) => {
-    let positionsUnderAttack: Position[] = [];
-
-    board.flat().forEach((cell) => {
-      if (cell !== null && cell.color !== playerTurn?.color) {
-        if (cell.type === "pawn")
-          positionsUnderAttack.push(...highlightPawn(cell, true));
-        if (cell.type === "knight")
-          positionsUnderAttack.push(...highlightKnight(cell, true));
-        if (cell.type === "queen")
-          positionsUnderAttack.push(...highlightQueen(cell, true));
-        if (cell.type === "bishop")
-          positionsUnderAttack.push(...highlightBishop(cell));
-        if (cell.type === "rook")
-          positionsUnderAttack.push(...highlightRook(cell, true));
-      }
-    });
-
-    return positionsUnderAttack;
-  };
-
-  const highlightKing = (piece: Piece) => {
-    let newBoard = JSON.parse(JSON.stringify(board));
-    const currentRow = piece.position.row;
-    const currentCol = piece.position.col;
-    let validMoves: Position[] = [];
-
-    let kingMoves = [
-      { row: -1, col: 0, direction: "up" }, //up
-      { row: 1, col: 0, direction: "down" }, //down
-      { row: 0, col: -1, direction: "left" }, //left
-      { row: 0, col: 1, direction: "right" }, //right
-      { row: -1, col: -1, direction: "uld" }, //upper left diagonal
-      { row: -1, col: 1, direction: "urd" }, //upper right diagonal
-      { row: 1, col: -1, direction: "bld" }, //bottom left diagonal
-      { row: 1, col: 1, direction: "brd" }, //bottom right diagonal
-    ];
-
-    kingMoves.forEach((move, index) => {
-      const r = currentRow + move.row;
-      const c = currentCol + move.col;
-
-      if (r >= 0 && r < 8 && c >= 0 && c < 8) {
-        if (!board[r][c] || board[r][c]?.color !== playerTurn?.color) {
-          validMoves.push({ row: r, col: c, direction: move.direction });
-        }
-      }
-    });
-
-    //this prevents king from walking in positions that are currently under atack
-    let positionsUnderAttack: Position[] = getAttackedPositions(newBoard);
-
-    //Now we need to prevent the king to create a situation that it can be eaten by simulating each move
-    validMoves.forEach((move) => {
-      //we put king on each one of them;
-      console.log(move.row, move.col);
-      newBoard[move.row][move.col] = piece;
-
-      positionsUnderAttack.push(...getAttackedPositions(newBoard));
-
-      newBoard[move.row][move.col] = null;
-    });
-
-    console.log(positionsUnderAttack, "positions under attack");
-
-    validMoves = validMoves.filter((move) => {
-      const moveLeadsToSafePosition = !positionsUnderAttack.some(
-        (position) => position.col === move.col && position.row === move.row
-      );
-
-      return moveLeadsToSafePosition;
-    });
+    if (!stop) validMoves = getValidCheckMoves(validMoves, piece);
 
     return validMoves;
   };
 
   const getValidCheckMoves = (validMoves: Position[], piece: Piece) => {
-    const newBoard = JSON.parse(JSON.stringify([...board]));
-    let positionsUnderAttack: Position[] = [];
-
     if (checkPositions.length > 0) {
       validMoves = validMoves.filter((move) => {
         const validMove = checkPositions.some(
@@ -423,16 +389,60 @@ export const GameContextProvider = ({ children }: any) => {
       });
     }
 
-    console.log(validMoves, "validMoves");
+    return validMoves;
+  };
+
+  const highlightRook = (piece: Piece, stop: boolean, newBoard: Square[][]) => {
+    const currentRow = piece.position.row;
+    const currentCol = piece.position.col;
+    let board = _.cloneDeep(newBoard);
+    let validMoves: Position[] = [];
+    let directions = [
+      { row: -1, col: 0, direction: "up" },
+      { row: 1, col: 0, direction: "down" },
+      { row: 0, col: -1, direction: "left" },
+      { row: 0, col: 1, direction: "right" },
+    ];
+
+    directions.forEach((direction) => {
+      let r = currentRow + direction.row;
+      let c = currentCol + direction.col;
+
+      while (r >= 0 && r < 8 && c >= 0 && c < 8) {
+        if (!board[r][c]) {
+          validMoves.push({ row: r, col: c, direction: direction.direction });
+        } else {
+          if (
+            (board[r][c]?.color === "white" && piece.color === "black") ||
+            (board[r][c]?.color === "black" && piece.color === "white")
+          ) {
+            validMoves.push({ row: r, col: c, direction: direction.direction });
+          }
+          break;
+        }
+        r += direction.row;
+        c += direction.col;
+      }
+    });
+
+    if (!stop) {
+      validMoves = getValidCheckMoves(validMoves, piece);
+    }
+
+    console.log(validMoves, "rook moves");
 
     return validMoves;
   };
 
-  const highlightQueen = (piece: Piece, stop: boolean | undefined) => {
+  const highlightQueen = (
+    piece: Piece,
+    stop: boolean,
+    newBoard: Square[][]
+  ) => {
     const currentRow = piece.position.row;
     const currentCol = piece.position.col;
     let validMoves: Position[] = [];
-    let checkPos: Position[] = [];
+    let board = _.cloneDeep(newBoard);
 
     let positions = [
       { row: -1, col: 0, direction: "up" }, //up
@@ -454,8 +464,8 @@ export const GameContextProvider = ({ children }: any) => {
           validMoves.push({ row: r, col: c, direction: position.direction });
         } else {
           if (
-            (board[r][c]?.color === "black" && playerTurn?.color === "white") ||
-            (board[r][c]?.color === "white" && playerTurn?.color === "black")
+            (board[r][c]?.color === "white" && piece.color === "black") ||
+            (board[r][c]?.color === "black" && piece.color === "white")
           ) {
             validMoves.push({ row: r, col: c, direction: position.direction });
           }
@@ -473,28 +483,124 @@ export const GameContextProvider = ({ children }: any) => {
     return validMoves;
   };
 
-  const determineCheck = () => {
+  const getAttackedPositions = (
+    board: Square[][],
+    pieceColor: string,
+    stop?: boolean
+  ) => {
+    let positionsUnderAttack: Position[] = [];
+
+    board.flat().forEach((cell) => {
+      if (cell !== null && cell.color !== pieceColor) {
+        if (cell.type === "pawn")
+          positionsUnderAttack.push(...highlightPawn(cell, true, board));
+        if (cell.type === "knight")
+          positionsUnderAttack.push(...highlightKnight(cell, true, board));
+        if (cell.type === "queen")
+          positionsUnderAttack.push(...highlightQueen(cell, true, board));
+        if (cell.type === "bishop")
+          positionsUnderAttack.push(...highlightBishop(cell, true, board));
+        if (cell.type === "rook")
+          positionsUnderAttack.push(...highlightRook(cell, true, board));
+        if (cell.type === "king" && !stop)
+          positionsUnderAttack.push(...getKingPositions(cell, board));
+      }
+    });
+
+    return positionsUnderAttack;
+  };
+
+  const getKingPositions = (piece: Piece, board: Square[][]) => {
+    const currentRow = piece.position.row;
+    const currentCol = piece.position.col;
+    let validMoves: Position[] = [];
+
+    console.log(piece.color, "piece color");
+
+    let kingMoves = [
+      { row: -1, col: 0, direction: "up" }, //up
+      { row: 1, col: 0, direction: "down" }, //down
+      { row: 0, col: -1, direction: "left" }, //left
+      { row: 0, col: 1, direction: "right" }, //right
+      { row: -1, col: -1, direction: "uld" }, //upper left diagonal
+      { row: -1, col: 1, direction: "urd" }, //upper right diagonal
+      { row: 1, col: -1, direction: "bld" }, //bottom left diagonal
+      { row: 1, col: 1, direction: "brd" }, //bottom right diagonal
+    ];
+
+    kingMoves.forEach((move, index) => {
+      const r = currentRow + move.row;
+      const c = currentCol + move.col;
+
+      if (r >= 0 && r < 8 && c >= 0 && c < 8) {
+        if (!board[r][c] || board[r][c]?.color !== piece.color) {
+          validMoves.push({ row: r, col: c, direction: move.direction });
+        }
+      }
+    });
+
+    return validMoves;
+  };
+
+  const highlightKing = (piece: Piece, board: Square[][]) => {
+    let newBoard = _.cloneDeep(board);
+
+    let validMoves = getKingPositions(piece, board);
+
+    //prevent the king to walk in positions where it can be eaten
+    let attackedPositions: Position[] = [];
+
+    //first take of the board current king position
+    newBoard[piece.position.row][piece.position.col] = null;
+
+    //then iterate through valid moves and simulate will they lead to dangerous pos
+    validMoves.forEach((validMove) => {
+      newBoard[validMove.row][validMove.col] = piece;
+
+      attackedPositions.push(...getAttackedPositions(newBoard, piece.color));
+
+      newBoard[validMove.row][validMove.col] = null;
+    });
+
+    //finaly we are filtering validMoves that are dangerous
+    validMoves = validMoves.filter((move) => {
+      let safeMove = !attackedPositions.some(
+        (pos) => pos.col === move.col && pos.row === move.row
+      );
+
+      return safeMove;
+    });
+
+    console.log(
+      attackedPositions.find((pos) => pos.row === 1 && pos.col === 1),
+      "validMoves"
+    );
+
+    return validMoves;
+  };
+
+  const determineCheck = (board: Square[][]) => {
     let availablePositions: Position[] = [];
 
     //finds availablePositions for a piece that just moved to a new square
     switch (activePiece?.type) {
       case "pawn":
-        availablePositions = highlightPawn(activePiece, false);
+        availablePositions = highlightPawn(activePiece, false, board);
         break;
       case "knight":
-        availablePositions = highlightKnight(activePiece, false);
+        availablePositions = highlightKnight(activePiece, false, board);
         break;
       case "queen":
-        availablePositions = highlightQueen(activePiece, false);
+        availablePositions = highlightQueen(activePiece, false, board);
         break;
       case "bishop":
-        availablePositions = highlightBishop(activePiece);
+        availablePositions = highlightBishop(activePiece, false, board);
         break;
       case "rook":
-        availablePositions = highlightRook(activePiece, false);
+        availablePositions = highlightRook(activePiece, false, board);
         break;
       case "king":
-        availablePositions = highlightKing(activePiece);
+        availablePositions = highlightKing(activePiece, board);
         break;
     }
 
@@ -515,26 +621,58 @@ export const GameContextProvider = ({ children }: any) => {
     if (!kingInCheck) return;
 
     //we get check positions based on direction
-    const checkPositions = availablePositions.filter(
+    let checkPositions = availablePositions.filter(
       (position) => position.direction === kingInCheck?.direction
     );
 
-    //also put the active piece position in chechpositions
+    //also put the active piece position in check positions
     checkPositions.push(activePiece!.position);
 
     setCheckPositions(checkPositions);
 
-    //chechMate
+    //determine chechMate
 
-    //determine that there is no peace that can eat the pawn causing the check
+    //this will find all possible enemy positions but we dont need king positions so we will put true as third argument
+    let enemyAttackPositions = getAttackedPositions(
+      board,
+      playerTurn?.color!,
+      true
+    );
 
-    //determine that there are no pieces that can block the check
+    console.log(enemyAttackPositions, "enemyAttackPos");
 
-    //determine that there are no possible moves king can make to escape the check
+    //this finds all possible king positions
+    let kingPositions = highlightKing(king!, board);
+
+    console.log(kingPositions, "kingPos");
+
+    let positionsThatBlockCheck: Position[] = [];
+
+    let filteredCheckPositions = checkPositions.filter(
+      (pos) => pos.col !== king?.position.col && pos.row !== king?.position.row
+    );
+
+    //we have to iterate throught all the enemy positions and check
+
+    // if we can find any of those positions in our checkPositions (that means enemy can block the check)
+    filteredCheckPositions.forEach((checkPos) => {
+      let position = enemyAttackPositions.find(
+        (enemyPos) =>
+          enemyPos.col === checkPos.col && enemyPos.row === checkPos.row
+      );
+
+      if (position) positionsThatBlockCheck.push(position);
+    });
+
+    console.log(positionsThatBlockCheck, "positionsThatBlockTheCheck");
+
+    if (positionsThatBlockCheck.length === 0 && kingPositions.length === 0) {
+      console.log("checkmate");
+    }
   };
 
   const movePiece = (row: number, col: number) => {
-    const updatedBoard = [...board];
+    let updatedBoard = _.cloneDeep(board);
     let promotion = false;
     setCheckPositions([]);
 
@@ -552,7 +690,7 @@ export const GameContextProvider = ({ children }: any) => {
     }
 
     //determine if it is a check or checkmate
-    const checkInfo = determineCheck();
+    determineCheck(updatedBoard);
 
     if (!promotion) switchTurns();
     setAvailablePositions([]);
@@ -561,20 +699,22 @@ export const GameContextProvider = ({ children }: any) => {
 
   const highlight = (piece: Piece) => {
     if (piece.type === "pawn")
-      setAvailablePositions(highlightPawn(piece, false));
+      setAvailablePositions(highlightPawn(piece, false, board));
 
     if (piece.type === "rook")
-      setAvailablePositions(highlightRook(piece, false));
+      setAvailablePositions(highlightRook(piece, false, board));
 
     if (piece.type === "knight")
-      setAvailablePositions(highlightKnight(piece, false));
+      setAvailablePositions(highlightKnight(piece, false, board));
 
-    if (piece.type === "bishop") setAvailablePositions(highlightBishop(piece));
+    if (piece.type === "bishop")
+      setAvailablePositions(highlightBishop(piece, false, board));
 
-    if (piece.type === "king") setAvailablePositions(highlightKing(piece));
+    if (piece.type === "king")
+      setAvailablePositions(highlightKing(piece, board));
 
     if (piece.type === "queen")
-      setAvailablePositions(highlightQueen(piece, false));
+      setAvailablePositions(highlightQueen(piece, false, board));
 
     setActivePiece(piece);
   };

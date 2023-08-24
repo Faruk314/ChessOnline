@@ -46,9 +46,9 @@ const Board = () => {
                     }
                     key={cellIndex}
                     className={classNames(
-                      "flex items-center justify-center w-20 h-20 border border-gray-500",
+                      "flex items-center justify-center w-[6rem] h-[6rem] border border-gray-500",
                       {
-                        "bg-red-400":
+                        "bg-blue-200":
                           ((rowIndex + 1) % 2 !== 0 &&
                             (cellIndex + 1) % 2 === 0) ||
                           ((rowIndex + 1) % 2 === 0 &&
