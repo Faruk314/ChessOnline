@@ -43,8 +43,6 @@ export const GameContextProvider = ({ children }: any) => {
   const [checkPositions, setCheckPositions] = useState<Position[]>([]);
   const [checkmate, setCheckmate] = useState(false);
 
-  console.log(board, "board");
-
   useEffect(() => {
     const initGame = () => {
       const whitePlayer = new Player("white");
@@ -506,9 +504,6 @@ export const GameContextProvider = ({ children }: any) => {
       }
     });
 
-    console.log(piece.color, "bishop color");
-    console.log("bishopMoves", validMoves);
-
     return validMoves;
   };
 
@@ -629,8 +624,6 @@ export const GameContextProvider = ({ children }: any) => {
     const currentCol = piece.position.col;
     let validMoves: Position[] = [];
 
-    console.log(piece.color, "piece color");
-
     let kingMoves = [
       { row: -1, col: 0, direction: "up" }, //up
       { row: 1, col: 0, direction: "down" }, //down
@@ -664,14 +657,10 @@ export const GameContextProvider = ({ children }: any) => {
     board[piece.position.row][piece.position.col] = null;
 
     for (const move of validMoves) {
-      console.log(move);
-
       const originalPiece = board[move.row][move.col];
       board[move.row][move.col] = piece;
 
       const attackedPositions = findAttackedPositions(board, piece.color);
-
-      console.log(attackedPositions, "attacked pos");
 
       const isKingThreatened = attackedPositions.some(
         (attackPos) => attackPos.row === move.row && attackPos.col === move.col
@@ -715,12 +704,8 @@ export const GameContextProvider = ({ children }: any) => {
         break;
     }
 
-    console.log(availablePositions, "availablePositions");
-
     //find the position of enemy king
     const enemyKing = findKing(enemyColor!);
-
-    console.log(enemyKing, "enemyKing");
 
     //find if the enemy king is in available positions (if it is that means its a checkmate)
     const kingInCheck = availablePositions.find(
@@ -728,8 +713,6 @@ export const GameContextProvider = ({ children }: any) => {
         position.row === enemyKing?.position.row &&
         position.col === enemyKing.position.col
     );
-
-    console.log(kingInCheck, "enemyKing in pieces path");
 
     //no check
     if (!kingInCheck) return false;
@@ -741,25 +724,18 @@ export const GameContextProvider = ({ children }: any) => {
     //include the active piece in checkPositions
     checkPositions.push(activePiece!.position);
 
-    console.log(checkPositions, "checkPos");
-
     //this will find all possible enemy positions but we dont need king positions so we will put true as third argument
     let enemyAttackPositions = findAttackedPositions2(
       board,
       playerTurn?.color!
     );
 
-    console.log(enemyAttackPositions, "enemyAttackPos");
-
     //this finds all possible king positions
     let kingPositions = highlightKing(enemyKing!, board);
-
-    console.log(kingPositions, "kingPos");
 
     let positionsThatBlockCheck: Position[] = [];
 
     //we have to iterate throught all the enemy positions and check
-    console.log(checkPositions, "filteredCheckPositions");
 
     // if we can find any of those positions in our checkPositions (that means enemy can block the check)
     checkPositions.forEach((checkPos) => {
@@ -771,18 +747,15 @@ export const GameContextProvider = ({ children }: any) => {
       if (position) positionsThatBlockCheck.push(position);
     });
 
-    console.log(positionsThatBlockCheck, "positionsThatBlockTheCheck");
-
     if (positionsThatBlockCheck.length === 0 && kingPositions.length === 0) {
-      console.log("checkmate");
       setCheckmate(true);
       return true;
     }
 
-    console.log(checkPositions, "checkPositions");
-
     return false;
   };
+
+  const elPassant = () => {};
 
   const promotePawn = (type: string) => {
     let newActivePiece: Piece | null = null;
@@ -826,8 +799,6 @@ export const GameContextProvider = ({ children }: any) => {
 
     if (!activePiece) return;
 
-    console.log(row, col);
-
     updatedBoard[activePiece.position.row][activePiece.position.col] = null;
     updatedActivePiece!.position.row = row;
     updatedActivePiece!.position.col = col;
@@ -843,8 +814,6 @@ export const GameContextProvider = ({ children }: any) => {
     let isCheckmate =
       promotion === false &&
       determineCheckmate(updatedBoard, updatedActivePiece!);
-
-    console.log(updatedActivePiece, "updatedActivePiece");
 
     setActivePiece(updatedActivePiece);
     if (promotion === false) switchTurns();
