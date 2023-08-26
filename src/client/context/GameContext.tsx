@@ -9,7 +9,7 @@ import { Player } from "../classes/Player";
 import { Piece } from "../classes/Piece";
 import { createPawn } from "../classes/Piece";
 import { Square, Position } from "../../types/types";
-import _, { cloneDeep, find } from "lodash";
+import _, { cloneDeep, find, update } from "lodash";
 
 interface GameContextProps {
   board: Square[][];
@@ -43,7 +43,7 @@ export const GameContextProvider = ({ children }: any) => {
   const [checkPositions, setCheckPositions] = useState<Position[]>([]);
   const [checkmate, setCheckmate] = useState(false);
 
-  console.log(activePiece, "active piece");
+  console.log(board, "board");
 
   useEffect(() => {
     const initGame = () => {
@@ -174,32 +174,41 @@ export const GameContextProvider = ({ children }: any) => {
           if (row === 1 && col === 1)
             board[row][col] = createPawn(row, col, "black", "pawn");
 
+          if (row === 1 && col === 2)
+            board[row][col] = createPawn(row, col, "black", "pawn");
+
+          if (row === 1 && col === 3)
+            board[row][col] = createPawn(row, col, "black", "pawn");
+
+          if (row === 1 && col === 7)
+            board[row][col] = createPawn(row, col, "black", "pawn");
+
           if (row === 0 && col === 2)
             board[row][col] = createPawn(row, col, "black", "king");
-          // if (row === 7) {
-          //   if (col === 0 || col === 7) {
-          //     board[row][col] = createPawn(row, col, "white", "rook");
-          //   }
-          //   board[row][4] = createPawn(row, 4, "white", "king");
-          //   board[row][3] = createPawn(row, 3, "white", "queen");
-          //   if (col === 1 || col === 6)
-          //     board[row][col] = createPawn(row, col, "white", "knight");
-          //   if (col === 2 || col === 5)
-          //     board[row][col] = createPawn(row, col, "white", "bishop");
-          // }
-          // if (row === 1)
-          //   board[row][col] = createPawn(row, col, "black", "pawn");
-          // if (row === 0) {
-          //   if (col === 0 || col === 7) {
-          //     board[row][col] = createPawn(row, col, "black", "rook");
-          //   }
-          //   board[row][4] = createPawn(row, 4, "black", "king");
-          //   board[row][3] = createPawn(row, 3, "black", "queen");
-          //   if (col === 1 || col === 6)
-          //     board[row][col] = createPawn(row, col, "black", "knight");
-          //   if (col === 2 || col === 5)
-          //     board[row][col] = createPawn(row, col, "black", "bishop");
-          // }
+          if (row === 7) {
+            if (col === 0 || col === 7) {
+              board[row][col] = createPawn(row, col, "white", "rook");
+            }
+            board[row][4] = createPawn(row, 4, "white", "king");
+            board[row][3] = createPawn(row, 3, "white", "queen");
+            if (col === 1 || col === 6)
+              board[row][col] = createPawn(row, col, "white", "knight");
+            if (col === 2 || col === 5)
+              board[row][col] = createPawn(row, col, "white", "bishop");
+          }
+          if (row === 1)
+            board[row][col] = createPawn(row, col, "black", "pawn");
+          if (row === 0) {
+            if (col === 0 || col === 7) {
+              board[row][col] = createPawn(row, col, "black", "rook");
+            }
+            board[row][4] = createPawn(row, 4, "black", "king");
+            board[row][3] = createPawn(row, 3, "black", "queen");
+            if (col === 1 || col === 6)
+              board[row][col] = createPawn(row, col, "black", "knight");
+            if (col === 2 || col === 5)
+              board[row][col] = createPawn(row, col, "black", "bishop");
+          }
         }
       }
 
@@ -219,19 +228,21 @@ export const GameContextProvider = ({ children }: any) => {
     let positionsUnderAttack: Position[] = [];
 
     board.flat().forEach((cell) => {
-      if (cell !== null && cell.color !== pieceColor) {
-        if (cell.type === "pawn")
-          positionsUnderAttack.push(...findPawnPositions(cell, board));
-        if (cell.type === "knight")
-          positionsUnderAttack.push(...findKnightPositions(cell, board));
-        if (cell.type === "queen")
-          positionsUnderAttack.push(...findQueenPositions(cell, board));
-        if (cell.type === "bishop")
-          positionsUnderAttack.push(...findBishopPositions(cell, board));
-        if (cell.type === "rook")
-          positionsUnderAttack.push(...findRookPositions(cell, board));
-        if (cell.type === "king")
-          positionsUnderAttack.push(...findKingPositions(cell, board));
+      if (cell !== null && cell instanceof Piece) {
+        if (cell.color !== pieceColor) {
+          if (cell.type === "pawn")
+            positionsUnderAttack.push(...findPawnPositions(cell, board));
+          if (cell.type === "knight")
+            positionsUnderAttack.push(...findKnightPositions(cell, board));
+          if (cell.type === "queen")
+            positionsUnderAttack.push(...findQueenPositions(cell, board));
+          if (cell.type === "bishop")
+            positionsUnderAttack.push(...findBishopPositions(cell, board));
+          if (cell.type === "rook")
+            positionsUnderAttack.push(...findRookPositions(cell, board));
+          if (cell.type === "king")
+            positionsUnderAttack.push(...findKingPositions(cell, board));
+        }
       }
     });
 
@@ -246,19 +257,21 @@ export const GameContextProvider = ({ children }: any) => {
     let positionsUnderAttack: Position[] = [];
 
     board.flat().forEach((cell) => {
-      if (cell !== null && cell.color !== pieceColor) {
-        if (cell.type === "pawn")
-          positionsUnderAttack.push(...highlightPawn(cell, board));
-        if (cell.type === "knight")
-          positionsUnderAttack.push(...highlightKnight(cell, board));
-        if (cell.type === "queen")
-          positionsUnderAttack.push(...highlightQueen(cell, board));
-        if (cell.type === "bishop")
-          positionsUnderAttack.push(...highlightBishop(cell, board));
-        if (cell.type === "rook")
-          positionsUnderAttack.push(...highlightRook(cell, board));
-        if (cell.type === "king")
-          positionsUnderAttack.push(...highlightKing(cell, board));
+      if (cell !== null) {
+        if (cell.color !== pieceColor && cell instanceof Piece) {
+          if (cell.type === "pawn")
+            positionsUnderAttack.push(...highlightPawn(cell, board));
+          if (cell.type === "knight")
+            positionsUnderAttack.push(...highlightKnight(cell, board));
+          if (cell.type === "queen")
+            positionsUnderAttack.push(...highlightQueen(cell, board));
+          if (cell.type === "bishop")
+            positionsUnderAttack.push(...highlightBishop(cell, board));
+          if (cell.type === "rook")
+            positionsUnderAttack.push(...highlightRook(cell, board));
+          if (cell.type === "king")
+            positionsUnderAttack.push(...highlightKing(cell, board));
+        }
       }
     });
 
@@ -762,7 +775,7 @@ export const GameContextProvider = ({ children }: any) => {
 
     if (positionsThatBlockCheck.length === 0 && kingPositions.length === 0) {
       console.log("checkmate");
-      // setCheckmate(true);
+      setCheckmate(true);
       return true;
     }
 
@@ -802,20 +815,23 @@ export const GameContextProvider = ({ children }: any) => {
 
     setBoard(newBoard);
     setIsPromotion(false);
-    !isCheckmate && switchTurns();
+    isCheckmate === false && switchTurns();
   };
 
   const movePiece = (row: number, col: number) => {
+    let updatedActivePiece = _.cloneDeep(activePiece);
     let updatedBoard = _.cloneDeep(board);
     let promotion = false;
     setCheckPositions([]);
 
     if (!activePiece) return;
 
+    console.log(row, col);
+
     updatedBoard[activePiece.position.row][activePiece.position.col] = null;
-    activePiece.position.row = row;
-    activePiece.position.col = col;
-    updatedBoard[row][col] = activePiece;
+    updatedActivePiece!.position.row = row;
+    updatedActivePiece!.position.col = col;
+    updatedBoard[row][col] = updatedActivePiece;
 
     //determine if it is a promotion
     if (activePiece.type === "pawn" && (row === 7 || row === 0)) {
@@ -825,8 +841,12 @@ export const GameContextProvider = ({ children }: any) => {
 
     //determine if it is a check or checkmate
     let isCheckmate =
-      !promotion && determineCheckmate(updatedBoard, activePiece);
+      promotion === false &&
+      determineCheckmate(updatedBoard, updatedActivePiece!);
 
+    console.log(updatedActivePiece, "updatedActivePiece");
+
+    setActivePiece(updatedActivePiece);
     if (promotion === false) switchTurns();
     setAvailablePositions([]);
     setBoard(updatedBoard);

@@ -1,11 +1,13 @@
 import { Position } from "../../types/types";
 
+type PieceColor = "black" | "white";
+
 export class Piece {
   type: string;
-  color: string;
+  color: PieceColor;
   position: Position;
 
-  constructor(type: string, color: string, position: Position) {
+  constructor(type: string, color: PieceColor, position: Position) {
     this.type = type;
     this.color = color;
     this.position = position;
@@ -15,7 +17,7 @@ export class Piece {
 export const createPawn = (
   row: number,
   col: number,
-  color: string,
+  color: PieceColor,
   type: string
 ) => {
   const piece = new Piece(type, color, {
