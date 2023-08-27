@@ -43,6 +43,7 @@ export const GameContextProvider = ({ children }: any) => {
   const [checkPositions, setCheckPositions] = useState<Position[]>([]);
   const [checkmate, setCheckmate] = useState(false);
   const [lastMovePositions, setLastMovePositions] = useState<Position[]>([]);
+  const [elPassantMove, setElPassantMove] = useState<Position | null>(null);
   const [elPassantCaptureMove, setElPassantCaptureMove] =
     useState<Position | null>(null);
 
@@ -323,6 +324,7 @@ export const GameContextProvider = ({ children }: any) => {
             col: firstPosCol,
           };
 
+          setElPassantMove(elPassantMove);
           setElPassantCaptureMove(lastMovePositions[1]);
           validMoves.push(elPassantMove);
         }
@@ -333,13 +335,16 @@ export const GameContextProvider = ({ children }: any) => {
           enemyPieceType === "pawn" &&
           firstPosRow === 6 &&
           secondPosRow === 4 &&
-          piece.position.row === 4
+          piece.position.row === 4 &&
+          (secondPosCol - piece.position.col === 1 ||
+            secondPosCol - piece.position.col === -1)
         ) {
           elPassantMove = {
             row: 5,
             col: firstPosCol,
           };
 
+          setElPassantMove(elPassantMove);
           setElPassantCaptureMove(lastMovePositions[1]);
           validMoves.push(elPassantMove);
         }
@@ -881,8 +886,13 @@ export const GameContextProvider = ({ children }: any) => {
 
     //eating a pawn if it is el passant
 
-    if (elPassantCaptureMove) {
-      updatedBoard[elPassantCaptureMove.row][elPassantCaptureMove.col] = null;
+    console.log(elPassantMove, "elPassantCapture move ");
+    if (
+      elPassantMove &&
+      elPassantMove?.row === row &&
+      elPassantMove.col === col
+    ) {
+      updatedBoard[elPassantCaptureMove!.row][elPassantCaptureMove!.col] = null;
     }
 
     //determine if it is a promotion
@@ -900,7 +910,7 @@ export const GameContextProvider = ({ children }: any) => {
     if (promotion === false && isCheckmate === false) switchTurns();
     setAvailablePositions([]);
     setBoard(updatedBoard);
-    setElPassantCaptureMove(null);
+    setElPassantMove(null);
   };
 
   const highlight = (piece: Piece) => {
