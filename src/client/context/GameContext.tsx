@@ -9,7 +9,7 @@ import { Player } from "../classes/Player";
 import { Piece } from "../classes/Piece";
 import { createPawn } from "../classes/Piece";
 import { Square, Position } from "../../types/types";
-import _, { cloneDeep, find, update } from "lodash";
+import _, { cloneDeep, find, first, update } from "lodash";
 
 interface GameContextProps {
   board: Square[][];
@@ -42,6 +42,11 @@ export const GameContextProvider = ({ children }: any) => {
   const [isPromotion, setIsPromotion] = useState(false);
   const [checkPositions, setCheckPositions] = useState<Position[]>([]);
   const [checkmate, setCheckmate] = useState(false);
+  const [lastMovePositions, setLastMovePositions] = useState<Position[]>([]);
+  const [elPassantCaptureMove, setElPassantCaptureMove] =
+    useState<Position | null>(null);
+
+  console.log(lastMovePositions, "last move positions");
 
   useEffect(() => {
     const initGame = () => {
@@ -165,24 +170,26 @@ export const GameContextProvider = ({ children }: any) => {
           // if (row === 0 && col === 0) {
           //   board[row][col] = createPawn(row, col, "black", "pawn");
           // }
+          //situation 8
+          // if (row === 1 && col === 1)
+          //   board[row][col] = createPawn(row, col, "black", "pawn");
+
+          // if (row === 1 && col === 2)
+          //   board[row][col] = createPawn(row, col, "black", "pawn");
+
+          // if (row === 1 && col === 3)
+          //   board[row][col] = createPawn(row, col, "black", "pawn");
+
+          // if (row === 1 && col === 7)
+          //   board[row][col] = createPawn(row, col, "black", "pawn");
+
+          // if (row === 0 && col === 2)
+          //   board[row][col] = createPawn(row, col, "black", "king");
+
           //importnant
           if (row === 6)
             board[row][col] = createPawn(row, col, "white", "pawn");
 
-          if (row === 1 && col === 1)
-            board[row][col] = createPawn(row, col, "black", "pawn");
-
-          if (row === 1 && col === 2)
-            board[row][col] = createPawn(row, col, "black", "pawn");
-
-          if (row === 1 && col === 3)
-            board[row][col] = createPawn(row, col, "black", "pawn");
-
-          if (row === 1 && col === 7)
-            board[row][col] = createPawn(row, col, "black", "pawn");
-
-          if (row === 0 && col === 2)
-            board[row][col] = createPawn(row, col, "black", "king");
           if (row === 7) {
             if (col === 0 || col === 7) {
               board[row][col] = createPawn(row, col, "white", "rook");
@@ -292,6 +299,56 @@ export const GameContextProvider = ({ children }: any) => {
     setPlayerTurn(nextPlayer!);
   };
 
+  const elPassant = (piece: Piece, validMoves: Position[]) => {
+    if (lastMovePositions.length > 0) {
+      const enemyPieceType = lastMovePositions[0].type;
+      const firstPosRow = lastMovePositions[0].row;
+      const secondPosRow = lastMovePositions[1].row;
+      const firstPosCol = lastMovePositions[0].col;
+      const secondPosCol = lastMovePositions[1].col;
+      let elPassantMove: Position | null = null;
+
+      if (piece.color === "white") {
+        if (
+          enemyPieceType === "pawn" &&
+          firstPosRow === 1 &&
+          secondPosRow === 3 &&
+          piece.position.row === 3 &&
+          (secondPosCol - piece.position.col === 1 ||
+            secondPosCol - piece.position.col === -1)
+        ) {
+          console.log("Uslo u white");
+          elPassantMove = {
+            row: 2,
+            col: firstPosCol,
+          };
+
+          setElPassantCaptureMove(lastMovePositions[1]);
+          validMoves.push(elPassantMove);
+        }
+      }
+
+      if (piece.color === "black") {
+        if (
+          enemyPieceType === "pawn" &&
+          firstPosRow === 6 &&
+          secondPosRow === 4 &&
+          piece.position.row === 4
+        ) {
+          elPassantMove = {
+            row: 5,
+            col: firstPosCol,
+          };
+
+          setElPassantCaptureMove(lastMovePositions[1]);
+          validMoves.push(elPassantMove);
+        }
+      }
+    }
+
+    return validMoves;
+  };
+
   const findPawnPositions = (piece: Piece, board: Square[][]) => {
     let firstPos: Position | null = null;
     let secondPos: Position | null = null;
@@ -338,6 +395,9 @@ export const GameContextProvider = ({ children }: any) => {
       ) {
         validMoves.push(leftDiagonal);
       }
+
+      //check for el passant
+      validMoves = elPassant(piece, validMoves);
     }
 
     if (piece.color === "black") {
@@ -379,6 +439,9 @@ export const GameContextProvider = ({ children }: any) => {
       ) {
         validMoves.push(leftDiagonal);
       }
+
+      //check for el passant
+      validMoves = elPassant(piece, validMoves);
     }
 
     return validMoves;
@@ -755,8 +818,6 @@ export const GameContextProvider = ({ children }: any) => {
     return false;
   };
 
-  const elPassant = () => {};
-
   const promotePawn = (type: string) => {
     let newActivePiece: Piece | null = null;
     const row = activePiece?.position.row;
@@ -799,10 +860,30 @@ export const GameContextProvider = ({ children }: any) => {
 
     if (!activePiece) return;
 
+    let initialPosition = {
+      row: activePiece.position.row,
+      col: activePiece.position.col,
+      type: activePiece.type,
+    };
+    let desiredPosition = {
+      row: row,
+      col: col,
+      type: activePiece.type,
+    };
+
+    setLastMovePositions([initialPosition, desiredPosition]);
+
+    //moving piece logic
     updatedBoard[activePiece.position.row][activePiece.position.col] = null;
     updatedActivePiece!.position.row = row;
     updatedActivePiece!.position.col = col;
     updatedBoard[row][col] = updatedActivePiece;
+
+    //eating a pawn if it is el passant
+
+    if (elPassantCaptureMove) {
+      updatedBoard[elPassantCaptureMove.row][elPassantCaptureMove.col] = null;
+    }
 
     //determine if it is a promotion
     if (activePiece.type === "pawn" && (row === 7 || row === 0)) {
@@ -816,9 +897,10 @@ export const GameContextProvider = ({ children }: any) => {
       determineCheckmate(updatedBoard, updatedActivePiece!);
 
     setActivePiece(updatedActivePiece);
-    if (promotion === false) switchTurns();
+    if (promotion === false && isCheckmate === false) switchTurns();
     setAvailablePositions([]);
     setBoard(updatedBoard);
+    setElPassantCaptureMove(null);
   };
 
   const highlight = (piece: Piece) => {

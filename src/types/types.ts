@@ -6,4 +6,5 @@ export interface Position {
   row: number;
   col: number;
   direction?: string;
+  type?: string;
 }
