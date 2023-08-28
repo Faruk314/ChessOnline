@@ -7,7 +7,6 @@ import whitePawn from "../assets/images/pawn_w.png";
 import whiteBishop from "../assets/images/bishop_w.png";
 import whiteKnight from "../assets/images/knight_w.png";
 import whiteRook from "../assets/images/rook_w.png";
-
 import blackKing from "../assets/images/king_b.png";
 import blackQueen from "../assets/images/queen_b.png";
 import blackPawn from "../assets/images/pawn_b.png";
@@ -16,6 +15,7 @@ import blackKnight from "../assets/images/knight_b.png";
 import blackRook from "../assets/images/rook_b.png";
 import Promotion from "../modals/Promotion";
 import Checkmate from "../modals/Checkmate";
+import Player from "../components/Player";
 
 const Board = () => {
   const {
@@ -29,75 +29,82 @@ const Board = () => {
   } = useContext(GameContext);
 
   return (
-    <section className="flex items-center justify-center h-[100vh] bg-amber-100">
+    <section className="flex flex-col items-center justify-center h-[100vh] bg-amber-100">
       {checkmate && <Checkmate />}
-      <div className="shadow-lg bg-amber-200">
-        {board.map((row, rowIndex) => {
-          return (
-            <div key={rowIndex} className="flex">
-              {row.map((cell, cellIndex) => {
-                const isAvailablePosition = availablePositions.some(
-                  (pos) => pos.row === rowIndex && pos.col === cellIndex
-                );
 
-                return (
-                  <div
-                    onClick={() =>
-                      isAvailablePosition && movePiece(rowIndex, cellIndex)
-                    }
-                    key={cellIndex}
-                    className={classNames(
-                      "flex items-center justify-center w-[6rem] h-[6rem]",
-                      {
-                        "bg-amber-900":
-                          ((rowIndex + 1) % 2 !== 0 &&
-                            (cellIndex + 1) % 2 === 0) ||
-                          ((rowIndex + 1) % 2 === 0 &&
-                            (cellIndex + 1) % 2 !== 0),
-                        "cursor-pointer": isAvailablePosition,
+      <div>
+        <Player index={1} playerName="Faruk" />
+
+        <div className="my-2 shadow-lg bg-amber-200">
+          {board.map((row, rowIndex) => {
+            return (
+              <div key={rowIndex} className="flex">
+                {row.map((cell, cellIndex) => {
+                  const isAvailablePosition = availablePositions.some(
+                    (pos) => pos.row === rowIndex && pos.col === cellIndex
+                  );
+
+                  return (
+                    <div
+                      onClick={() =>
+                        isAvailablePosition && movePiece(rowIndex, cellIndex)
                       }
-                    )}
-                  >
-                    {isAvailablePosition && cell === null && (
-                      <div className="w-5 h-5 bg-black rounded-full"></div>
-                    )}
-                    {isAvailablePosition && cell && (
-                      <div className="absolute w-[5rem] h-[5rem] border border-black rounded-full"></div>
-                    )}
-                    {/* {`${rowIndex}${cellIndex}`} */}
-                    {cell?.color === "white" ? (
-                      <button
-                        onClick={() =>
-                          playerTurn?.color === "white" && highlight(cell)
+                      key={cellIndex}
+                      className={classNames(
+                        "flex items-center justify-center w-[5.8rem] h-[5.8rem]",
+                        {
+                          "bg-amber-900":
+                            ((rowIndex + 1) % 2 !== 0 &&
+                              (cellIndex + 1) % 2 === 0) ||
+                            ((rowIndex + 1) % 2 === 0 &&
+                              (cellIndex + 1) % 2 !== 0),
+                          "cursor-pointer": isAvailablePosition,
                         }
-                      >
-                        {cell.type === "pawn" && <img src={whitePawn} />}
-                        {cell.type === "king" && <img src={whiteKing} />}
-                        {cell.type === "queen" && <img src={whiteQueen} />}
-                        {cell.type === "bishop" && <img src={whiteBishop} />}
-                        {cell.type === "knight" && <img src={whiteKnight} />}
-                        {cell.type === "rook" && <img src={whiteRook} />}
-                      </button>
-                    ) : (
-                      <button
-                        onClick={() =>
-                          playerTurn?.color === "black" && highlight(cell!)
-                        }
-                      >
-                        {cell?.type === "pawn" && <img src={blackPawn} />}
-                        {cell?.type === "king" && <img src={blackKing} />}
-                        {cell?.type === "queen" && <img src={blackQueen} />}
-                        {cell?.type === "bishop" && <img src={blackBishop} />}
-                        {cell?.type === "knight" && <img src={blackKnight} />}
-                        {cell?.type === "rook" && <img src={blackRook} />}
-                      </button>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
-          );
-        })}
+                      )}
+                    >
+                      {isAvailablePosition && cell === null && (
+                        <div className="w-5 h-5 bg-black rounded-full"></div>
+                      )}
+                      {isAvailablePosition && cell && (
+                        <div className="absolute w-[5rem] h-[5rem] border-2 border-black rounded-full"></div>
+                      )}
+                      {/* {`${rowIndex}${cellIndex}`} */}
+                      {cell?.color === "white" ? (
+                        <button
+                          onClick={() =>
+                            playerTurn?.color === "white" && highlight(cell)
+                          }
+                        >
+                          {cell.type === "pawn" && <img src={whitePawn} />}
+                          {cell.type === "king" && <img src={whiteKing} />}
+                          {cell.type === "queen" && <img src={whiteQueen} />}
+                          {cell.type === "bishop" && <img src={whiteBishop} />}
+                          {cell.type === "knight" && <img src={whiteKnight} />}
+                          {cell.type === "rook" && <img src={whiteRook} />}
+                        </button>
+                      ) : (
+                        <button
+                          onClick={() =>
+                            playerTurn?.color === "black" && highlight(cell!)
+                          }
+                        >
+                          {cell?.type === "pawn" && <img src={blackPawn} />}
+                          {cell?.type === "king" && <img src={blackKing} />}
+                          {cell?.type === "queen" && <img src={blackQueen} />}
+                          {cell?.type === "bishop" && <img src={blackBishop} />}
+                          {cell?.type === "knight" && <img src={blackKnight} />}
+                          {cell?.type === "rook" && <img src={blackRook} />}
+                        </button>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            );
+          })}
+        </div>
+
+        <Player index={0} playerName="Mustafa" />
       </div>
 
       {isPromotion && <Promotion />}

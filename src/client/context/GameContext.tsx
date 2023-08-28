@@ -22,6 +22,7 @@ interface GameContextProps {
   isPromotion: boolean;
   promotePawn: (type: string) => void;
   checkmate: boolean;
+  players: Player[];
 }
 
 export const GameContext = createContext<GameContextProps>({
@@ -33,6 +34,7 @@ export const GameContext = createContext<GameContextProps>({
   isPromotion: false,
   promotePawn: (type) => {},
   checkmate: false,
+  players: [],
 });
 
 export const GameContextProvider = ({ children }: any) => {
@@ -50,7 +52,7 @@ export const GameContextProvider = ({ children }: any) => {
   const [elPassantCaptureMove, setElPassantCaptureMove] =
     useState<Position | null>(null);
 
-  console.log(lastMovePositions, "last move positions");
+  console.log(players, "players");
 
   useEffect(() => {
     const initGame = () => {
@@ -865,7 +867,6 @@ export const GameContextProvider = ({ children }: any) => {
     let updatedBoard = _.cloneDeep(board);
     let promotion = false;
     setCheckPositions([]);
-
     playSound(move);
 
     if (!activePiece) return;
@@ -887,10 +888,24 @@ export const GameContextProvider = ({ children }: any) => {
     updatedBoard[activePiece.position.row][activePiece.position.col] = null;
     updatedActivePiece!.position.row = row;
     updatedActivePiece!.position.col = col;
+
+    //enemy peace that was eaten
+    const enemyPiece = updatedBoard[row][col];
+
+    if (enemyPiece) {
+      const currentPlayerIndex = players.findIndex(
+        (player) => player.color === activePiece.color
+      );
+      const updatedPlayers = [...players];
+
+      updatedPlayers[currentPlayerIndex].enemyPieces.push(enemyPiece);
+
+      setPlayers(updatedPlayers);
+    }
+
     updatedBoard[row][col] = updatedActivePiece;
 
     //eating a pawn if it is el passant
-
     console.log(elPassantMove, "elPassantCapture move ");
     if (
       elPassantMove &&
@@ -949,6 +964,7 @@ export const GameContextProvider = ({ children }: any) => {
     checkmate,
     isPromotion,
     promotePawn,
+    players,
   };
 
   return (

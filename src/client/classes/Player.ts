@@ -1,11 +1,10 @@
 import { Piece } from "./Piece";
 
 export class Player {
-  pieces: Piece[];
+  enemyPieces: Piece[] = [];
   color: string;
 
   constructor(color: string) {
-    this.pieces = [];
     this.color = color;
   }
 }
