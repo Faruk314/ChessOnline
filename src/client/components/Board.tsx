@@ -31,7 +31,7 @@ const Board = () => {
   return (
     <section className="flex items-center justify-center h-[100vh] bg-amber-100">
       {checkmate && <Checkmate />}
-      <div className="border shadow-lg bg-amber-200">
+      <div className="shadow-lg bg-amber-200">
         {board.map((row, rowIndex) => {
           return (
             <div key={rowIndex} className="flex">
