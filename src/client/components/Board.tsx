@@ -29,9 +29,9 @@ const Board = () => {
   } = useContext(GameContext);
 
   return (
-    <section className="flex items-center justify-center h-[100vh]">
+    <section className="flex items-center justify-center h-[100vh] bg-amber-100">
       {checkmate && <Checkmate />}
-      <div>
+      <div className="border shadow-lg bg-amber-200">
         {board.map((row, rowIndex) => {
           return (
             <div key={rowIndex} className="flex">
@@ -47,18 +47,24 @@ const Board = () => {
                     }
                     key={cellIndex}
                     className={classNames(
-                      "flex items-center justify-center w-[6rem] h-[6rem] border border-gray-500",
+                      "flex items-center justify-center w-[6rem] h-[6rem]",
                       {
-                        "bg-blue-200":
+                        "bg-amber-900":
                           ((rowIndex + 1) % 2 !== 0 &&
                             (cellIndex + 1) % 2 === 0) ||
                           ((rowIndex + 1) % 2 === 0 &&
                             (cellIndex + 1) % 2 !== 0),
-                        "cursor-pointer green": isAvailablePosition,
+                        "cursor-pointer": isAvailablePosition,
                       }
                     )}
                   >
-                    {`${rowIndex}${cellIndex}`}
+                    {isAvailablePosition && cell === null && (
+                      <div className="w-5 h-5 bg-black rounded-full"></div>
+                    )}
+                    {isAvailablePosition && cell && (
+                      <div className="absolute w-[5rem] h-[5rem] border border-black rounded-full"></div>
+                    )}
+                    {/* {`${rowIndex}${cellIndex}`} */}
                     {cell?.color === "white" ? (
                       <button
                         onClick={() =>

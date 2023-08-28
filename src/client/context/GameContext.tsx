@@ -10,6 +10,8 @@ import { Piece } from "../classes/Piece";
 import { createPawn } from "../classes/Piece";
 import { Square, Position } from "../../types/types";
 import _, { cloneDeep, find, first, update } from "lodash";
+import { SoundContext } from "./SoundContext";
+import move from "../assets/sounds/move.mp3";
 
 interface GameContextProps {
   board: Square[][];
@@ -34,6 +36,7 @@ export const GameContext = createContext<GameContextProps>({
 });
 
 export const GameContextProvider = ({ children }: any) => {
+  const { playSound } = useContext(SoundContext);
   const [board, setBoard] = useState<Square[][]>([]);
   const [players, setPlayers] = useState<Player[]>([]);
   const [playerTurn, setPlayerTurn] = useState<Player | null>(null);
@@ -862,6 +865,8 @@ export const GameContextProvider = ({ children }: any) => {
     let updatedBoard = _.cloneDeep(board);
     let promotion = false;
     setCheckPositions([]);
+
+    playSound(move);
 
     if (!activePiece) return;
 
