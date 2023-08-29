@@ -5,3 +5,7 @@
 .green {
   background-color: green;
 }
+
+img {
+  pointer-events: none;
+}

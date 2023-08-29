@@ -1,11 +1,14 @@
 import { useEffect, useState } from "react";
 import Board from "./components/Board";
+import Menu from "./pages/Menu";
+import { Routes, Route } from "react-router-dom";
 
 function App() {
   return (
-    <div className="text-2xl font-bold">
-      <Board />
-    </div>
+    <Routes>
+      <Route path="/" element={<Menu />} />
+      <Route path="/game" element={<Board />} />
+    </Routes>
   );
 }
 
