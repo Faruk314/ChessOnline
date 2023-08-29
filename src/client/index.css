@@ -3,9 +3,13 @@
 @tailwind utilities;
 
 .green {
-  background-color: green;
+  background-color: #45753c;
 }
 
 img {
   pointer-events: none;
+}
+
+.lightGreen {
+  background-color: #ebffbd;
 }

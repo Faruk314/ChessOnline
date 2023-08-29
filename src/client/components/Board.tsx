@@ -35,7 +35,7 @@ const Board = () => {
       <div>
         <Player index={1} playerName="Faruk" />
 
-        <div className="my-2 shadow-lg bg-amber-200">
+        <div className="my-2 border shadow-lg">
           {board.map((row, rowIndex) => {
             return (
               <div key={rowIndex} className="flex">
@@ -53,7 +53,7 @@ const Board = () => {
                       className={classNames(
                         "flex items-center justify-center w-[5.8rem] h-[5.8rem]",
                         {
-                          "bg-amber-900":
+                          "bg-yellow-500":
                             ((rowIndex + 1) % 2 !== 0 &&
                               (cellIndex + 1) % 2 === 0) ||
                             ((rowIndex + 1) % 2 === 0 &&
@@ -68,7 +68,7 @@ const Board = () => {
                       {isAvailablePosition && cell && (
                         <div className="absolute w-[5rem] h-[5rem] border-2 border-black rounded-full"></div>
                       )}
-                      {`${rowIndex}${cellIndex}`}
+                      {/* {`${rowIndex}${cellIndex}`} */}
                       {cell?.color === "white" ? (
                         <button
                           onClick={() =>

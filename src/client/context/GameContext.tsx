@@ -245,11 +245,11 @@ export const GameContextProvider = ({ children }: any) => {
                 "kingSide"
               );
             board[row][4] = createPawn(row, 4, "black", "king");
-            // board[row][3] = createPawn(row, 3, "black", "queen");
-            // if (col === 1 || col === 6)
-            //   board[row][col] = createPawn(row, col, "black", "knight");
-            // if (col === 2 || col === 5)
-            //   board[row][col] = createPawn(row, col, "black", "bishop");
+            board[row][3] = createPawn(row, 3, "black", "queen");
+            if (col === 1 || col === 6)
+              board[row][col] = createPawn(row, col, "black", "knight");
+            if (col === 2 || col === 5)
+              board[row][col] = createPawn(row, col, "black", "bishop");
           }
         }
       }
