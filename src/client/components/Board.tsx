@@ -68,7 +68,7 @@ const Board = () => {
                       {isAvailablePosition && cell && (
                         <div className="absolute w-[5rem] h-[5rem] border-2 border-black rounded-full"></div>
                       )}
-                      {/* {`${rowIndex}${cellIndex}`} */}
+                      {`${rowIndex}${cellIndex}`}
                       {cell?.color === "white" ? (
                         <button
                           onClick={() =>

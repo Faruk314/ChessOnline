@@ -51,6 +51,9 @@ export const GameContextProvider = ({ children }: any) => {
   const [elPassantMove, setElPassantMove] = useState<Position | null>(null);
   const [elPassantCaptureMove, setElPassantCaptureMove] =
     useState<Position | null>(null);
+  const [movedPieces, setMovedPieces] = useState<Piece[]>([]);
+
+  console.log(movedPieces, "movedPieces");
 
   console.log(players, "players");
 
@@ -197,9 +200,24 @@ export const GameContextProvider = ({ children }: any) => {
             board[row][col] = createPawn(row, col, "white", "pawn");
 
           if (row === 7) {
-            if (col === 0 || col === 7) {
-              board[row][col] = createPawn(row, col, "white", "rook");
-            }
+            if (col === 0)
+              board[row][col] = createPawn(
+                row,
+                col,
+                "white",
+                "rook",
+                "queenSide"
+              );
+
+            if (col === 7)
+              board[row][col] = createPawn(
+                row,
+                col,
+                "white",
+                "rook",
+                "kingSide"
+              );
+
             board[row][4] = createPawn(row, 4, "white", "king");
             board[row][3] = createPawn(row, 3, "white", "queen");
             if (col === 1 || col === 6)
@@ -210,15 +228,28 @@ export const GameContextProvider = ({ children }: any) => {
           if (row === 1)
             board[row][col] = createPawn(row, col, "black", "pawn");
           if (row === 0) {
-            if (col === 0 || col === 7) {
-              board[row][col] = createPawn(row, col, "black", "rook");
-            }
+            if (col === 0)
+              board[row][col] = createPawn(
+                row,
+                col,
+                "black",
+                "rook",
+                "queenSide"
+              );
+            if (col === 7)
+              board[row][col] = createPawn(
+                row,
+                col,
+                "black",
+                "rook",
+                "kingSide"
+              );
             board[row][4] = createPawn(row, 4, "black", "king");
-            board[row][3] = createPawn(row, 3, "black", "queen");
-            if (col === 1 || col === 6)
-              board[row][col] = createPawn(row, col, "black", "knight");
-            if (col === 2 || col === 5)
-              board[row][col] = createPawn(row, col, "black", "bishop");
+            // board[row][3] = createPawn(row, 3, "black", "queen");
+            // if (col === 1 || col === 6)
+            //   board[row][col] = createPawn(row, col, "black", "knight");
+            // if (col === 2 || col === 5)
+            //   board[row][col] = createPawn(row, col, "black", "bishop");
           }
         }
       }
@@ -722,10 +753,138 @@ export const GameContextProvider = ({ children }: any) => {
     return validMoves;
   };
 
+  const castling = (safeMoves: Position[], piece: Piece, board: Square[][]) => {
+    let kingRightPositionRow: null | number = null;
+    let kingRightPositionCol = 5;
+    let rightSideCastlingPositionRow: null | number = null;
+    let rightSideCastlingPositionCol = 6;
+    let rightCastleMove: null | Position = null;
+
+    let leftSideCastlingPositions: Position[] = [];
+    let kingLeftPositionRow: null | number = null;
+    let kingLeftPositionCol = 3;
+    let leftCastleMove: null | Position = null;
+
+    //check if the king already moved and if yes then return from func
+    let kingMoved = movedPieces.find(
+      (movedPiece) =>
+        movedPiece.color === piece.color && movedPiece.type === "king"
+    );
+
+    if (kingMoved) return safeMoves;
+
+    if (piece.color === "white") {
+      kingRightPositionRow = 7;
+      rightSideCastlingPositionRow = 7;
+      rightCastleMove = { row: 7, col: 6 };
+
+      leftSideCastlingPositions = [
+        { row: 7, col: 1 },
+        { row: 7, col: 2 },
+        { row: 7, col: 3 },
+      ];
+      kingLeftPositionRow = 7;
+      leftCastleMove = { row: 7, col: 2 };
+    }
+
+    if (piece.color === "black") {
+      kingRightPositionRow = 0;
+      rightSideCastlingPositionRow = 0;
+      rightCastleMove = { row: 0, col: 6 };
+
+      leftSideCastlingPositions = [
+        { row: 0, col: 1 },
+        { row: 0, col: 2 },
+        { row: 0, col: 3 },
+      ];
+
+      kingLeftPositionRow = 0;
+      leftCastleMove = { row: 0, col: 2 };
+    }
+
+    //check if any of these positions are under attack
+    let attackedPositions = findAttackedPositions(board, piece.color);
+
+    //right side logic (king side)
+
+    //check if the right side rook moved
+    const rightSideRook = movedPieces.find(
+      (movedPiece) =>
+        movedPiece.side === "kingSide" &&
+        movedPiece.color === piece.color &&
+        movedPiece.type === "rook"
+    );
+
+    if (!rightSideRook) {
+      //check if the king is safe to move to the right
+      const kingCanMoveRight = safeMoves.some(
+        (move) =>
+          move.row === kingRightPositionRow && move.col === kingRightPositionCol
+      );
+
+      //check if that castling positions is under attack
+      let positionUnderAttack = attackedPositions.some(
+        (attackedPos) =>
+          attackedPos.row === rightSideCastlingPositionRow &&
+          attackedPos.col === rightSideCastlingPositionCol
+      );
+
+      //check if there is a piece on a right castling position
+      if (
+        board[rightSideCastlingPositionRow!][rightSideCastlingPositionCol!] ===
+          null &&
+        positionUnderAttack === false &&
+        kingCanMoveRight
+      ) {
+        safeMoves.push(rightCastleMove!);
+      }
+    }
+
+    //left side logic (queen side)
+
+    //check if there is any piece on these positions
+    const positionsNotFree = leftSideCastlingPositions.some(
+      (position) => board[position.row][position.col] !== null
+    );
+
+    if (positionsNotFree) return safeMoves;
+
+    //check if the left side rook moved
+    const leftSideRook = movedPieces.find(
+      (movedPiece) =>
+        movedPiece.side === "queenSide" &&
+        movedPiece.color === piece.color &&
+        movedPiece.type === "rook"
+    );
+
+    //if it moved we just return
+    if (leftSideRook) return safeMoves;
+
+    //check if the king is safe to move to left
+    const kingCanMoveLeft = safeMoves.some(
+      (move) =>
+        move.row === kingLeftPositionRow && move.col === kingLeftPositionCol
+    );
+
+    leftSideCastlingPositions = leftSideCastlingPositions.filter((move) => {
+      let positionUnderAttack = !attackedPositions.some(
+        (attackPos) => move.row === attackPos.row && move.col === attackPos.col
+      );
+
+      return positionUnderAttack;
+    });
+
+    if (leftSideCastlingPositions.length === 3 && kingCanMoveLeft) {
+      safeMoves.push(leftCastleMove!);
+    }
+
+    return safeMoves;
+  };
+
   const highlightKing = (piece: Piece, newBoard: Square[][]) => {
     let board = _.cloneDeep(newBoard);
     const validMoves = findKingPositions(piece, board);
-    const safeMoves: Position[] = [];
+    let safeMoves: Position[] = [];
 
     board[piece.position.row][piece.position.col] = null;
 
@@ -745,6 +904,13 @@ export const GameContextProvider = ({ children }: any) => {
 
       board[move.row][move.col] = originalPiece;
     }
+
+    board[piece.position.row][piece.position.col] = piece;
+
+    console.log(board, "board in higlight king");
+
+    //check for castling moves
+    safeMoves = castling(safeMoves, piece, board);
 
     return safeMoves;
   };
@@ -889,6 +1055,38 @@ export const GameContextProvider = ({ children }: any) => {
     updatedActivePiece!.position.row = row;
     updatedActivePiece!.position.col = col;
 
+    //moving piece logic if it is a castling move
+
+    //check if the king already moved
+    const kingMoved = movedPieces.find(
+      (movedPiece) =>
+        movedPiece.type === "king" && movedPiece.color === activePiece.color
+    );
+
+    //if the piece is king and it did not move then we can castle
+    if (activePiece.type === "king" && !kingMoved) {
+      //now we have to move the rook based on a king position
+
+      //this is left side castling (queen side)
+      if ((row === 0 && col === 2) || (row === 7 && col === 2)) {
+        //move the rook one position after this
+        const rook = updatedBoard[row][col - 2];
+        updatedBoard[row][col - 2] = null;
+        rook!.position.row = row;
+        rook!.position.col = col + 1;
+        updatedBoard[row][col + 1] = rook;
+      }
+
+      //this is right side castling (king side)
+      if ((row === 0 && col === 6) || (row === 7 && col === 6)) {
+        const rook = updatedBoard[row][col + 1];
+        updatedBoard[row][col + 1] = null;
+        rook!.position.row = row;
+        rook!.position.col = col - 1;
+        updatedBoard[row][col - 1] = rook;
+      }
+    }
+
     //enemy peace that was eaten
     const enemyPiece = updatedBoard[row][col];
 
@@ -906,7 +1104,6 @@ export const GameContextProvider = ({ children }: any) => {
     updatedBoard[row][col] = updatedActivePiece;
 
     //eating a pawn if it is el passant
-    console.log(elPassantMove, "elPassantCapture move ");
     if (
       elPassantMove &&
       elPassantMove?.row === row &&
@@ -926,6 +1123,7 @@ export const GameContextProvider = ({ children }: any) => {
       promotion === false &&
       determineCheckmate(updatedBoard, updatedActivePiece!);
 
+    setMovedPieces((prev) => [...prev, updatedActivePiece!]);
     setActivePiece(updatedActivePiece);
     if (promotion === false && isCheckmate === false) switchTurns();
     setAvailablePositions([]);
