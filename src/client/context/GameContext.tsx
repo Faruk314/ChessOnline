@@ -23,6 +23,7 @@ interface GameContextProps {
   promotePawn: (type: string) => void;
   checkmate: boolean;
   players: Player[];
+  stalemate: boolean;
 }
 
 export const GameContext = createContext<GameContextProps>({
@@ -35,6 +36,7 @@ export const GameContext = createContext<GameContextProps>({
   promotePawn: (type) => {},
   checkmate: false,
   players: [],
+  stalemate: false,
 });
 
 export const GameContextProvider = ({ children }: any) => {
@@ -52,6 +54,7 @@ export const GameContextProvider = ({ children }: any) => {
   const [elPassantCaptureMove, setElPassantCaptureMove] =
     useState<Position | null>(null);
   const [movedPieces, setMovedPieces] = useState<Piece[]>([]);
+  const [stalemate, setStalemate] = useState(false);
 
   console.log(movedPieces, "movedPieces");
 
@@ -182,75 +185,67 @@ export const GameContextProvider = ({ children }: any) => {
           //situation 8
           // if (row === 1 && col === 1)
           //   board[row][col] = createPawn(row, col, "black", "pawn");
-
           // if (row === 1 && col === 2)
           //   board[row][col] = createPawn(row, col, "black", "pawn");
-
           // if (row === 1 && col === 3)
           //   board[row][col] = createPawn(row, col, "black", "pawn");
-
           // if (row === 1 && col === 7)
           //   board[row][col] = createPawn(row, col, "black", "pawn");
-
           // if (row === 0 && col === 2)
           //   board[row][col] = createPawn(row, col, "black", "king");
-
           //importnant
-          if (row === 6)
-            board[row][col] = createPawn(row, col, "white", "pawn");
-
-          if (row === 7) {
-            if (col === 0)
-              board[row][col] = createPawn(
-                row,
-                col,
-                "white",
-                "rook",
-                "queenSide"
-              );
-
-            if (col === 7)
-              board[row][col] = createPawn(
-                row,
-                col,
-                "white",
-                "rook",
-                "kingSide"
-              );
-
-            board[row][4] = createPawn(row, 4, "white", "king");
-            board[row][3] = createPawn(row, 3, "white", "queen");
-            if (col === 1 || col === 6)
-              board[row][col] = createPawn(row, col, "white", "knight");
-            if (col === 2 || col === 5)
-              board[row][col] = createPawn(row, col, "white", "bishop");
-          }
-          if (row === 1)
-            board[row][col] = createPawn(row, col, "black", "pawn");
-          if (row === 0) {
-            if (col === 0)
-              board[row][col] = createPawn(
-                row,
-                col,
-                "black",
-                "rook",
-                "queenSide"
-              );
-            if (col === 7)
-              board[row][col] = createPawn(
-                row,
-                col,
-                "black",
-                "rook",
-                "kingSide"
-              );
-            board[row][4] = createPawn(row, 4, "black", "king");
-            board[row][3] = createPawn(row, 3, "black", "queen");
-            if (col === 1 || col === 6)
-              board[row][col] = createPawn(row, col, "black", "knight");
-            if (col === 2 || col === 5)
-              board[row][col] = createPawn(row, col, "black", "bishop");
-          }
+          // if (row === 6)
+          //   board[row][col] = createPawn(row, col, "white", "pawn");
+          // if (row === 7) {
+          //   if (col === 0)
+          //     board[row][col] = createPawn(
+          //       row,
+          //       col,
+          //       "white",
+          //       "rook",
+          //       "queenSide"
+          //     );
+          //   if (col === 7)
+          //     board[row][col] = createPawn(
+          //       row,
+          //       col,
+          //       "white",
+          //       "rook",
+          //       "kingSide"
+          //     );
+          //   board[row][4] = createPawn(row, 4, "white", "king");
+          //   board[row][3] = createPawn(row, 3, "white", "queen");
+          //   if (col === 1 || col === 6)
+          //     board[row][col] = createPawn(row, col, "white", "knight");
+          //   if (col === 2 || col === 5)
+          //     board[row][col] = createPawn(row, col, "white", "bishop");
+          // }
+          // if (row === 1)
+          //   board[row][col] = createPawn(row, col, "black", "pawn");
+          // if (row === 0) {
+          //   if (col === 0)
+          //     board[row][col] = createPawn(
+          //       row,
+          //       col,
+          //       "black",
+          //       "rook",
+          //       "queenSide"
+          //     );
+          //   if (col === 7)
+          //     board[row][col] = createPawn(
+          //       row,
+          //       col,
+          //       "black",
+          //       "rook",
+          //       "kingSide"
+          //     );
+          //   board[row][4] = createPawn(row, 4, "black", "king");
+          //   board[row][3] = createPawn(row, 3, "black", "queen");
+          //   if (col === 1 || col === 6)
+          //     board[row][col] = createPawn(row, col, "black", "knight");
+          //   if (col === 2 || col === 5)
+          //     board[row][col] = createPawn(row, col, "black", "bishop");
+          // }
         }
       }
 
@@ -953,6 +948,20 @@ export const GameContextProvider = ({ children }: any) => {
         position.col === enemyKing.position.col
     );
 
+    //this will find all possible enemy positions but we dont need king positions so we will put true as third argument
+    let enemyAttackPositions = findAttackedPositions2(
+      board,
+      playerTurn?.color!
+    );
+
+    console.log(enemyAttackPositions, "enemy attack positions");
+
+    //this is stalemate
+    if (!kingInCheck && enemyAttackPositions.length === 0) {
+      setStalemate(true);
+      return false;
+    }
+
     //no check
     if (!kingInCheck) return false;
 
@@ -962,12 +971,6 @@ export const GameContextProvider = ({ children }: any) => {
     );
     //include the active piece in checkPositions
     checkPositions.push(activePiece!.position);
-
-    //this will find all possible enemy positions but we dont need king positions so we will put true as third argument
-    let enemyAttackPositions = findAttackedPositions2(
-      board,
-      playerTurn?.color!
-    );
 
     //this finds all possible king positions
     let kingPositions = highlightKing(enemyKing!, board);
@@ -1163,6 +1166,7 @@ export const GameContextProvider = ({ children }: any) => {
     isPromotion,
     promotePawn,
     players,
+    stalemate,
   };
 
   return (

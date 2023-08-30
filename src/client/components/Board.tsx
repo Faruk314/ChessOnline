@@ -16,6 +16,7 @@ import blackRook from "../assets/images/rook_b.png";
 import Promotion from "../modals/Promotion";
 import Checkmate from "../modals/Checkmate";
 import Player from "../components/Player";
+import Stalemate from "../modals/Stalemate";
 
 const Board = () => {
   const {
@@ -26,14 +27,16 @@ const Board = () => {
     playerTurn,
     isPromotion,
     checkmate,
+    stalemate,
   } = useContext(GameContext);
 
   return (
     <section className="flex flex-col items-center justify-center h-[100vh] bg-amber-100">
       {checkmate && <Checkmate />}
+      {stalemate && <Stalemate />}
 
       <div>
-        <Player index={1} playerName="Faruk" />
+        <Player index={1} playerName="Player Two" />
 
         <div className="my-2 border shadow-lg">
           {board.map((row, rowIndex) => {
@@ -68,7 +71,7 @@ const Board = () => {
                       {isAvailablePosition && cell && (
                         <div className="absolute w-[5rem] h-[5rem] border-2 border-black rounded-full"></div>
                       )}
-                      {/* {`${rowIndex}${cellIndex}`} */}
+                      {`${rowIndex}${cellIndex}`}
                       {cell?.color === "white" ? (
                         <button
                           onClick={() =>
@@ -104,7 +107,7 @@ const Board = () => {
           })}
         </div>
 
-        <Player index={0} playerName="Mustafa" />
+        <Player index={0} playerName="Player One" />
       </div>
 
       {isPromotion && <Promotion />}
