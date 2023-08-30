@@ -17,6 +17,7 @@ import Promotion from "../modals/Promotion";
 import Checkmate from "../modals/Checkmate";
 import Player from "../components/Player";
 import Stalemate from "../modals/Stalemate";
+import menuImage from "../assets/images/menu.png";
 
 const Board = () => {
   const {
@@ -38,7 +39,7 @@ const Board = () => {
       <div>
         <Player index={1} playerName="Player Two" />
 
-        <div className="my-2 border shadow-lg">
+        <div className="my-2 shadow-[0_3px_10px_rgb(0,0,0,0.4)]">
           {board.map((row, rowIndex) => {
             return (
               <div key={rowIndex} className="flex">
@@ -56,7 +57,7 @@ const Board = () => {
                       className={classNames(
                         "flex items-center justify-center w-[5.8rem] h-[5.8rem]",
                         {
-                          "bg-yellow-500":
+                          "bg-amber-900":
                             ((rowIndex + 1) % 2 !== 0 &&
                               (cellIndex + 1) % 2 === 0) ||
                             ((rowIndex + 1) % 2 === 0 &&
@@ -71,7 +72,7 @@ const Board = () => {
                       {isAvailablePosition && cell && (
                         <div className="absolute w-[5rem] h-[5rem] border-2 border-black rounded-full"></div>
                       )}
-                      {`${rowIndex}${cellIndex}`}
+                      {/* {`${rowIndex}${cellIndex}`} */}
                       {cell?.color === "white" ? (
                         <button
                           onClick={() =>

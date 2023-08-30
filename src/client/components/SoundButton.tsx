@@ -8,7 +8,7 @@ const SoundButton = () => {
   return (
     <button
       onClick={() => setIsSoundEnabled((prev) => !prev)}
-      className="flex items-center justify-center p-2 bg-yellow-500 border rounded-md"
+      className="flex items-center justify-center p-2 border rounded-md outline-none bg-amber-900"
     >
       {isSoundEnabled && (
         <ImVolumeMute size={25} className="w-full text-white outline-none" />
