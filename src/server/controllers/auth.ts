@@ -117,3 +117,14 @@ export const login = asyncHandler(async (req, res) => {
       },
     });
 });
+
+export const logout = asyncHandler(async (req, res) => {
+  res
+    .clearCookie("token", {
+      httpOnly: true,
+      sameSite: "none",
+      secure: true,
+    })
+    .status(200)
+    .json("successfully logged out");
+});
