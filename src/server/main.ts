@@ -7,6 +7,7 @@ import cookieParser from "cookie-parser";
 import cors from "cors";
 import http from "http";
 import setupSocket from "./socket";
+import { Redis } from "ioredis";
 dotenv.config();
 
 const app = express();
@@ -20,6 +21,11 @@ app.use(
     credentials: true,
   })
 );
+
+export const client = new Redis({
+  host: "localhost",
+  port: 6379,
+});
 
 ViteExpress.listen(app, 3000, () =>
   console.log("Server is listening on port 3000...")

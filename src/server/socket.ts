@@ -5,6 +5,7 @@ import { VerifiedToken } from "./types/types.js";
 import dotenv from "dotenv";
 import { v4 as uuidv4 } from "uuid";
 import query from "./db";
+import { client } from "./main";
 dotenv.config();
 
 declare module "socket.io" {
@@ -112,7 +113,7 @@ export default function setupSocket() {
 
         // let gameState = createGame(players);
 
-        // await client.set(gameId, JSON.stringify(gameState));
+        await client.set(gameId, JSON.stringify({ faruk: "hej" }));
 
         io.to(gameId).emit("gameStart", gameId);
       }
