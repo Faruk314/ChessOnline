@@ -1,12 +1,14 @@
 import React, { useContext } from "react";
 import { SoundContext } from "../context/SoundContext";
 import moveSound from "../assets/sounds/move.mp3";
+import { SocketContext } from "../context/SocketContext";
 
 interface Props {
   setOpenFindMatch: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const FindMatch = ({ setOpenFindMatch }: Props) => {
+  const { socket } = useContext(SocketContext);
   const { playSound } = useContext(SoundContext);
 
   return (
@@ -17,7 +19,10 @@ const FindMatch = ({ setOpenFindMatch }: Props) => {
           <div className="loader"></div>
 
           <button
-            onClick={() => setOpenFindMatch(false)}
+            onClick={() => {
+              socket?.emit("cancelFindMatch");
+              setOpenFindMatch(false);
+            }}
             onMouseEnter={() => playSound(moveSound)}
             className="px-4 py-1 space-x-2 text-xl text-center text-white border-2 rounded-md shadow-lg bg-amber-900 hover:bg-transparent border-amber-900 hover:text-amber-900"
           >

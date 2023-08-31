@@ -1,5 +1,5 @@
 interface VerifiedToken {
-  userId: string;
+  userId: number;
 }
 
 export type { VerifiedToken };
