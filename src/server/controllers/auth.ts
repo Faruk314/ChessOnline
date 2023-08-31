@@ -3,6 +3,10 @@ import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import query from "../db";
 
+interface VerifiedToken {
+  userId: string;
+}
+
 export const register = asyncHandler(async (req, res) => {
   const { userName, email, password } = req.body;
 
@@ -127,4 +131,29 @@ export const logout = asyncHandler(async (req, res) => {
     })
     .status(200)
     .json("successfully logged out");
+});
+
+export const getLoginStatus = asyncHandler(async (req, res) => {
+  const token = req.cookies.token;
+
+  if (!token) {
+    res.json({ status: false });
+    return;
+  }
+
+  let verified = jwt.verify(token, process.env.JWT_SECRET!) as VerifiedToken;
+
+  if (!verified) {
+    res.json({ status: false });
+    return;
+  }
+
+  if (verified.userId) {
+    let q =
+      "SELECT `userId`, `userName`,`email`,`image` FROM users WHERE `userId`= ?";
+
+    let userInfo: any = await query(q, [verified.userId]);
+
+    res.json({ status: true, userInfo: userInfo[0] });
+  }
 });
