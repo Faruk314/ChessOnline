@@ -76,6 +76,8 @@ export const register = asyncHandler(async (req, res) => {
 export const login = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
 
+  console.log(password, "pas");
+
   if (!email || !password) {
     res.status(400);
     throw new Error("All fields must be filled");
@@ -86,7 +88,7 @@ export const login = asyncHandler(async (req, res) => {
 
   let data: any = await query(q, [email]);
 
-  if (!data) {
+  if (data.length === 0) {
     res.status(404);
     throw new Error("Incorrect email or password");
   }
