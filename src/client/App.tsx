@@ -7,6 +7,7 @@ import axios from "axios";
 import Register from "./pages/Register";
 
 axios.defaults.withCredentials = true;
+// axios.defaults.baseURL = process.env.FRONTEND_URL;
 
 function App() {
   return (

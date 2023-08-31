@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import menuImage from "../assets/images/menu.png";
 import { ImUser, ImUsers } from "react-icons/im";
 import SoundButton from "../components/SoundButton";
@@ -6,9 +6,11 @@ import { SoundContext } from "../context/SoundContext";
 import moveSound from "../assets/sounds/move.mp3";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import FindMatch from "../modals/FindMatch";
 
 const Menu = () => {
   const { playSound } = useContext(SoundContext);
+  const [openFindMatch, setOpenFindMatch] = useState(false);
   const navigate = useNavigate();
 
   const logoutHandler = async () => {
@@ -33,7 +35,7 @@ const Menu = () => {
         <img src={menuImage} className="w-[17rem] h-[20rem]" />
       </div>
 
-      <div className="grid gap-4 mt-[10rem]">
+      <div className="grid gap-4 mt-[10rem] z-20">
         <button
           onMouseEnter={() => playSound(moveSound)}
           onClick={() => navigate("/game")}
@@ -44,6 +46,7 @@ const Menu = () => {
         </button>
 
         <button
+          onClick={() => setOpenFindMatch(true)}
           onMouseEnter={() => playSound(moveSound)}
           className="flex items-center justify-center px-10 py-4 space-x-2 text-xl border-2 rounded-md shadow-lg border-amber-900 bg-amber-900 hover:bg-transparent hover:text-amber-900"
         >
@@ -59,6 +62,8 @@ const Menu = () => {
           EXIT GAME
         </button>
       </div>
+
+      {openFindMatch && <FindMatch setOpenFindMatch={setOpenFindMatch} />}
     </section>
   );
 };
