@@ -5,9 +5,14 @@ import errorHandler from "./utils/error";
 import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
 import cors from "cors";
+import http from "http";
+import setupSocket from "./socket";
 dotenv.config();
 
 const app = express();
+const server = http.createServer(app);
+
+setupSocket();
 
 app.use(
   cors({

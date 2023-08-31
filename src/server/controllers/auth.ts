@@ -2,10 +2,7 @@ import asyncHandler from "express-async-handler";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import query from "../db";
-
-interface VerifiedToken {
-  userId: string;
-}
+import { VerifiedToken } from "../types/types";
 
 export const register = asyncHandler(async (req, res) => {
   const { userName, email, password } = req.body;

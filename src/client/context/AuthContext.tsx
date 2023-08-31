@@ -25,6 +25,8 @@ export const AuthContextProvider = ({ children }: any) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [loggedUserInfo, setLoggedUserInfo] = useState<UserInfo | null>(null);
 
+  console.log(loggedUserInfo, "logged user info");
+
   console.log("isLoggedIn auth context", isLoggedIn);
 
   return (
