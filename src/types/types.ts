@@ -7,7 +7,7 @@ export interface UserInfo {
   userId: number;
   userName: string;
   email?: string;
-  image: number | null;
+  image: string | null;
 }
 
 export interface Position {

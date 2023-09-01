@@ -7,6 +7,8 @@ import axios from "axios";
 import Register from "./pages/Register";
 import { AuthContext } from "./context/AuthContext";
 import { SocketContext } from "./context/SocketContext";
+import Multiplayer from "./pages/Multiplayer";
+import SinglePlayer from "./pages/SinglePlayer";
 
 axios.defaults.withCredentials = true;
 // axios.defaults.baseURL = process.env.FRONTEND_URL;
@@ -35,8 +37,8 @@ function App() {
   }, []);
 
   useEffect(() => {
-    socket?.on("gameStart", (gameId) => {
-      navigate("/game");
+    socket?.on("gameStart", () => {
+      navigate("/multiplayer");
     });
 
     return () => {
@@ -49,7 +51,8 @@ function App() {
       <Route path="/" element={<Login />} />
       <Route path="/register" element={<Register />} />
       <Route path="/menu" element={<Menu />} />
-      <Route path="/game" element={<Board />} />
+      <Route path="/multiplayer" element={<Multiplayer />} />
+      <Route path="/singlePlayer" element={<SinglePlayer />} />
     </Routes>
   );
 }

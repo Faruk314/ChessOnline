@@ -12,6 +12,7 @@ import { Square, Position } from "../../types/types";
 import _, { cloneDeep, find, first, update } from "lodash";
 import { SoundContext } from "./SoundContext";
 import move from "../assets/sounds/move.mp3";
+import axios from "axios";
 
 interface GameContextProps {
   board: Square[][];
@@ -24,6 +25,7 @@ interface GameContextProps {
   checkmate: boolean;
   players: Player[];
   stalemate: boolean;
+  getGameStatus: () => Promise<void>;
 }
 
 export const GameContext = createContext<GameContextProps>({
@@ -37,6 +39,7 @@ export const GameContext = createContext<GameContextProps>({
   checkmate: false,
   players: [],
   stalemate: false,
+  getGameStatus: async () => {},
 });
 
 export const GameContextProvider = ({ children }: any) => {
@@ -286,7 +289,32 @@ export const GameContextProvider = ({ children }: any) => {
     return positionsUnderAttack;
   };
 
-  const findAttackedPositions2 = (
+  const getGameStatus = async () => {
+    try {
+      const response = await axios.get(
+        " http://localhost:3000/api/game/retrieveGameStatus"
+      );
+
+      const game = response.data;
+      setBoard(game.board);
+      setPlayers(game.players);
+      setPlayerTurn(game.playerTurn);
+      setAvailablePositions(game.availablePositions);
+      setActivePiece(game.activePiece);
+      setIsPromotion(game.isPromotion);
+      setCheckPositions(game.checkPositions);
+      setCheckmate(game.checkmate);
+      setLastMovePositions(game.lastMovePositions);
+      setElPassantMove(game.elPassantMove);
+      setElPassantCaptureMove(game.elPassantCaptureMove);
+      setMovedPieces(game.movedPieces);
+      setStalemate(game.stalemate);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const findPositions = (
     board: Square[][],
     pieceColor: string,
     exclude?: boolean
@@ -948,11 +976,8 @@ export const GameContextProvider = ({ children }: any) => {
         position.col === enemyKing.position.col
     );
 
-    //this will find all possible enemy positions but we dont need king positions so we will put true as third argument
-    let enemyAttackPositions = findAttackedPositions2(
-      board,
-      playerTurn?.color!
-    );
+    //this will find all possible enemy positions
+    let enemyAttackPositions = findPositions(board, playerTurn?.color!);
 
     console.log(enemyAttackPositions, "enemy attack positions");
 
@@ -1167,6 +1192,7 @@ export const GameContextProvider = ({ children }: any) => {
     promotePawn,
     players,
     stalemate,
+    getGameStatus,
   };
 
   return (

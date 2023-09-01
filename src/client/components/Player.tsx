@@ -16,7 +16,8 @@ import avatar from "../assets/images/avatar.png";
 
 interface Props {
   index: number;
-  playerName: string;
+  playerName?: string;
+  image?: string | null;
 }
 
 const Player = ({ index, playerName }: Props) => {

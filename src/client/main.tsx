@@ -5,6 +5,7 @@ import { AuthContextProvider } from "./context/AuthContext";
 import { SocketContextProvider } from "./context/SocketContext";
 import { GameContextProvider } from "./context/GameContext";
 import { SoundContextProvider } from "./context/SoundContext";
+import { MultiplayerContextProvider } from "./context/MultiplayerContext";
 import App from "./App";
 import { BrowserRouter } from "react-router-dom";
 
@@ -14,9 +15,11 @@ ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
       <SocketContextProvider>
         <SoundContextProvider>
           <GameContextProvider>
-            <BrowserRouter>
-              <App />
-            </BrowserRouter>
+            <MultiplayerContextProvider>
+              <BrowserRouter>
+                <App />
+              </BrowserRouter>
+            </MultiplayerContextProvider>
           </GameContextProvider>
         </SoundContextProvider>
       </SocketContextProvider>

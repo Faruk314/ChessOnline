@@ -40,7 +40,7 @@ const Menu = () => {
       <div className="grid gap-4 mt-[10rem] z-20">
         <button
           onMouseEnter={() => playSound(moveSound)}
-          onClick={() => navigate("/game")}
+          onClick={() => navigate("/singlePlayer")}
           className="flex items-center justify-center px-10 py-4 space-x-2 text-xl border-2 rounded-md shadow-md border-amber-900 bg-amber-900 hover:bg-transparent hover:text-amber-900"
         >
           <ImUser size={30} className="" />
