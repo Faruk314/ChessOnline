@@ -6,7 +6,8 @@ import dotenv from "dotenv";
 import { v4 as uuidv4 } from "uuid";
 import query from "./db";
 import { client } from "./main";
-import { createGame } from "./game";
+import { createGame, highlight } from "./game";
+import { Piece } from "../client/classes/Piece.js";
 dotenv.config();
 
 declare module "socket.io" {
@@ -71,6 +72,19 @@ export default function setupSocket() {
 
     if (socket.userId) addUser(socket.userId, socket.id);
 
+    socket.on("reconnectToRoom", (gameId: string) => {
+      if (socket.userId === undefined) return;
+
+      const userSocketId = getUser(socket.userId);
+
+      if (userSocketId) {
+        const userSocket = io.sockets.sockets.get(userSocketId);
+
+        console.log(gameId, "gameid");
+        if (userSocket) userSocket.join(gameId);
+      }
+    });
+
     socket.on("disconnect", () => {
       removeUser(socket.id);
       console.log("disconnected");
@@ -127,6 +141,27 @@ export default function setupSocket() {
 
       console.log(playersQueue, "playersQuee");
     });
+
+    socket.on(
+      "highlightPiece",
+      async (data: { gameId: string; piece: Piece }) => {
+        const gameData = await client.get(data.gameId);
+
+        let gameState = JSON.parse(gameData!);
+
+        if (!socket.userId) return;
+
+        const userSocketId = getUser(socket.userId);
+
+        highlight(data.piece, gameState);
+
+        await client.set(data.gameId, JSON.stringify(gameState));
+
+        console.log(gameState, "gameState");
+
+        io.to(userSocketId).emit("positionsHiglited", gameState);
+      }
+    );
   });
 
   io.listen(5001);

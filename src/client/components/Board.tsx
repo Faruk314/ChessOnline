@@ -14,14 +14,16 @@ import blackRook from "../assets/images/rook_b.png";
 import { GameContext } from "../context/GameContext";
 import classNames from "classnames";
 import { Piece } from "../classes/Piece";
+import { Data } from "../context/MultiplayerContext";
 
 interface Props {
   movePiece: (rowIndex: number, cellIndex: number) => Promise<void> | void;
-  highlight: (cell: Piece) => Promise<void> | void;
+  highlight: (cell: Data) => void;
 }
 
 const Board = ({ movePiece, highlight }: Props) => {
-  const { board, availablePositions, playerTurn } = useContext(GameContext);
+  const { board, availablePositions, playerTurn, gameId } =
+    useContext(GameContext);
 
   return (
     <div className="my-2 shadow-[0_3px_10px_rgb(0,0,0,0.4)]">
@@ -60,7 +62,8 @@ const Board = ({ movePiece, highlight }: Props) => {
                   {cell?.color === "white" ? (
                     <button
                       onClick={() =>
-                        playerTurn?.color === "white" && highlight(cell)
+                        playerTurn?.color === "white" &&
+                        highlight({ piece: cell, gameId })
                       }
                     >
                       {cell.type === "pawn" && <img src={whitePawn} />}
@@ -73,7 +76,8 @@ const Board = ({ movePiece, highlight }: Props) => {
                   ) : (
                     <button
                       onClick={() =>
-                        playerTurn?.color === "black" && highlight(cell!)
+                        playerTurn?.color === "black" &&
+                        highlight({ piece: cell!, gameId })
                       }
                     >
                       {cell?.type === "pawn" && <img src={blackPawn} />}

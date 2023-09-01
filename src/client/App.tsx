@@ -1,5 +1,4 @@
 import { useContext, useEffect, useState } from "react";
-import Board from "./components/Board";
 import Menu from "./pages/Menu";
 import { Routes, Route, useNavigate } from "react-router-dom";
 import Login from "./pages/Login";
@@ -9,13 +8,16 @@ import { AuthContext } from "./context/AuthContext";
 import { SocketContext } from "./context/SocketContext";
 import Multiplayer from "./pages/Multiplayer";
 import SinglePlayer from "./pages/SinglePlayer";
+import { GameContext } from "./context/GameContext";
 
 axios.defaults.withCredentials = true;
 // axios.defaults.baseURL = process.env.FRONTEND_URL;
 
 function App() {
   const { socket } = useContext(SocketContext);
-  const { setIsLoggedIn, setLoggedUserInfo } = useContext(AuthContext);
+  const { gameId } = useContext(GameContext);
+  const { setIsLoggedIn, setLoggedUserInfo, isLoggedIn } =
+    useContext(AuthContext);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -35,6 +37,14 @@ function App() {
 
     getLoginStatus();
   }, []);
+
+  useEffect(() => {
+    socket?.on("connect", () => {
+      if (gameId) {
+        socket?.emit("reconnectToRoom", gameId);
+      }
+    });
+  }, [gameId, socket, isLoggedIn]);
 
   useEffect(() => {
     socket?.on("gameStart", () => {

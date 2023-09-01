@@ -7,11 +7,20 @@ import Player from "../components/Player";
 import Board from "../components/Board";
 import Promotion from "../modals/Promotion";
 import { MultiplayerContext } from "../context/MultiplayerContext";
+import { SocketContext } from "../context/SocketContext";
+import { Game } from "../../types/types";
 
 const Multiplayer = () => {
+  const { socket } = useContext(SocketContext);
   const [isLoading, setIsLoading] = useState(true);
-  const { isPromotion, checkmate, stalemate, players, getGameStatus } =
-    useContext(GameContext);
+  const {
+    isPromotion,
+    checkmate,
+    stalemate,
+    players,
+    getGameStatus,
+    updateGameState,
+  } = useContext(GameContext);
   const { movePiece, higlightPiece } = useContext(MultiplayerContext);
 
   useEffect(() => {
@@ -22,6 +31,16 @@ const Multiplayer = () => {
 
     retrieveGame();
   }, []);
+
+  useEffect(() => {
+    socket?.on("positionsHiglited", (gameState: Game) => {
+      updateGameState(gameState);
+    });
+
+    return () => {
+      socket?.off("positionsHiglited");
+    };
+  }, [socket]);
 
   if (isLoading) {
     return (

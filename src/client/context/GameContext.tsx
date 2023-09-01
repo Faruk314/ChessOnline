@@ -8,15 +8,17 @@ import React, {
 import { Player } from "../classes/Player";
 import { Piece } from "../classes/Piece";
 import { createPawn } from "../classes/Piece";
-import { Square, Position } from "../../types/types";
+import { Square, Position, Game } from "../../types/types";
 import _, { cloneDeep, find, first, update } from "lodash";
 import { SoundContext } from "./SoundContext";
 import move from "../assets/sounds/move.mp3";
 import axios from "axios";
+import { Data } from "./MultiplayerContext";
+import { AuthContext } from "./AuthContext";
 
 interface GameContextProps {
   board: Square[][];
-  highlight: (piece: Piece) => void;
+  highlight: (data: Data) => void;
   availablePositions: Position[];
   movePiece: (row: number, col: number) => void;
   playerTurn: Player | null;
@@ -26,11 +28,13 @@ interface GameContextProps {
   players: Player[];
   stalemate: boolean;
   getGameStatus: () => Promise<void>;
+  gameId: string;
+  updateGameState: (game: Game) => void;
 }
 
 export const GameContext = createContext<GameContextProps>({
   board: [],
-  highlight: (piece) => {},
+  highlight: (data) => {},
   availablePositions: [],
   movePiece: (row, col) => {},
   playerTurn: null,
@@ -40,10 +44,14 @@ export const GameContext = createContext<GameContextProps>({
   players: [],
   stalemate: false,
   getGameStatus: async () => {},
+  gameId: "",
+  updateGameState: (game) => {},
 });
 
 export const GameContextProvider = ({ children }: any) => {
   const { playSound } = useContext(SoundContext);
+  const { loggedUserInfo } = useContext(AuthContext);
+  const [gameId, setGameId] = useState("");
   const [board, setBoard] = useState<Square[][]>([]);
   const [players, setPlayers] = useState<Player[]>([]);
   const [playerTurn, setPlayerTurn] = useState<Player | null>(null);
@@ -58,10 +66,6 @@ export const GameContextProvider = ({ children }: any) => {
     useState<Position | null>(null);
   const [movedPieces, setMovedPieces] = useState<Piece[]>([]);
   const [stalemate, setStalemate] = useState(false);
-
-  console.log(movedPieces, "movedPieces");
-
-  console.log(players, "players");
 
   useEffect(() => {
     const initGame = () => {
@@ -289,6 +293,26 @@ export const GameContextProvider = ({ children }: any) => {
     return positionsUnderAttack;
   };
 
+  const updateGameState = (game: Game) => {
+    if (game.playerTurn?.playerData?.userId === loggedUserInfo?.userId) {
+      setAvailablePositions(game.availablePositions);
+    }
+
+    setBoard(game.board);
+    setPlayers(game.players);
+    setPlayerTurn(game.playerTurn);
+    setActivePiece(game.activePiece);
+    setIsPromotion(game.isPromotion);
+    setCheckPositions(game.checkPositions);
+    setCheckmate(game.checkmate);
+    setLastMovePositions(game.lastMovePositions);
+    setElPassantMove(game.elPassantMove);
+    setElPassantCaptureMove(game.elPassantCaptureMove);
+    setMovedPieces(game.movedPieces);
+    setStalemate(game.stalemate);
+    setGameId(game.gameId);
+  };
+
   const getGameStatus = async () => {
     try {
       const response = await axios.get(
@@ -296,19 +320,7 @@ export const GameContextProvider = ({ children }: any) => {
       );
 
       const game = response.data;
-      setBoard(game.board);
-      setPlayers(game.players);
-      setPlayerTurn(game.playerTurn);
-      setAvailablePositions(game.availablePositions);
-      setActivePiece(game.activePiece);
-      setIsPromotion(game.isPromotion);
-      setCheckPositions(game.checkPositions);
-      setCheckmate(game.checkmate);
-      setLastMovePositions(game.lastMovePositions);
-      setElPassantMove(game.elPassantMove);
-      setElPassantCaptureMove(game.elPassantCaptureMove);
-      setMovedPieces(game.movedPieces);
-      setStalemate(game.stalemate);
+      updateGameState(game);
     } catch (error) {
       console.log(error);
     }
@@ -1159,7 +1171,9 @@ export const GameContextProvider = ({ children }: any) => {
     setElPassantMove(null);
   };
 
-  const highlight = (piece: Piece) => {
+  const highlight = (data: Data) => {
+    const piece = data.piece;
+
     if (piece.type === "pawn")
       setAvailablePositions(highlightPawn(piece, board));
 
@@ -1193,6 +1207,8 @@ export const GameContextProvider = ({ children }: any) => {
     players,
     stalemate,
     getGameStatus,
+    gameId,
+    updateGameState,
   };
 
   return (

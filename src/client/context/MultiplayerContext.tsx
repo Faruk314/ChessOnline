@@ -7,13 +7,18 @@ import { Piece } from "../classes/Piece";
 import axios from "axios";
 import { SocketContext } from "./SocketContext";
 
+export interface Data {
+  gameId: string;
+  piece: Piece;
+}
+
 type MultiplayerContextType = {
-  higlightPiece: () => void;
+  higlightPiece: (data: Data) => void;
   movePiece: () => void;
 };
 
 export const MultiplayerContext = createContext<MultiplayerContextType>({
-  higlightPiece: () => {},
+  higlightPiece: (data) => {},
   movePiece: () => {},
 });
 
@@ -26,7 +31,9 @@ export const MultiplayerContextProvider = ({
 }: MultiplayerProviderProps) => {
   const { socket } = useContext(SocketContext);
 
-  const higlightPiece = () => {};
+  const higlightPiece = (data: Data) => {
+    socket?.emit("highlightPiece", data);
+  };
 
   const movePiece = () => {};
 
