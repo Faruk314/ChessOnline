@@ -6,6 +6,7 @@ import dotenv from "dotenv";
 import { v4 as uuidv4 } from "uuid";
 import query from "./db";
 import { client } from "./main";
+import { createGame } from "./game";
 dotenv.config();
 
 declare module "socket.io" {
@@ -111,9 +112,11 @@ export default function setupSocket() {
 
         let players = [firstPlayerId, secondPlayerId];
 
-        // let gameState = createGame(players);
+        let gameState = await createGame(players, gameId);
 
-        await client.set(gameId, JSON.stringify({ faruk: "hej" }));
+        console.log(gameState, "gameState");
+
+        await client.set(gameId, JSON.stringify(gameState));
 
         io.to(gameId).emit("gameStart", gameId);
       }

@@ -18,6 +18,7 @@ import Checkmate from "../modals/Checkmate";
 import Player from "../components/Player";
 import Stalemate from "../modals/Stalemate";
 import menuImage from "../assets/images/menu.png";
+import axios from "axios";
 
 const Board = () => {
   const {
@@ -30,6 +31,22 @@ const Board = () => {
     checkmate,
     stalemate,
   } = useContext(GameContext);
+
+  useEffect(() => {
+    const getGameStatus = async () => {
+      try {
+        const response = await axios.get(
+          " http://localhost:3000/api/game/retrieveGameStatus"
+        );
+
+        console.log(response.data, "data");
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    getGameStatus();
+  }, []);
 
   return (
     <section className="flex flex-col items-center justify-center h-[100vh] bg-amber-100">

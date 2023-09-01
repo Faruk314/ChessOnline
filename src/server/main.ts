@@ -1,6 +1,7 @@
 import express from "express";
 import ViteExpress from "vite-express";
 import authRoutes from "./routes/auth";
+import gameRoutes from "./routes/game";
 import errorHandler from "./utils/error";
 import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
@@ -36,5 +37,6 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
 app.use("/api/auth", authRoutes);
+app.use("/api/game", gameRoutes);
 
 app.use(errorHandler);

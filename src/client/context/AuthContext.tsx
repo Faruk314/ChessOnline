@@ -1,11 +1,5 @@
 import React, { createContext, useState } from "react";
-
-export interface UserInfo {
-  userId: number;
-  userName: string;
-  email?: string;
-  image: number | null;
-}
+import { UserInfo } from "../../types/types";
 
 interface AuthContextProps {
   loggedUserInfo: UserInfo | null;
