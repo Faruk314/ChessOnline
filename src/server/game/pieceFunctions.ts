@@ -618,4 +618,5 @@ export {
   findQueenPositions,
   findRookPositions,
   findPawnPositions,
+  movePiece,
 };

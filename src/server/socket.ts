@@ -6,7 +6,9 @@ import dotenv from "dotenv";
 import { v4 as uuidv4 } from "uuid";
 import query from "./db";
 import { client } from "./main";
-import { createGame, movePiece } from "./game/pieceFunctions.js";
+import { createGame } from "./game/pieceFunctions";
+import { movePiece } from "./game/pieceFunctions";
+import { highlight } from "./game/gameFunctions";
 
 import { Piece } from "../client/classes/Piece.js";
 dotenv.config();
