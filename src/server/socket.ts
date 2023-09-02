@@ -6,7 +6,8 @@ import dotenv from "dotenv";
 import { v4 as uuidv4 } from "uuid";
 import query from "./db";
 import { client } from "./main";
-import { createGame, highlight } from "./game";
+import { createGame, movePiece } from "./game/pieceFunctions.js";
+
 import { Piece } from "../client/classes/Piece.js";
 dotenv.config();
 
@@ -157,9 +158,22 @@ export default function setupSocket() {
 
         await client.set(data.gameId, JSON.stringify(gameState));
 
-        console.log(gameState, "gameState");
-
         io.to(userSocketId).emit("positionsHiglited", gameState);
+      }
+    );
+
+    socket.on(
+      "movePiece",
+      async (data: { gameId: string; row: number; col: number }) => {
+        const gameData = await client.get(data.gameId);
+
+        let gameState = JSON.parse(gameData!);
+
+        movePiece(data.row, data.col, gameState);
+
+        await client.set(data.gameId, JSON.stringify(gameState));
+
+        io.to(data.gameId).emit("pieceMoved", gameState);
       }
     );
   });

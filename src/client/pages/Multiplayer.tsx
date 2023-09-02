@@ -42,6 +42,18 @@ const Multiplayer = () => {
     };
   }, [socket]);
 
+  useEffect(() => {
+    socket?.on("pieceMoved", (gameState: Game) => {
+      console.log(gameState, "gameState");
+
+      updateGameState(gameState);
+    });
+
+    return () => {
+      socket?.off("pieceMoved");
+    };
+  }, [socket]);
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-[100vh]">

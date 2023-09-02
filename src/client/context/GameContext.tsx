@@ -13,14 +13,14 @@ import _, { cloneDeep, find, first, update } from "lodash";
 import { SoundContext } from "./SoundContext";
 import move from "../assets/sounds/move.mp3";
 import axios from "axios";
-import { Data } from "./MultiplayerContext";
+import { Data, MoveData } from "./MultiplayerContext";
 import { AuthContext } from "./AuthContext";
 
 interface GameContextProps {
   board: Square[][];
   highlight: (data: Data) => void;
   availablePositions: Position[];
-  movePiece: (row: number, col: number) => void;
+  movePiece: (moveData: MoveData) => void;
   playerTurn: Player | null;
   isPromotion: boolean;
   promotePawn: (type: string) => void;
@@ -36,7 +36,7 @@ export const GameContext = createContext<GameContextProps>({
   board: [],
   highlight: (data) => {},
   availablePositions: [],
-  movePiece: (row, col) => {},
+  movePiece: (moveData) => {},
   playerTurn: null,
   isPromotion: false,
   promotePawn: (type) => {},
@@ -1068,10 +1068,12 @@ export const GameContextProvider = ({ children }: any) => {
     isCheckmate === false && switchTurns();
   };
 
-  const movePiece = (row: number, col: number) => {
+  const movePiece = (moveData: MoveData) => {
     let updatedActivePiece = _.cloneDeep(activePiece);
     let updatedBoard = _.cloneDeep(board);
     let promotion = false;
+    const row = moveData.row;
+    const col = moveData.col;
     setCheckPositions([]);
     playSound(move);
 

@@ -12,14 +12,20 @@ export interface Data {
   piece: Piece;
 }
 
+export interface MoveData {
+  gameId: string;
+  row: number;
+  col: number;
+}
+
 type MultiplayerContextType = {
   higlightPiece: (data: Data) => void;
-  movePiece: () => void;
+  movePiece: (moveData: MoveData) => void;
 };
 
 export const MultiplayerContext = createContext<MultiplayerContextType>({
   higlightPiece: (data) => {},
-  movePiece: () => {},
+  movePiece: (moveData) => {},
 });
 
 type MultiplayerProviderProps = {
@@ -35,7 +41,9 @@ export const MultiplayerContextProvider = ({
     socket?.emit("highlightPiece", data);
   };
 
-  const movePiece = () => {};
+  const movePiece = (moveData: MoveData) => {
+    socket?.emit("movePiece", moveData);
+  };
 
   return (
     <MultiplayerContext.Provider value={{ higlightPiece, movePiece }}>

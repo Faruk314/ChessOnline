@@ -14,10 +14,10 @@ import blackRook from "../assets/images/rook_b.png";
 import { GameContext } from "../context/GameContext";
 import classNames from "classnames";
 import { Piece } from "../classes/Piece";
-import { Data } from "../context/MultiplayerContext";
+import { Data, MoveData } from "../context/MultiplayerContext";
 
 interface Props {
-  movePiece: (rowIndex: number, cellIndex: number) => Promise<void> | void;
+  movePiece: (moveData: MoveData) => Promise<void> | void;
   highlight: (cell: Data) => void;
 }
 
@@ -38,7 +38,8 @@ const Board = ({ movePiece, highlight }: Props) => {
               return (
                 <div
                   onClick={() =>
-                    isAvailablePosition && movePiece(rowIndex, cellIndex)
+                    isAvailablePosition &&
+                    movePiece({ row: rowIndex, col: cellIndex, gameId })
                   }
                   key={cellIndex}
                   className={classNames(
