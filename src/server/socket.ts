@@ -94,8 +94,6 @@ export default function setupSocket() {
     });
 
     socket.on("findMatch", async () => {
-      console.log("uslo");
-
       if (!socket.userId) return;
 
       if (!playersQueue.includes(socket.userId))
@@ -131,8 +129,6 @@ export default function setupSocket() {
 
         let gameState = await createGame(players, gameId);
 
-        console.log(gameState, "gameState");
-
         await client.set(gameId, JSON.stringify(gameState));
 
         io.to(gameId).emit("gameStart", gameId);
@@ -141,8 +137,6 @@ export default function setupSocket() {
 
     socket.on("cancelFindMatch", () => {
       playersQueue = playersQueue.filter((userId) => userId !== socket.userId);
-
-      console.log(playersQueue, "playersQuee");
     });
 
     socket.on(

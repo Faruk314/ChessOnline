@@ -36,22 +36,46 @@ export const findKing = (color: string, board: Square[][]) => {
 
 export const highlight = (piece: Piece, gameState: Game) => {
   if (piece.type === "pawn")
-    gameState.availablePositions = highlightPawn(piece, gameState);
+    gameState.availablePositions = highlightPawn(
+      piece,
+      gameState,
+      gameState.board
+    );
 
   if (piece.type === "rook")
-    gameState.availablePositions = highlightRook(piece, gameState);
+    gameState.availablePositions = highlightRook(
+      piece,
+      gameState,
+      gameState.board
+    );
 
   if (piece.type === "knight")
-    gameState.availablePositions = highlightKnight(piece, gameState);
+    gameState.availablePositions = highlightKnight(
+      piece,
+      gameState,
+      gameState.board
+    );
 
   if (piece.type === "bishop")
-    gameState.availablePositions = highlightBishop(piece, gameState);
+    gameState.availablePositions = highlightBishop(
+      piece,
+      gameState,
+      gameState.board
+    );
 
   if (piece.type === "king")
-    gameState.availablePositions = highlightKing(piece, gameState);
+    gameState.availablePositions = highlightKing(
+      piece,
+      gameState,
+      gameState.board
+    );
 
   if (piece.type === "queen")
-    gameState.availablePositions = highlightQueen(piece, gameState);
+    gameState.availablePositions = highlightQueen(
+      piece,
+      gameState,
+      gameState.board
+    );
 
   gameState.activePiece = piece;
 };
@@ -64,7 +88,7 @@ export const findAttackedPositions = (
   let positionsUnderAttack: Position[] = [];
 
   board.flat().forEach((cell) => {
-    if (cell !== null && cell instanceof Piece) {
+    if (cell !== null) {
       if (cell.color !== pieceColor) {
         if (cell.type === "pawn")
           positionsUnderAttack.push(
@@ -96,19 +120,20 @@ export const findPositions = (
 
   board.flat().forEach((cell) => {
     if (cell !== null) {
-      if (cell.color !== pieceColor && cell instanceof Piece) {
+      if (cell.color !== pieceColor) {
         if (cell.type === "pawn")
-          positionsUnderAttack.push(...highlightPawn(cell, gameState));
+          positionsUnderAttack.push(...highlightPawn(cell, gameState, board));
+
         if (cell.type === "knight")
-          positionsUnderAttack.push(...highlightKnight(cell, gameState));
+          positionsUnderAttack.push(...highlightKnight(cell, gameState, board));
         if (cell.type === "queen")
-          positionsUnderAttack.push(...highlightQueen(cell, gameState));
+          positionsUnderAttack.push(...highlightQueen(cell, gameState, board));
         if (cell.type === "bishop")
-          positionsUnderAttack.push(...highlightBishop(cell, gameState));
+          positionsUnderAttack.push(...highlightBishop(cell, gameState, board));
         if (cell.type === "rook")
-          positionsUnderAttack.push(...highlightRook(cell, gameState));
+          positionsUnderAttack.push(...highlightRook(cell, gameState, board));
         if (cell.type === "king")
-          positionsUnderAttack.push(...highlightKing(cell, gameState));
+          positionsUnderAttack.push(...highlightKing(cell, gameState, board));
       }
     }
   });
@@ -129,22 +154,22 @@ export const determineCheckmate = (
   //finds availablePositions for a piece that just moved to a new square
   switch (activePiece?.type) {
     case "pawn":
-      availablePositions = highlightPawn(activePiece, gameState);
+      availablePositions = highlightPawn(activePiece, gameState, board);
       break;
     case "knight":
-      availablePositions = highlightKnight(activePiece, gameState);
+      availablePositions = highlightKnight(activePiece, gameState, board);
       break;
     case "queen":
-      availablePositions = highlightQueen(activePiece, gameState);
+      availablePositions = highlightQueen(activePiece, gameState, board);
       break;
     case "bishop":
-      availablePositions = highlightBishop(activePiece, gameState);
+      availablePositions = highlightBishop(activePiece, gameState, board);
       break;
     case "rook":
-      availablePositions = highlightRook(activePiece, gameState);
+      availablePositions = highlightRook(activePiece, gameState, board);
       break;
     case "king":
-      availablePositions = highlightKing(activePiece, gameState);
+      availablePositions = highlightKing(activePiece, gameState, board);
       break;
   }
 
@@ -165,8 +190,6 @@ export const determineCheckmate = (
     gameState
   );
 
-  console.log(enemyAttackPositions, "enemy attack positions");
-
   //this is stalemate
   if (!kingInCheck && enemyAttackPositions.length === 0) {
     gameState.stalemate = true;
@@ -184,7 +207,7 @@ export const determineCheckmate = (
   checkPositions.push(activePiece!.position);
 
   //this finds all possible king positions
-  let kingPositions = highlightKing(enemyKing!, gameState);
+  let kingPositions = highlightKing(enemyKing!, gameState, board);
 
   let positionsThatBlockCheck: Position[] = [];
 

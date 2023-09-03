@@ -6,7 +6,7 @@ import { UserInfo } from "../../types/types";
 import { Piece } from "../../client/classes/Piece";
 import { Square } from "../../types/types";
 import { Position } from "../../types/types";
-import { cloneDeep } from "lodash";
+import _, { cloneDeep } from "lodash";
 import {
   findKing,
   determineCheckmate,
@@ -122,10 +122,10 @@ const findKnightPositions = (piece: Piece, board: Square[][]) => {
 
 const highlightKnight = (
   piece: Piece,
-
-  gameState: Game
+  gameState: Game,
+  newBoard: Square[][]
 ) => {
-  let board = cloneDeep(gameState.board);
+  let board = _.cloneDeep(newBoard);
 
   let validMoves = findKnightPositions(piece, board);
 
@@ -170,8 +170,12 @@ const findBishopPositions = (piece: Piece, board: Square[][]) => {
   return validMoves;
 };
 
-const highlightBishop = (piece: Piece, gameState: Game) => {
-  let board = cloneDeep(gameState.board);
+const highlightBishop = (
+  piece: Piece,
+  gameState: Game,
+  newBoard: Square[][]
+) => {
+  let board = _.cloneDeep(newBoard);
 
   let validMoves = findBishopPositions(piece, board);
 
@@ -216,8 +220,8 @@ const findRookPositions = (piece: Piece, board: Square[][]) => {
   return validMoves;
 };
 
-const highlightRook = (piece: Piece, gameState: Game) => {
-  let board = cloneDeep(gameState.board);
+const highlightRook = (piece: Piece, gameState: Game, newBoard: Square[][]) => {
+  let board = _.cloneDeep(newBoard);
 
   let validMoves = findRookPositions(piece, board);
 
@@ -270,10 +274,10 @@ const findQueenPositions = (piece: Piece, board: Square[][]) => {
 
 const highlightQueen = (
   piece: Piece,
-
-  gameState: Game
+  gameState: Game,
+  newBoard: Square[][]
 ) => {
-  let board = cloneDeep(gameState.board);
+  let board = _.cloneDeep(newBoard);
 
   let validMoves = findQueenPositions(piece, board);
 
@@ -312,9 +316,9 @@ const findKingPositions = (piece: Piece, board: Square[][]) => {
   return validMoves;
 };
 
-const highlightKing = (piece: Piece, gameState: Game) => {
-  let board = cloneDeep(gameState.board);
-  const validMoves = findKingPositions(piece, board);
+const highlightKing = (piece: Piece, gameState: Game, newBoard: Square[][]) => {
+  let board = _.cloneDeep(newBoard);
+  let validMoves = findKingPositions(piece, board);
   let safeMoves: Position[] = [];
 
   board[piece.position.row][piece.position.col] = null;
@@ -443,6 +447,8 @@ const findPawnPositions = (
       validMoves.push(leftDiagonal);
     }
 
+    console.log("black validMoves before going in ell passant", validMoves);
+
     //check for el passant
     validMoves = elPassant(piece, validMoves, gameState);
   }
@@ -487,8 +493,8 @@ const checkIsKingInDanger = (
   return safeMoves;
 };
 
-const highlightPawn = (piece: Piece, gameState: Game) => {
-  let board = cloneDeep(gameState.board);
+const highlightPawn = (piece: Piece, gameState: Game, newBoard: Square[][]) => {
+  let board = _.cloneDeep(newBoard);
 
   let validMoves = findPawnPositions(piece, board, gameState);
 
@@ -499,8 +505,8 @@ const highlightPawn = (piece: Piece, gameState: Game) => {
 };
 
 const movePiece = (row: number, col: number, gameState: Game) => {
-  let updatedActivePiece = cloneDeep(gameState.activePiece);
-  let updatedBoard = cloneDeep(gameState.board);
+  let updatedActivePiece = _.cloneDeep(gameState.activePiece);
+  let updatedBoard = _.cloneDeep(gameState.board);
   let promotion = false;
   gameState.checkPositions = [];
   const activePiece = gameState.activePiece;
@@ -590,14 +596,12 @@ const movePiece = (row: number, col: number, gameState: Game) => {
     promotion = true;
   }
 
-  gameState.board = updatedBoard;
   //determine if it is a check or checkmate
   let isCheckmate =
     promotion === false &&
     determineCheckmate(updatedBoard, updatedActivePiece!, gameState);
 
   gameState.movedPieces.push(updatedActivePiece!);
-
   gameState.activePiece = updatedActivePiece;
   if (promotion === false && isCheckmate === false) switchTurns(gameState);
   gameState.availablePositions = [];

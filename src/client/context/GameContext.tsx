@@ -296,6 +296,8 @@ export const GameContextProvider = ({ children }: any) => {
   const updateGameState = (game: Game) => {
     if (game.playerTurn?.playerData?.userId === loggedUserInfo?.userId) {
       setAvailablePositions(game.availablePositions);
+    } else {
+      setAvailablePositions([]);
     }
 
     setBoard(game.board);
@@ -559,6 +561,8 @@ export const GameContextProvider = ({ children }: any) => {
     let board = _.cloneDeep(newBoard);
 
     let validMoves = findPawnPositions(piece, board);
+
+    console.log(validMoves, "validMoves in hilgight pawn");
 
     //validate positions
     validMoves = checkIsKingInDanger(validMoves, piece, board);
@@ -990,8 +994,6 @@ export const GameContextProvider = ({ children }: any) => {
 
     //this will find all possible enemy positions
     let enemyAttackPositions = findPositions(board, playerTurn?.color!);
-
-    console.log(enemyAttackPositions, "enemy attack positions");
 
     //this is stalemate
     if (!kingInCheck && enemyAttackPositions.length === 0) {
