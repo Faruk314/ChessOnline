@@ -3,16 +3,20 @@ import blackRook from "../assets/images/rook_b.png";
 import blackKnight from "../assets/images/knight_b.png";
 import blackBishop from "../assets/images/bishop_b .png";
 import blackQueen from "../assets/images/queen_b.png";
-
 import whiteRook from "../assets/images/rook_w.png";
 import whiteKnight from "../assets/images/knight_w.png";
 import whiteBishop from "../assets/images/bishop_w.png";
 import whiteQueen from "../assets/images/queen_w.png";
 import { GameContext } from "../context/GameContext";
 import classNames from "classnames";
+import { PromotionData } from "../context/MultiplayerContext";
 
-const Promotion = () => {
-  const { playerTurn, promotePawn } = useContext(GameContext);
+interface Props {
+  promotePawn: (data: PromotionData) => void;
+}
+
+const Promotion = ({ promotePawn }: Props) => {
+  const { playerTurn, gameId } = useContext(GameContext);
 
   const promotionPieces =
     playerTurn?.color === "black"
@@ -31,14 +35,21 @@ const Promotion = () => {
 
   return (
     <div
-      className={classNames("fixed p-2 border border-black", {
-        "bottom-10": playerTurn?.color === "black",
-        "top-10": playerTurn?.color === "white",
-      })}
+      className={classNames(
+        "fixed p-2 shadow-lg rounded-md border-black bg-white",
+        {
+          "bottom-10": playerTurn?.color === "black",
+          "top-10": playerTurn?.color === "white",
+        }
+      )}
     >
       <div className="flex">
         {promotionPieces.map((piece, index) => (
-          <button onClick={() => promotePawn(piece.type)} key={index}>
+          <button
+            className="hover:bg-gray-100"
+            onClick={() => promotePawn({ gameId, type: piece.type })}
+            key={index}
+          >
             <img src={piece.image} alt="" />
           </button>
         ))}

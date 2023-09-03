@@ -14,7 +14,7 @@ import blackRook from "../assets/images/rook_b.png";
 import { GameContext } from "../context/GameContext";
 import classNames from "classnames";
 import { Piece } from "../classes/Piece";
-import { Data, MoveData } from "../context/MultiplayerContext";
+import { Data, MoveData, PromotionData } from "../context/MultiplayerContext";
 
 interface Props {
   movePiece: (moveData: MoveData) => Promise<void> | void;

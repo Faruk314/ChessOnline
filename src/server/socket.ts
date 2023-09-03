@@ -9,8 +9,8 @@ import { client } from "./main";
 import { createGame } from "./game/pieceFunctions";
 import { movePiece } from "./game/pieceFunctions";
 import { highlight } from "./game/gameFunctions";
-
 import { Piece } from "../client/classes/Piece.js";
+import { promotePawn } from "./game/specialMoves";
 dotenv.config();
 
 declare module "socket.io" {
@@ -172,6 +172,20 @@ export default function setupSocket() {
         io.to(data.gameId).emit("pieceMoved", gameState);
       }
     );
+
+    socket.on("promotePawn", async (data: { gameId: string; type: string }) => {
+      const gameData = await client.get(data.gameId);
+
+      console.log(data, "uslo u promote pawn");
+
+      let gameState = JSON.parse(gameData!);
+
+      promotePawn(data.type, gameState);
+
+      await client.set(data.gameId, JSON.stringify(gameState));
+
+      io.to(data.gameId).emit("pieceMoved", gameState);
+    });
   });
 
   io.listen(5001);

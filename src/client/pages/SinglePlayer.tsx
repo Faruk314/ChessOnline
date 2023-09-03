@@ -9,8 +9,14 @@ import axios from "axios";
 import Board from "../components/Board";
 
 const SinglePlayer = () => {
-  const { isPromotion, checkmate, stalemate, movePiece, highlight } =
-    useContext(GameContext);
+  const {
+    isPromotion,
+    checkmate,
+    stalemate,
+    movePiece,
+    highlight,
+    promotePawn,
+  } = useContext(GameContext);
 
   return (
     <section className="flex flex-col items-center justify-center h-[100vh] bg-amber-100">
@@ -25,7 +31,7 @@ const SinglePlayer = () => {
         <Player index={0} playerName={"Player One"} />
       </div>
 
-      {isPromotion && <Promotion />}
+      {isPromotion && <Promotion promotePawn={promotePawn} />}
     </section>
   );
 };

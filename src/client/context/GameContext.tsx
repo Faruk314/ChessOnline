@@ -13,7 +13,7 @@ import _, { cloneDeep, find, first, update } from "lodash";
 import { SoundContext } from "./SoundContext";
 import move from "../assets/sounds/move.mp3";
 import axios from "axios";
-import { Data, MoveData } from "./MultiplayerContext";
+import { Data, MoveData, PromotionData } from "./MultiplayerContext";
 import { AuthContext } from "./AuthContext";
 
 interface GameContextProps {
@@ -23,7 +23,7 @@ interface GameContextProps {
   movePiece: (moveData: MoveData) => void;
   playerTurn: Player | null;
   isPromotion: boolean;
-  promotePawn: (type: string) => void;
+  promotePawn: (data: PromotionData) => void;
   checkmate: boolean;
   players: Player[];
   stalemate: boolean;
@@ -39,7 +39,7 @@ export const GameContext = createContext<GameContextProps>({
   movePiece: (moveData) => {},
   playerTurn: null,
   isPromotion: false,
-  promotePawn: (type) => {},
+  promotePawn: (data) => {},
   checkmate: false,
   players: [],
   stalemate: false,
@@ -1036,8 +1036,9 @@ export const GameContextProvider = ({ children }: any) => {
     return false;
   };
 
-  const promotePawn = (type: string) => {
+  const promotePawn = (data: PromotionData) => {
     let newActivePiece: Piece | null = null;
+    const type = data.type;
     const row = activePiece?.position.row;
     const col = activePiece?.position.col;
     const color = activePiece?.color;

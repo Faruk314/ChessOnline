@@ -21,7 +21,8 @@ const Multiplayer = () => {
     getGameStatus,
     updateGameState,
   } = useContext(GameContext);
-  const { movePiece, higlightPiece } = useContext(MultiplayerContext);
+  const { movePiece, higlightPiece, promotePawn } =
+    useContext(MultiplayerContext);
 
   useEffect(() => {
     const retrieveGame = async () => {
@@ -83,7 +84,7 @@ const Multiplayer = () => {
         />
       </div>
 
-      {isPromotion && <Promotion />}
+      {isPromotion && <Promotion promotePawn={promotePawn} />}
     </section>
   );
 };

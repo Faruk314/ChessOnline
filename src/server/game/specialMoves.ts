@@ -5,6 +5,7 @@ import { Game } from "../../types/types";
 import { findAttackedPositions } from "./gameFunctions";
 import { createPawn } from "../../client/classes/Piece";
 import { determineCheckmate, switchTurns } from "./gameFunctions";
+import _, { cloneDeep } from "lodash";
 
 export const castling = (
   safeMoves: Position[],
@@ -144,7 +145,7 @@ export const promotePawn = (type: string, gameState: Game) => {
   const row = gameState.activePiece?.position.row;
   const col = gameState.activePiece?.position.col;
   const color = gameState.activePiece?.color;
-  let newBoard = gameState.board;
+  let newBoard = _.cloneDeep(gameState.board);
 
   if (type === "queen") {
     newActivePiece = createPawn(row!, col!, color!, "queen");
