@@ -9,6 +9,7 @@ import Promotion from "../modals/Promotion";
 import { MultiplayerContext } from "../context/MultiplayerContext";
 import { SocketContext } from "../context/SocketContext";
 import { Game } from "../../types/types";
+import Chat from "../components/Chat";
 
 const Multiplayer = () => {
   const { socket } = useContext(SocketContext);
@@ -67,6 +68,7 @@ const Multiplayer = () => {
     <section className="flex flex-col items-center justify-center h-[100vh] bg-amber-100">
       {checkmate && <Checkmate />}
       {stalemate && <Stalemate />}
+      <Chat />
 
       <div>
         <Player

@@ -15,6 +15,7 @@ import move from "../assets/sounds/move.mp3";
 import axios from "axios";
 import { Data, MoveData, PromotionData } from "./MultiplayerContext";
 import { AuthContext } from "./AuthContext";
+import { Msg } from "../../types/types";
 
 interface GameContextProps {
   board: Square[][];
@@ -30,6 +31,8 @@ interface GameContextProps {
   getGameStatus: () => Promise<void>;
   gameId: string;
   updateGameState: (game: Game) => void;
+  setMessages: React.Dispatch<React.SetStateAction<Msg[]>>;
+  messages: Msg[];
 }
 
 export const GameContext = createContext<GameContextProps>({
@@ -46,6 +49,8 @@ export const GameContext = createContext<GameContextProps>({
   getGameStatus: async () => {},
   gameId: "",
   updateGameState: (game) => {},
+  setMessages: () => {},
+  messages: [],
 });
 
 export const GameContextProvider = ({ children }: any) => {
@@ -66,6 +71,7 @@ export const GameContextProvider = ({ children }: any) => {
     useState<Position | null>(null);
   const [movedPieces, setMovedPieces] = useState<Piece[]>([]);
   const [stalemate, setStalemate] = useState(false);
+  const [messages, setMessages] = useState<Msg[]>([]);
 
   useEffect(() => {
     const initGame = () => {
@@ -300,6 +306,7 @@ export const GameContextProvider = ({ children }: any) => {
       setAvailablePositions([]);
     }
 
+    setMessages(game.messages);
     setBoard(game.board);
     setPlayers(game.players);
     setPlayerTurn(game.playerTurn);
@@ -1214,6 +1221,8 @@ export const GameContextProvider = ({ children }: any) => {
     getGameStatus,
     gameId,
     updateGameState,
+    messages,
+    setMessages,
   };
 
   return (

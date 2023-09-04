@@ -17,6 +17,12 @@ export interface Position {
   type?: string;
 }
 
+export interface Msg {
+  id: string;
+  senderName: string;
+  message: string;
+}
+
 export interface Game {
   gameId: string;
   board: Square[][];
@@ -32,4 +38,5 @@ export interface Game {
   elPassantCaptureMove: Position | null;
   movedPieces: Piece[];
   stalemate: boolean;
+  messages: [];
 }

@@ -32,6 +32,7 @@ export const createGame = async (playerIds: number[], gameId: string) => {
     elPassantCaptureMove: null,
     movedPieces: [],
     stalemate: false,
+    messages: [],
   };
 
   const board = new Array(8).fill(null).map(() => new Array(8).fill(null));

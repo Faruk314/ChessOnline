@@ -11,6 +11,7 @@ import { movePiece } from "./game/pieceFunctions";
 import { highlight } from "./game/gameFunctions";
 import { Piece } from "../client/classes/Piece.js";
 import { promotePawn } from "./game/specialMoves";
+import { Msg } from "../types/types";
 dotenv.config();
 
 declare module "socket.io" {
@@ -155,6 +156,27 @@ export default function setupSocket() {
         await client.set(data.gameId, JSON.stringify(gameState));
 
         io.to(userSocketId).emit("positionsHiglited", gameState);
+      }
+    );
+
+    socket.on(
+      "sendMessage",
+      async (data: { gameId: string; message: string; senderName: string }) => {
+        const msg = {
+          id: uuidv4(),
+          message: data.message,
+          senderName: data.senderName,
+        };
+
+        const gameData = await client.get(data.gameId);
+
+        const gameState = JSON.parse(gameData!);
+
+        gameState.messages.push(msg);
+
+        await client.set(data.gameId, JSON.stringify(gameState));
+
+        io.to(data.gameId).emit("receiveMessage", msg);
       }
     );
 
