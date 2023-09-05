@@ -529,6 +529,10 @@ const movePiece = (row: number, col: number, gameState: Game) => {
   const activePiece = gameState.activePiece;
   const elPassantMove = gameState.elPassantMove;
   const elPassantCaptureMove = gameState.elPassantCaptureMove;
+  const currentPlayerIndex = gameState.players.findIndex(
+    (player) => player.color === activePiece?.color
+  );
+  const updatedPlayers = [...gameState.players];
 
   if (!activePiece) return;
 
@@ -586,13 +590,7 @@ const movePiece = (row: number, col: number, gameState: Game) => {
   const enemyPiece = updatedBoard[row][col];
 
   if (enemyPiece) {
-    const currentPlayerIndex = gameState.players.findIndex(
-      (player) => player.color === activePiece.color
-    );
-    const updatedPlayers = [...gameState.players];
-
     updatedPlayers[currentPlayerIndex].enemyPieces.push(enemyPiece);
-
     gameState.players = updatedPlayers;
   }
 
@@ -604,7 +602,13 @@ const movePiece = (row: number, col: number, gameState: Game) => {
     elPassantMove?.row === row &&
     elPassantMove.col === col
   ) {
+    const piece =
+      updatedBoard[elPassantCaptureMove!.row][elPassantCaptureMove!.col];
+
     updatedBoard[elPassantCaptureMove!.row][elPassantCaptureMove!.col] = null;
+
+    updatedPlayers[currentPlayerIndex].enemyPieces.push(piece!);
+    gameState.players = updatedPlayers;
   }
 
   //determine if it is a promotion
@@ -619,7 +623,8 @@ const movePiece = (row: number, col: number, gameState: Game) => {
     determineCheckmate(updatedBoard, updatedActivePiece!, gameState);
 
   gameState.movedPieces.push(updatedActivePiece!);
-  gameState.activePiece = updatedActivePiece;
+  if (promotion === true) gameState.activePiece = updatedActivePiece;
+  if (promotion === false) gameState.activePiece = null;
   if (promotion === false && isCheckmate === false) switchTurns(gameState);
   gameState.availablePositions = [];
   gameState.board = updatedBoard;

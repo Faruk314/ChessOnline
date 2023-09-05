@@ -303,8 +303,10 @@ export const GameContextProvider = ({ children }: any) => {
 
   const updateGameState = (game: Game) => {
     if (game.playerTurn?.playerData?.userId === loggedUserInfo?.userId) {
+      setActivePiece(game.activePiece);
       setAvailablePositions(game.availablePositions);
     } else {
+      setActivePiece(null);
       setAvailablePositions([]);
     }
 
@@ -312,7 +314,6 @@ export const GameContextProvider = ({ children }: any) => {
     setBoard(game.board);
     setPlayers(game.players);
     setPlayerTurn(game.playerTurn);
-    setActivePiece(game.activePiece);
     setIsPromotion(game.isPromotion);
     setCheckPositions(game.checkPositions);
     setCheckmate(game.checkmate);

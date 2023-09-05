@@ -20,7 +20,7 @@ interface Props {
   image?: string | null;
 }
 
-const Player = ({ index, playerName }: Props) => {
+const Player = ({ index, playerName, image }: Props) => {
   const { players } = useContext(GameContext);
 
   const pawns = players[index]?.enemyPieces.filter(
@@ -50,13 +50,15 @@ const Player = ({ index, playerName }: Props) => {
   return (
     <div className="flex space-x-2">
       <div>
-        <img src={avatar} className="w-[3.5rem] border-black rounded-md"></img>
+        <img
+          src={image || avatar}
+          className="w-[3.5rem] border-black rounded-md"
+        ></img>
       </div>
 
       <div className="flex flex-col">
         <div className="text-[1rem] flex space-x-1 font-bold">
           <h2>{playerName}</h2>
-          <span>(962)</span>
         </div>
         <div className="flex space-x-1">
           <div className="flex">

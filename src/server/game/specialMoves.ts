@@ -171,6 +171,7 @@ export const promotePawn = (type: string, gameState: Game) => {
 
   gameState.board = newBoard;
   gameState.isPromotion = false;
+  gameState.activePiece = null;
   isCheckmate === false && switchTurns(gameState);
 };
 
