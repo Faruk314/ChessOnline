@@ -1086,6 +1086,10 @@ export const GameContextProvider = ({ children }: any) => {
     let promotion = false;
     const row = moveData.row;
     const col = moveData.col;
+    const currentPlayerIndex = players.findIndex(
+      (player) => player.color === activePiece?.color
+    );
+    const updatedPlayers = [...players];
     setCheckPositions([]);
     playSound(move);
 
@@ -1145,13 +1149,7 @@ export const GameContextProvider = ({ children }: any) => {
     const enemyPiece = updatedBoard[row][col];
 
     if (enemyPiece) {
-      const currentPlayerIndex = players.findIndex(
-        (player) => player.color === activePiece.color
-      );
-      const updatedPlayers = [...players];
-
       updatedPlayers[currentPlayerIndex].enemyPieces.push(enemyPiece);
-
       setPlayers(updatedPlayers);
     }
 
@@ -1163,7 +1161,12 @@ export const GameContextProvider = ({ children }: any) => {
       elPassantMove?.row === row &&
       elPassantMove.col === col
     ) {
+      const piece =
+        updatedBoard[elPassantCaptureMove?.row!][elPassantCaptureMove?.col!];
+
       updatedBoard[elPassantCaptureMove!.row][elPassantCaptureMove!.col] = null;
+      updatedPlayers[currentPlayerIndex].enemyPieces.push(piece!);
+      setPlayers(updatedPlayers);
     }
 
     //determine if it is a promotion
@@ -1178,7 +1181,11 @@ export const GameContextProvider = ({ children }: any) => {
       determineCheckmate(updatedBoard, updatedActivePiece!);
 
     setMovedPieces((prev) => [...prev, updatedActivePiece!]);
-    setActivePiece(updatedActivePiece);
+
+    if (promotion === true) setActivePiece(updatedActivePiece);
+
+    if (promotion === false) setActivePiece(null);
+
     if (promotion === false && isCheckmate === false) switchTurns();
     setAvailablePositions([]);
     setBoard(updatedBoard);
