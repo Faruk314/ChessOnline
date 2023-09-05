@@ -6,6 +6,8 @@ interface AuthContextProps {
   setLoggedUserInfo: React.Dispatch<React.SetStateAction<UserInfo | null>>;
   isLoggedIn: boolean;
   setIsLoggedIn: React.Dispatch<React.SetStateAction<boolean>>;
+  openChangeAvatar: boolean;
+  setOpenChangeAvatar: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export const AuthContext = createContext<AuthContextProps>({
@@ -13,11 +15,14 @@ export const AuthContext = createContext<AuthContextProps>({
   setLoggedUserInfo: () => {},
   isLoggedIn: false,
   setIsLoggedIn: () => {},
+  openChangeAvatar: false,
+  setOpenChangeAvatar: () => {},
 });
 
 export const AuthContextProvider = ({ children }: any) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [loggedUserInfo, setLoggedUserInfo] = useState<UserInfo | null>(null);
+  const [openChangeAvatar, setOpenChangeAvatar] = useState(false);
 
   console.log(loggedUserInfo, "logged user info");
 
@@ -25,7 +30,14 @@ export const AuthContextProvider = ({ children }: any) => {
 
   return (
     <AuthContext.Provider
-      value={{ loggedUserInfo, setLoggedUserInfo, isLoggedIn, setIsLoggedIn }}
+      value={{
+        loggedUserInfo,
+        setLoggedUserInfo,
+        isLoggedIn,
+        setIsLoggedIn,
+        openChangeAvatar,
+        setOpenChangeAvatar,
+      }}
     >
       {children}
     </AuthContext.Provider>

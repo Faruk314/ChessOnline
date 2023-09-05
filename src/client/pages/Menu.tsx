@@ -8,11 +8,15 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import FindMatch from "../modals/FindMatch";
 import { SocketContext } from "../context/SocketContext";
+import UserInfo from "../components/UserInfo";
+import ChangeAvatar from "../modals/ChangeAvatar";
+import { AuthContext } from "../context/AuthContext";
 
 const Menu = () => {
   const { socket } = useContext(SocketContext);
   const { playSound } = useContext(SoundContext);
   const [openFindMatch, setOpenFindMatch] = useState(false);
+  const { openChangeAvatar } = useContext(AuthContext);
   const navigate = useNavigate();
 
   const logoutHandler = async () => {
@@ -28,9 +32,11 @@ const Menu = () => {
   return (
     <section className="h-[100vh] bg-amber-100 text-white font-bold flex flex-col justify-center items-center">
       <div className="fixed top-0 flex justify-between w-full p-4">
-        <div>
-          <SoundButton />
-        </div>
+        <SoundButton />
+      </div>
+
+      <div className="fixed top-0 right-0 p-4">
+        <UserInfo />
       </div>
 
       <div className="fixed top-[10rem]">
@@ -69,6 +75,7 @@ const Menu = () => {
       </div>
 
       {openFindMatch && <FindMatch setOpenFindMatch={setOpenFindMatch} />}
+      {openChangeAvatar && <ChangeAvatar />}
     </section>
   );
 };
