@@ -3,7 +3,7 @@ import query from "../db";
 import { client } from "../main";
 
 export const retrieveGameStatus = asyncHandler(async (req, res) => {
-  const userId = 2;
+  const userId = req.user?.userId;
 
   let q = "SELECT `gameId` FROM games WHERE `playerOne` = ? OR `playerTwo` = ?";
 
@@ -18,7 +18,7 @@ export const retrieveGameStatus = asyncHandler(async (req, res) => {
 
 export const changeAvatar = asyncHandler(async (req, res) => {
   const { avatar } = req.body;
-  const userId = 2;
+  const userId = req.user?.userId;
 
   try {
     let q = "UPDATE users SET `image`= ? WHERE `userId`= ?";

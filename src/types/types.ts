@@ -1,6 +1,16 @@
 import { Piece } from "../client/classes/Piece";
 import { Player } from "../client/classes/Player";
 
+declare global {
+  namespace Express {
+    interface Request {
+      user?: {
+        userId: number;
+      };
+    }
+  }
+}
+
 export type Square = Piece | null;
 
 export interface UserInfo {
