@@ -33,6 +33,7 @@ interface GameContextProps {
   updateGameState: (game: Game) => void;
   setMessages: React.Dispatch<React.SetStateAction<Msg[]>>;
   messages: Msg[];
+  activePiece: Piece | null;
 }
 
 export const GameContext = createContext<GameContextProps>({
@@ -51,6 +52,7 @@ export const GameContext = createContext<GameContextProps>({
   updateGameState: (game) => {},
   setMessages: () => {},
   messages: [],
+  activePiece: null,
 });
 
 export const GameContextProvider = ({ children }: any) => {
@@ -1223,6 +1225,7 @@ export const GameContextProvider = ({ children }: any) => {
     updateGameState,
     messages,
     setMessages,
+    activePiece,
   };
 
   return (

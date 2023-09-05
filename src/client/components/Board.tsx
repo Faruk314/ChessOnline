@@ -22,8 +22,12 @@ interface Props {
 }
 
 const Board = ({ movePiece, highlight }: Props) => {
-  const { board, availablePositions, playerTurn, gameId } =
+  const { board, availablePositions, playerTurn, gameId, activePiece } =
     useContext(GameContext);
+
+  const handleDragStart = (e: React.DragEvent<HTMLButtonElement>) => {
+    console.log("drag");
+  };
 
   return (
     <div className="my-2 shadow-[0_3px_10px_rgb(0,0,0,0.4)]">
@@ -50,6 +54,9 @@ const Board = ({ movePiece, highlight }: Props) => {
                           (cellIndex + 1) % 2 === 0) ||
                         ((rowIndex + 1) % 2 === 0 && (cellIndex + 1) % 2 !== 0),
                       "cursor-pointer": isAvailablePosition,
+                      "bg-green-400":
+                        activePiece?.position.row === rowIndex &&
+                        activePiece.position.col === cellIndex,
                     }
                   )}
                 >
@@ -59,9 +66,10 @@ const Board = ({ movePiece, highlight }: Props) => {
                   {isAvailablePosition && cell && (
                     <div className="absolute w-[5rem] h-[5rem] border-2 border-black rounded-full"></div>
                   )}
-                  {`${rowIndex}${cellIndex}`}
+                  {/* {`${rowIndex}${cellIndex}`} */}
                   {cell?.color === "white" ? (
                     <button
+                      onDragStart={handleDragStart}
                       onClick={() =>
                         playerTurn?.color === "white" &&
                         highlight({ piece: cell, gameId })
