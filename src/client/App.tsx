@@ -9,6 +9,7 @@ import { SocketContext } from "./context/SocketContext";
 import Multiplayer from "./pages/Multiplayer";
 import SinglePlayer from "./pages/SinglePlayer";
 import { GameContext } from "./context/GameContext";
+import OpponentLeft from "./modals/OpponentLeft";
 
 axios.defaults.withCredentials = true;
 // axios.defaults.baseURL = process.env.FRONTEND_URL;
@@ -18,6 +19,7 @@ function App() {
   const { gameId } = useContext(GameContext);
   const { setIsLoggedIn, setLoggedUserInfo, isLoggedIn } =
     useContext(AuthContext);
+  const [openOpponentLeft, setOpenOpponentLeft] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -56,14 +58,30 @@ function App() {
     };
   }, [socket, navigate]);
 
+  useEffect(() => {
+    socket?.on("opponentResigned", () => {
+      setOpenOpponentLeft(true);
+      navigate("/menu");
+    });
+
+    return () => {
+      socket?.off("opponentResigned");
+    };
+  }, [socket, navigate]);
+
   return (
-    <Routes>
-      <Route path="/" element={<Login />} />
-      <Route path="/register" element={<Register />} />
-      <Route path="/menu" element={<Menu />} />
-      <Route path="/multiplayer" element={<Multiplayer />} />
-      <Route path="/singlePlayer" element={<SinglePlayer />} />
-    </Routes>
+    <div>
+      <Routes>
+        <Route path="/" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/menu" element={<Menu />} />
+        <Route path="/multiplayer" element={<Multiplayer />} />
+        <Route path="/singlePlayer" element={<SinglePlayer />} />
+      </Routes>
+      {openOpponentLeft && (
+        <OpponentLeft setOpenOpponentLeft={setOpenOpponentLeft} />
+      )}
+    </div>
   );
 }
 

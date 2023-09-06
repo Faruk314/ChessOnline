@@ -208,6 +208,20 @@ export default function setupSocket() {
 
       io.to(data.gameId).emit("pieceMoved", gameState);
     });
+
+    socket.on("resign", async (gameId: string) => {
+      try {
+        let q = "DELETE FROM games WHERE `gameId`= ?";
+
+        await query(q, [gameId]);
+        await client.del(gameId);
+      } catch (error) {
+        throw new Error("could not delete game state");
+      }
+      socket.leave(gameId);
+
+      io.to(gameId).emit("opponentResigned");
+    });
   });
 
   io.listen(5001);

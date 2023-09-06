@@ -11,10 +11,10 @@ const SoundButton = () => {
       className="flex items-center justify-center p-2 border rounded-md outline-none bg-amber-900"
     >
       {isSoundEnabled && (
-        <ImVolumeMute size={25} className="w-full text-white outline-none" />
+        <ImVolumeMute size={20} className="w-full text-white outline-none" />
       )}
       {!isSoundEnabled && (
-        <ImVolumeMute2 size={25} className="w-full text-white outline-none" />
+        <ImVolumeMute2 size={20} className="w-full text-white outline-none" />
       )}
     </button>
   );
