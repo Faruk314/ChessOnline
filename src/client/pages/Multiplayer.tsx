@@ -10,10 +10,14 @@ import { MultiplayerContext } from "../context/MultiplayerContext";
 import { SocketContext } from "../context/SocketContext";
 import { Game } from "../../types/types";
 import Chat from "../components/Chat";
+import { AiFillFlag } from "react-icons/ai";
+import SoundButton from "../components/SoundButton";
+import Resign from "../modals/Resign";
 
 const Multiplayer = () => {
   const { socket } = useContext(SocketContext);
   const [isLoading, setIsLoading] = useState(true);
+  const [openResignModal, setOpenResignModal] = useState(false);
   const {
     isPromotion,
     checkmate,
@@ -68,6 +72,18 @@ const Multiplayer = () => {
     <section className="flex flex-col items-center justify-center h-[100vh] bg-amber-100">
       {checkmate && <Checkmate />}
       {stalemate && <Stalemate />}
+      {openResignModal && <Resign setOpenResignModal={setOpenResignModal} />}
+
+      <div className="fixed flex space-x-2 top-4 right-4">
+        <SoundButton />
+        <button
+          onClick={() => setOpenResignModal(true)}
+          className="p-2 text-white rounded-md bg-amber-900"
+        >
+          <AiFillFlag size={20} />
+        </button>
+      </div>
+
       <Chat />
 
       <div>
