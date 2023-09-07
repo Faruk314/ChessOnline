@@ -24,10 +24,8 @@ interface Props {
 const Board = ({ movePiece, highlight }: Props) => {
   const { board, availablePositions, playerTurn, gameId, activePiece } =
     useContext(GameContext);
-
-  const handleDragStart = (e: React.DragEvent<HTMLButtonElement>) => {
-    console.log("drag");
-  };
+  const letters = ["a", "b", "c", "d", "e", "f", "g", "h"];
+  const numbers = [1, 2, 3, 4, 5, 6, 7, 8].reverse();
 
   return (
     <div className="my-2 shadow-[0_3px_10px_rgb(0,0,0,0.4)]">
@@ -47,7 +45,7 @@ const Board = ({ movePiece, highlight }: Props) => {
                   }
                   key={cellIndex}
                   className={classNames(
-                    "flex items-center justify-center w-[5.8rem] h-[5.8rem]",
+                    "relative flex items-center justify-center w-10 h-10 md:w-[5.8rem] md:h-[5.8rem]",
                     {
                       "bg-amber-900":
                         ((rowIndex + 1) % 2 !== 0 &&
@@ -63,13 +61,25 @@ const Board = ({ movePiece, highlight }: Props) => {
                   {isAvailablePosition && cell === null && (
                     <div className="w-5 h-5 bg-black rounded-full"></div>
                   )}
+
+                  {rowIndex === 7 && (
+                    <span className="absolute bottom-0 right-2">
+                      {letters[cellIndex]}
+                    </span>
+                  )}
+
+                  {cellIndex === 0 && (
+                    <span className="absolute bottom-0 left-2">
+                      {numbers[rowIndex]}
+                    </span>
+                  )}
+
                   {isAvailablePosition && cell && (
                     <div className="absolute w-[5rem] h-[5rem] border-2 border-black rounded-full"></div>
                   )}
                   {/* {`${rowIndex}${cellIndex}`} */}
                   {cell?.color === "white" ? (
                     <button
-                      onDragStart={handleDragStart}
                       onClick={() =>
                         playerTurn?.color === "white" &&
                         highlight({ piece: cell, gameId })
