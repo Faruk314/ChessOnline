@@ -22,8 +22,8 @@ const Chat = () => {
   }, [socket]);
 
   return (
-    <div className="fixed flex flex-col space-y-2 bottom-4 right-4">
-      <div className="border-[0.2rem] overflow-y-auto rounded-md border-amber-900 h-[20rem] pt-1">
+    <div className="fixed flex flex-col space-y-2 bottom-4 md:right-4">
+      <div className="border-[0.2rem] overflow-y-auto rounded-md border-amber-900 h-[10rem] md:h-[20rem] pt-1">
         {messages.map((message) => (
           <div key={message.id} className="px-2">
             <div className="flex space-x-1">

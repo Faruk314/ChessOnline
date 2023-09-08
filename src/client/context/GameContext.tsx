@@ -401,7 +401,6 @@ export const GameContextProvider = ({ children }: any) => {
           (secondPosCol - piece.position.col === 1 ||
             secondPosCol - piece.position.col === -1)
         ) {
-          console.log("Uslo u white");
           elPassantMove = {
             row: 2,
             col: firstPosCol,
@@ -571,8 +570,6 @@ export const GameContextProvider = ({ children }: any) => {
     let board = _.cloneDeep(newBoard);
 
     let validMoves = findPawnPositions(piece, board);
-
-    console.log(validMoves, "validMoves in hilgight pawn");
 
     //validate positions
     validMoves = checkIsKingInDanger(validMoves, piece, board);
@@ -955,8 +952,6 @@ export const GameContextProvider = ({ children }: any) => {
     }
 
     board[piece.position.row][piece.position.col] = piece;
-
-    console.log(board, "board in higlight king");
 
     //check for castling moves
     safeMoves = castling(safeMoves, piece, board);

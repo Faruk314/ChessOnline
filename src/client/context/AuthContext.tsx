@@ -24,10 +24,6 @@ export const AuthContextProvider = ({ children }: any) => {
   const [loggedUserInfo, setLoggedUserInfo] = useState<UserInfo | null>(null);
   const [openChangeAvatar, setOpenChangeAvatar] = useState(false);
 
-  console.log(loggedUserInfo, "logged user info");
-
-  console.log("isLoggedIn auth context", isLoggedIn);
-
   return (
     <AuthContext.Provider
       value={{

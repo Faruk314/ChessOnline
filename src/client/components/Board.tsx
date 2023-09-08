@@ -27,6 +27,32 @@ const Board = ({ movePiece, highlight }: Props) => {
   const letters = ["a", "b", "c", "d", "e", "f", "g", "h"];
   const numbers = [1, 2, 3, 4, 5, 6, 7, 8].reverse();
 
+  const handleDragStart = (e: any, data: Data) => {
+    e.dataTransfer.effectAllowed = "move";
+    highlight(data);
+    setTimeout(() => {
+      e.target.style.display = "none";
+    });
+  };
+
+  const handleDragEnd = (e: any) => {
+    e.target.style.display = "block";
+  };
+
+  const handleDragOver = (e: any) => {
+    e.preventDefault();
+  };
+
+  const handleDrop = (e: any, moveData: MoveData) => {
+    const canMove = availablePositions.find(
+      (pos) => pos.col === moveData.col && pos.row === moveData.row
+    );
+
+    if (canMove) {
+      return movePiece(moveData);
+    }
+  };
+
   return (
     <div className="my-2 shadow-[0_3px_10px_rgb(0,0,0,0.4)]">
       {board.map((row, rowIndex) => {
@@ -39,6 +65,11 @@ const Board = ({ movePiece, highlight }: Props) => {
 
               return (
                 <div
+                  onDragOver={(e) => handleDragOver(e)}
+                  onDrop={(e) =>
+                    isAvailablePosition &&
+                    handleDrop(e, { row: rowIndex, col: cellIndex, gameId })
+                  }
                   onClick={() =>
                     isAvailablePosition &&
                     movePiece({ row: rowIndex, col: cellIndex, gameId })
@@ -63,13 +94,13 @@ const Board = ({ movePiece, highlight }: Props) => {
                   )}
 
                   {rowIndex === 7 && (
-                    <span className="absolute bottom-0 right-2">
+                    <span className="absolute font-bold bottom-1 right-2">
                       {letters[cellIndex]}
                     </span>
                   )}
 
                   {cellIndex === 0 && (
-                    <span className="absolute bottom-0 left-2">
+                    <span className="absolute font-bold top-2 left-2">
                       {numbers[rowIndex]}
                     </span>
                   )}
@@ -79,7 +110,14 @@ const Board = ({ movePiece, highlight }: Props) => {
                   )}
                   {/* {`${rowIndex}${cellIndex}`} */}
                   {cell?.color === "white" ? (
-                    <button
+                    <div
+                      className="cursor-grab"
+                      draggable
+                      onDragStart={(e) => {
+                        playerTurn?.color === "white" &&
+                          handleDragStart(e, { piece: cell, gameId });
+                      }}
+                      onDragEnd={handleDragEnd}
                       onClick={() =>
                         playerTurn?.color === "white" &&
                         highlight({ piece: cell, gameId })
@@ -91,9 +129,16 @@ const Board = ({ movePiece, highlight }: Props) => {
                       {cell.type === "bishop" && <img src={whiteBishop} />}
                       {cell.type === "knight" && <img src={whiteKnight} />}
                       {cell.type === "rook" && <img src={whiteRook} />}
-                    </button>
+                    </div>
                   ) : (
-                    <button
+                    <div
+                      className="cursor-grab"
+                      draggable
+                      onDragStart={(e) => {
+                        playerTurn?.color === "black" &&
+                          handleDragStart(e, { piece: cell!, gameId });
+                      }}
+                      onDragEnd={handleDragEnd}
                       onClick={() =>
                         playerTurn?.color === "black" &&
                         highlight({ piece: cell!, gameId })
@@ -105,7 +150,7 @@ const Board = ({ movePiece, highlight }: Props) => {
                       {cell?.type === "bishop" && <img src={blackBishop} />}
                       {cell?.type === "knight" && <img src={blackKnight} />}
                       {cell?.type === "rook" && <img src={blackRook} />}
-                    </button>
+                    </div>
                   )}
                 </div>
               );

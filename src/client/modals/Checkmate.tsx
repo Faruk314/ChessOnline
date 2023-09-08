@@ -5,7 +5,7 @@ const Checkmate = () => {
   const { playerTurn } = useContext(GameContext);
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center">
+    <div className="fixed inset-0 z-20 flex items-center justify-center">
       <div className="flex flex-col px-10 py-5 bg-white border rounded-lg shadow-lg">
         <div className="text-center">
           <h2>Checkmate!</h2>

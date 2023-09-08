@@ -35,7 +35,7 @@ const Menu = () => {
         <SoundButton />
       </div>
 
-      <div className="fixed top-0 right-0 p-4">
+      <div className="fixed top-4 right-4">
         <UserInfo />
       </div>
 

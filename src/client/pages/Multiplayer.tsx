@@ -50,8 +50,6 @@ const Multiplayer = () => {
 
   useEffect(() => {
     socket?.on("pieceMoved", (gameState: Game) => {
-      console.log(gameState, "gameState");
-
       updateGameState(gameState);
     });
 
