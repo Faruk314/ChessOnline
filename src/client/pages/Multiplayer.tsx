@@ -13,9 +13,11 @@ import Chat from "../components/Chat";
 import { AiFillFlag } from "react-icons/ai";
 import SoundButton from "../components/SoundButton";
 import Resign from "../modals/Resign";
+import { BsFillChatLeftDotsFill } from "react-icons/bs";
 
 const Multiplayer = () => {
   const { socket } = useContext(SocketContext);
+  const [openChat, setOpenChat] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [openResignModal, setOpenResignModal] = useState(false);
   const {
@@ -82,7 +84,18 @@ const Multiplayer = () => {
         </button>
       </div>
 
-      <Chat />
+      {!openChat && (
+        <div className="fixed flex items-center justify-center bottom-4 right-4">
+          <button
+            onClick={() => setOpenChat(true)}
+            className="p-2 text-white rounded-md bg-amber-900"
+          >
+            <BsFillChatLeftDotsFill size={20} />
+          </button>
+        </div>
+      )}
+
+      {openChat && <Chat setOpenChat={setOpenChat} />}
 
       <div>
         <Player
