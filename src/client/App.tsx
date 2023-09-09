@@ -10,16 +10,18 @@ import Multiplayer from "./pages/Multiplayer";
 import SinglePlayer from "./pages/SinglePlayer";
 import { GameContext } from "./context/GameContext";
 import OpponentLeft from "./modals/OpponentLeft";
+import Draw from "./modals/Draw";
 
 axios.defaults.withCredentials = true;
 // axios.defaults.baseURL = process.env.FRONTEND_URL;
 
 function App() {
   const { socket } = useContext(SocketContext);
-  const { gameId } = useContext(GameContext);
+  const { gameId, setDrawOffered } = useContext(GameContext);
   const { setIsLoggedIn, setLoggedUserInfo, isLoggedIn } =
     useContext(AuthContext);
   const [openOpponentLeft, setOpenOpponentLeft] = useState(false);
+  const [openDrawModal, setOpenDrawModal] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -69,6 +71,18 @@ function App() {
     };
   }, [socket, navigate]);
 
+  useEffect(() => {
+    socket?.on("draw", () => {
+      setOpenDrawModal(true);
+      setDrawOffered(false);
+      navigate("/menu");
+    });
+
+    return () => {
+      socket?.off("draw");
+    };
+  }, [socket, navigate]);
+
   return (
     <div>
       <Routes>
@@ -81,6 +95,7 @@ function App() {
       {openOpponentLeft && (
         <OpponentLeft setOpenOpponentLeft={setOpenOpponentLeft} />
       )}
+      {openDrawModal && <Draw setOpenDrawModal={setOpenDrawModal} />}
     </div>
   );
 }

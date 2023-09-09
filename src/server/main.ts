@@ -9,6 +9,7 @@ import cors from "cors";
 import http from "http";
 import setupSocket from "./socket";
 import { Redis } from "ioredis";
+
 dotenv.config();
 
 const app = express();

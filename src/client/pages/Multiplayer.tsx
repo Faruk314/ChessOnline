@@ -14,6 +14,8 @@ import { AiFillFlag } from "react-icons/ai";
 import SoundButton from "../components/SoundButton";
 import Resign from "../modals/Resign";
 import { BsFillChatLeftDotsFill } from "react-icons/bs";
+import DrawOffer from "../modals/DrawOffer";
+import { AuthContext } from "../context/AuthContext";
 
 const Multiplayer = () => {
   const { socket } = useContext(SocketContext);
@@ -27,9 +29,28 @@ const Multiplayer = () => {
     players,
     getGameStatus,
     updateGameState,
+    setDrawOffered,
+    drawOffered,
+    gameId,
+    setOpenDrawOffer,
+    openDrawOffer,
   } = useContext(GameContext);
-  const { movePiece, higlightPiece, promotePawn } =
+  const { movePiece, higlightPiece, promotePawn, offerDraw } =
     useContext(MultiplayerContext);
+  const { loggedUserInfo } = useContext(AuthContext);
+
+  const handleDrawOffer = () => {
+    const opponentId = players.find(
+      (player) => player.playerData?.userId !== loggedUserInfo?.userId
+    )?.playerData?.userId;
+
+    console.log(opponentId, "opponentId");
+
+    if (opponentId) {
+      offerDraw(opponentId, gameId);
+      setDrawOffered(true);
+    }
+  };
 
   useEffect(() => {
     const retrieveGame = async () => {
@@ -39,6 +60,26 @@ const Multiplayer = () => {
 
     retrieveGame();
   }, []);
+
+  useEffect(() => {
+    socket?.on("drawRejected", () => {
+      setDrawOffered(false);
+    });
+
+    return () => {
+      socket?.off("drawRejected");
+    };
+  }, [socket]);
+
+  useEffect(() => {
+    socket?.on("drawOffered", () => {
+      setOpenDrawOffer(true);
+    });
+
+    return () => {
+      socket?.off("drawOffered");
+    };
+  }, [socket]);
 
   useEffect(() => {
     socket?.on("positionsHiglited", (gameState: Game) => {
@@ -73,8 +114,16 @@ const Multiplayer = () => {
       {checkmate && <Checkmate />}
       {stalemate && <Stalemate />}
       {openResignModal && <Resign setOpenResignModal={setOpenResignModal} />}
+      {openDrawOffer && <DrawOffer setOpenDrawOffer={setOpenDrawOffer} />}
 
       <div className="fixed flex space-x-2 top-4 right-4">
+        <button
+          disabled={drawOffered || openDrawOffer}
+          onClick={handleDrawOffer}
+          className="p-2 font-bold text-white rounded-md bg-amber-900 disabled:text-gray-300 disabled:bg-gray-400"
+        >
+          {drawOffered ? "draw offered" : "Offer draw"}
+        </button>
         <SoundButton />
         <button
           onClick={() => setOpenResignModal(true)}

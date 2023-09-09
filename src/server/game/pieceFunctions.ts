@@ -16,6 +16,130 @@ import {
 import { castling } from "./specialMoves";
 import { elPassant } from "./specialMoves";
 
+//checkmate situation 1
+// if (row === 7 && col === 0) {
+//   board[row][col] = createPawn(row, col, "white", "rook");
+// }
+// if (row === 0 && col === 3) {
+//   board[row][col] = createPawn(row, col, "black", "king");
+// }
+// if (row === 1 && col === 5) {
+//   board[row][col] = createPawn(row, col, "white", "rook");
+// }
+//checkmate situation 2
+// if (row === 0 && col === 7) {
+//   board[row][col] = createPawn(row, col, "black", "king");
+// }
+// if (row === 1 && col === 6) {
+//   board[row][col] = createPawn(row, col, "black", "pawn");
+// }
+// if (row === 1 && col === 7) {
+//   board[row][col] = createPawn(row, col, "black", "pawn");
+// }
+// if (row === 5 && col === 0) {
+//   board[row][col] = createPawn(row, col, "white", "queen");
+// }
+//checkmate situation 3
+// if (row === 7 && col === 0) {
+//   board[row][col] = createPawn(row, col, "white", "queen");
+// }
+// if (row === 0 && col === 3) {
+//   board[row][col] = createPawn(row, col, "black", "king");
+// }
+// if (row === 1 && col === 5) {
+//   board[row][col] = createPawn(row, col, "white", "queen");
+// }
+//checkmate situation 4 //
+// if (row === 0 && col === 0) {
+//   board[row][col] = createPawn(row, col, "black", "king");
+// }
+// if (row === 2 && col === 1) {
+//   board[row][col] = createPawn(row, col, "white", "king");
+// }
+// if (row === 2 && col === 3) {
+//   board[row][col] = createPawn(row, col, "white", "bishop");
+// }
+// if (row === 1 && col === 7) {
+//   board[row][col] = createPawn(row, col, "white", "bishop");
+// }
+//checkmate situation 5
+// if (row === 5 && col === 0) {
+//   board[row][col] = createPawn(row, col, "white", "queen");
+// }
+// if (row === 1 && col === 6) {
+//   board[row][col] = createPawn(row, col, "black", "pawn");
+// }
+// if (row === 2 && col === 6) {
+//   board[row][col] = createPawn(row, col, "black", "pawn");
+// }
+// if (row === 0 && col === 7) {
+//   board[row][col] = createPawn(row, col, "black", "king");
+// }
+// if (row === 1 && col === 4) {
+//   board[row][col] = createPawn(row, col, "white", "knight");
+// }
+//checkmate situation 6
+// if (row === 0 && col === 3) {
+//   board[row][col] = createPawn(row, col, "black", "queen");
+// }
+// if (row === 0 && col === 4) {
+//   board[row][col] = createPawn(row, col, "black", "king");
+// }
+// if (row === 0 && col === 5) {
+//   board[row][col] = createPawn(row, col, "black", "rook");
+// }
+// if (row === 1 && col === 3) {
+//   board[row][col] = createPawn(row, col, "black", "pawn");
+// }
+// if (row === 1 && col === 4) {
+//   board[row][col] = createPawn(row, col, "black", "knight");
+// }
+// if (row === 1 && col === 5) {
+//   board[row][col] = createPawn(row, col, "black", "pawn");
+// }
+// if (row === 4 && col === 2) {
+//   board[row][col] = createPawn(row, col, "white", "knight");
+// }
+//checkmate situation 7 ///
+// if (row === 0 && col === 3) {
+//   board[row][col] = createPawn(row, col, "black", "queen");
+// }
+// if (row === 0 && col === 4) {
+//   board[row][col] = createPawn(row, col, "black", "king");
+// }
+// if (row === 1 && col === 4) {
+//   board[row][col] = createPawn(row, col, "black", "pawn");
+// }
+// if (row === 1 && col === 3) {
+//   board[row][col] = createPawn(row, col, "black", "knight");
+// }
+// if (row === 4 && col === 4) {
+//   board[row][col] = createPawn(row, col, "white", "knight");
+// }
+// if (row === 7 && col === 3) {
+//   board[row][col] = createPawn(row, col, "white", "queen");
+// }
+// if (row === 0 && col === 5) {
+//   board[row][col] = createPawn(row, col, "black", "bishop");
+// }
+// if (row === 1 && col === 5) {
+//   board[row][col] = createPawn(row, col, "black", "pawn");
+// }
+// if (row === 0 && col === 0) {
+//   board[row][col] = createPawn(row, col, "black", "pawn");
+// }
+//situation 8
+// if (row === 1 && col === 1)
+//   board[row][col] = createPawn(row, col, "black", "pawn");
+// if (row === 1 && col === 2)
+//   board[row][col] = createPawn(row, col, "black", "pawn");
+// if (row === 1 && col === 3)
+//   board[row][col] = createPawn(row, col, "black", "pawn");
+// if (row === 1 && col === 7)
+//   board[row][col] = createPawn(row, col, "black", "pawn");
+// if (row === 0 && col === 2)
+//   board[row][col] = createPawn(row, col, "black", "king");
+
 export const createGame = async (playerIds: number[], gameId: string) => {
   let game: Game = {
     gameId: gameId,
@@ -33,54 +157,55 @@ export const createGame = async (playerIds: number[], gameId: string) => {
     movedPieces: [],
     stalemate: false,
     messages: [],
+    drawOffererId: null,
   };
 
   const board = new Array(8).fill(null).map(() => new Array(8).fill(null));
 
   for (let row = 0; row < 8; row++) {
     for (let col = 0; col < 8; col++) {
-      if (row === 7 && col === 5) {
-        board[row][col] = createPawn(row, col, "white", "pawn");
-      }
+      // if (row === 7 && col === 5) {
+      //   board[row][col] = createPawn(row, col, "white", "pawn");
+      // }
 
-      if (row === 1 && col === 1)
-        board[row][col] = createPawn(row, col, "black", "pawn");
-      if (row === 1 && col === 2)
-        board[row][col] = createPawn(row, col, "black", "pawn");
-      if (row === 1 && col === 3)
-        board[row][col] = createPawn(row, col, "black", "pawn");
-      if (row === 1 && col === 7)
-        board[row][col] = createPawn(row, col, "black", "pawn");
-      if (row === 0 && col === 2)
-        board[row][col] = createPawn(row, col, "black", "king");
+      // if (row === 1 && col === 1)
+      //   board[row][col] = createPawn(row, col, "black", "pawn");
+      // if (row === 1 && col === 2)
+      //   board[row][col] = createPawn(row, col, "black", "pawn");
+      // if (row === 1 && col === 3)
+      //   board[row][col] = createPawn(row, col, "black", "pawn");
+      // if (row === 1 && col === 7)
+      //   board[row][col] = createPawn(row, col, "black", "pawn");
+      // if (row === 0 && col === 2)
+      //   board[row][col] = createPawn(row, col, "black", "king");
 
       //importnant
-      // if (row === 6) board[row][col] = createPawn(row, col, "white", "pawn");
-      // if (row === 7) {
-      //   if (col === 0)
-      //     board[row][col] = createPawn(row, col, "white", "rook", "queenSide");
-      //   if (col === 7)
-      //     board[row][col] = createPawn(row, col, "white", "rook", "kingSide");
-      //   board[row][4] = createPawn(row, 4, "white", "king");
-      //   board[row][3] = createPawn(row, 3, "white", "queen");
-      //   if (col === 1 || col === 6)
-      //     board[row][col] = createPawn(row, col, "white", "knight");
-      //   if (col === 2 || col === 5)
-      //     board[row][col] = createPawn(row, col, "white", "bishop");
-      // }
-      // if (row === 1) board[row][col] = createPawn(row, col, "black", "pawn");
-      // if (row === 0) {
-      //   if (col === 0)
-      //     board[row][col] = createPawn(row, col, "black", "rook", "queenSide");
-      //   if (col === 7)
-      //     board[row][col] = createPawn(row, col, "black", "rook", "kingSide");
-      //   board[row][4] = createPawn(row, 4, "black", "king");
-      //   board[row][3] = createPawn(row, 3, "black", "queen");
-      //   if (col === 1 || col === 6)
-      //     board[row][col] = createPawn(row, col, "black", "knight");
-      //   if (col === 2 || col === 5)
-      //     board[row][col] = createPawn(row, col, "black", "bishop");
-      // }
+      if (row === 6) board[row][col] = createPawn(row, col, "white", "pawn");
+      if (row === 7) {
+        if (col === 0)
+          board[row][col] = createPawn(row, col, "white", "rook", "queenSide");
+        if (col === 7)
+          board[row][col] = createPawn(row, col, "white", "rook", "kingSide");
+        board[row][4] = createPawn(row, 4, "white", "king");
+        board[row][3] = createPawn(row, 3, "white", "queen");
+        if (col === 1 || col === 6)
+          board[row][col] = createPawn(row, col, "white", "knight");
+        if (col === 2 || col === 5)
+          board[row][col] = createPawn(row, col, "white", "bishop");
+      }
+      if (row === 1) board[row][col] = createPawn(row, col, "black", "pawn");
+      if (row === 0) {
+        if (col === 0)
+          board[row][col] = createPawn(row, col, "black", "rook", "queenSide");
+        if (col === 7)
+          board[row][col] = createPawn(row, col, "black", "rook", "kingSide");
+        board[row][4] = createPawn(row, 4, "black", "king");
+        board[row][3] = createPawn(row, 3, "black", "queen");
+        if (col === 1 || col === 6)
+          board[row][col] = createPawn(row, col, "black", "knight");
+        if (col === 2 || col === 5)
+          board[row][col] = createPawn(row, col, "black", "bishop");
+      }
     }
   }
 

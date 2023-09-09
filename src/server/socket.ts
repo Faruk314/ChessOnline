@@ -11,7 +11,7 @@ import { movePiece } from "./game/pieceFunctions";
 import { highlight } from "./game/gameFunctions";
 import { Piece } from "../client/classes/Piece.js";
 import { promotePawn } from "./game/specialMoves";
-import { Msg } from "../types/types";
+import { Game, Msg } from "../types/types";
 dotenv.config();
 
 declare module "socket.io" {
@@ -198,8 +198,6 @@ export default function setupSocket() {
     socket.on("promotePawn", async (data: { gameId: string; type: string }) => {
       const gameData = await client.get(data.gameId);
 
-      console.log(data, "uslo u promote pawn");
-
       let gameState = JSON.parse(gameData!);
 
       promotePawn(data.type, gameState);
@@ -208,6 +206,57 @@ export default function setupSocket() {
 
       io.to(data.gameId).emit("pieceMoved", gameState);
     });
+
+    socket.on(
+      "drawOffer",
+      async (data: { receiverId: number; gameId: string }) => {
+        const receiverId = data.receiverId;
+        const receiverSocketId = getUser(receiverId);
+        const senderId = socket.userId;
+        const gameId = data.gameId;
+
+        const gameData = await client.get(gameId);
+        let gameState: Game = JSON.parse(gameData!);
+
+        if (senderId) gameState.drawOffererId = senderId;
+
+        console.log(gameState, "gameState");
+
+        await client.set(gameId, JSON.stringify(gameState));
+
+        if (receiverSocketId) io.to(receiverSocketId).emit("drawOffered");
+      }
+    );
+
+    socket.on(
+      "drawOfferResponse",
+      async (response: { gameId: string; accept: boolean }) => {
+        const gameId = response.gameId;
+
+        if (response.accept) {
+          try {
+            let q = "DELETE FROM games WHERE `gameId`= ?";
+
+            await query(q, [gameId]);
+            await client.del(gameId);
+
+            return io.to(gameId).emit("draw");
+          } catch (error) {
+            throw new Error("could not delete game state");
+          }
+        }
+
+        const gameData = await client.get(gameId);
+
+        let gameState: Game = JSON.parse(gameData!);
+
+        gameState.drawOffererId = null;
+
+        await client.set(gameId, JSON.stringify(gameState));
+
+        io.to(gameId).emit("drawRejected");
+      }
+    );
 
     socket.on("resign", async (gameId: string) => {
       try {

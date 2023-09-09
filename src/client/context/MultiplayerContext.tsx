@@ -26,6 +26,7 @@ type MultiplayerContextType = {
   movePiece: (moveData: MoveData) => void;
   promotePawn: (data: PromotionData) => void;
   resign: (gameId: string) => void;
+  offerDraw: (receiverId: number, gameId: string) => void;
 };
 
 export const MultiplayerContext = createContext<MultiplayerContextType>({
@@ -33,6 +34,7 @@ export const MultiplayerContext = createContext<MultiplayerContextType>({
   movePiece: (moveData) => {},
   promotePawn: (data) => {},
   resign: (gameId) => {},
+  offerDraw: (receiverId, gameId) => {},
 });
 
 type MultiplayerProviderProps = {
@@ -47,6 +49,10 @@ export const MultiplayerContextProvider = ({
 
   const resign = (gameId: string) => {
     socket?.emit("resign", gameId);
+  };
+
+  const offerDraw = (receiverId: number, gameId: string) => {
+    socket?.emit("drawOffer", { receiverId, gameId });
   };
 
   const higlightPiece = (data: Data) => {
@@ -64,7 +70,13 @@ export const MultiplayerContextProvider = ({
 
   return (
     <MultiplayerContext.Provider
-      value={{ higlightPiece, movePiece, promotePawn, resign }}
+      value={{
+        higlightPiece,
+        movePiece,
+        promotePawn,
+        resign,
+        offerDraw,
+      }}
     >
       {children}
     </MultiplayerContext.Provider>

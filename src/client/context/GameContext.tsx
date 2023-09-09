@@ -34,6 +34,10 @@ interface GameContextProps {
   setMessages: React.Dispatch<React.SetStateAction<Msg[]>>;
   messages: Msg[];
   activePiece: Piece | null;
+  drawOffered: boolean;
+  setDrawOffered: React.Dispatch<React.SetStateAction<boolean>>;
+  setOpenDrawOffer: React.Dispatch<React.SetStateAction<boolean>>;
+  openDrawOffer: boolean;
 }
 
 export const GameContext = createContext<GameContextProps>({
@@ -53,6 +57,10 @@ export const GameContext = createContext<GameContextProps>({
   setMessages: () => {},
   messages: [],
   activePiece: null,
+  drawOffered: false,
+  setDrawOffered: () => {},
+  setOpenDrawOffer: () => {},
+  openDrawOffer: false,
 });
 
 export const GameContextProvider = ({ children }: any) => {
@@ -74,6 +82,8 @@ export const GameContextProvider = ({ children }: any) => {
   const [movedPieces, setMovedPieces] = useState<Piece[]>([]);
   const [stalemate, setStalemate] = useState(false);
   const [messages, setMessages] = useState<Msg[]>([]);
+  const [drawOffered, setDrawOffered] = useState(false);
+  const [openDrawOffer, setOpenDrawOffer] = useState(false);
 
   useEffect(() => {
     const initGame = () => {
@@ -85,129 +95,6 @@ export const GameContextProvider = ({ children }: any) => {
 
       for (let row = 0; row < 8; row++) {
         for (let col = 0; col < 8; col++) {
-          //checkmate situation 1
-          // if (row === 7 && col === 0) {
-          //   board[row][col] = createPawn(row, col, "white", "rook");
-          // }
-          // if (row === 0 && col === 3) {
-          //   board[row][col] = createPawn(row, col, "black", "king");
-          // }
-          // if (row === 1 && col === 5) {
-          //   board[row][col] = createPawn(row, col, "white", "rook");
-          // }
-          //checkmate situation 2
-          // if (row === 0 && col === 7) {
-          //   board[row][col] = createPawn(row, col, "black", "king");
-          // }
-          // if (row === 1 && col === 6) {
-          //   board[row][col] = createPawn(row, col, "black", "pawn");
-          // }
-          // if (row === 1 && col === 7) {
-          //   board[row][col] = createPawn(row, col, "black", "pawn");
-          // }
-          // if (row === 5 && col === 0) {
-          //   board[row][col] = createPawn(row, col, "white", "queen");
-          // }
-          //checkmate situation 3
-          // if (row === 7 && col === 0) {
-          //   board[row][col] = createPawn(row, col, "white", "queen");
-          // }
-          // if (row === 0 && col === 3) {
-          //   board[row][col] = createPawn(row, col, "black", "king");
-          // }
-          // if (row === 1 && col === 5) {
-          //   board[row][col] = createPawn(row, col, "white", "queen");
-          // }
-          //checkmate situation 4 //
-          // if (row === 0 && col === 0) {
-          //   board[row][col] = createPawn(row, col, "black", "king");
-          // }
-          // if (row === 2 && col === 1) {
-          //   board[row][col] = createPawn(row, col, "white", "king");
-          // }
-          // if (row === 2 && col === 3) {
-          //   board[row][col] = createPawn(row, col, "white", "bishop");
-          // }
-          // if (row === 1 && col === 7) {
-          //   board[row][col] = createPawn(row, col, "white", "bishop");
-          // }
-          //checkmate situation 5
-          // if (row === 5 && col === 0) {
-          //   board[row][col] = createPawn(row, col, "white", "queen");
-          // }
-          // if (row === 1 && col === 6) {
-          //   board[row][col] = createPawn(row, col, "black", "pawn");
-          // }
-          // if (row === 2 && col === 6) {
-          //   board[row][col] = createPawn(row, col, "black", "pawn");
-          // }
-          // if (row === 0 && col === 7) {
-          //   board[row][col] = createPawn(row, col, "black", "king");
-          // }
-          // if (row === 1 && col === 4) {
-          //   board[row][col] = createPawn(row, col, "white", "knight");
-          // }
-          //checkmate situation 6
-          // if (row === 0 && col === 3) {
-          //   board[row][col] = createPawn(row, col, "black", "queen");
-          // }
-          // if (row === 0 && col === 4) {
-          //   board[row][col] = createPawn(row, col, "black", "king");
-          // }
-          // if (row === 0 && col === 5) {
-          //   board[row][col] = createPawn(row, col, "black", "rook");
-          // }
-          // if (row === 1 && col === 3) {
-          //   board[row][col] = createPawn(row, col, "black", "pawn");
-          // }
-          // if (row === 1 && col === 4) {
-          //   board[row][col] = createPawn(row, col, "black", "knight");
-          // }
-          // if (row === 1 && col === 5) {
-          //   board[row][col] = createPawn(row, col, "black", "pawn");
-          // }
-          // if (row === 4 && col === 2) {
-          //   board[row][col] = createPawn(row, col, "white", "knight");
-          // }
-          //checkmate situation 7 ///
-          // if (row === 0 && col === 3) {
-          //   board[row][col] = createPawn(row, col, "black", "queen");
-          // }
-          // if (row === 0 && col === 4) {
-          //   board[row][col] = createPawn(row, col, "black", "king");
-          // }
-          // if (row === 1 && col === 4) {
-          //   board[row][col] = createPawn(row, col, "black", "pawn");
-          // }
-          // if (row === 1 && col === 3) {
-          //   board[row][col] = createPawn(row, col, "black", "knight");
-          // }
-          // if (row === 4 && col === 4) {
-          //   board[row][col] = createPawn(row, col, "white", "knight");
-          // }
-          // if (row === 7 && col === 3) {
-          //   board[row][col] = createPawn(row, col, "white", "queen");
-          // }
-          // if (row === 0 && col === 5) {
-          //   board[row][col] = createPawn(row, col, "black", "bishop");
-          // }
-          // if (row === 1 && col === 5) {
-          //   board[row][col] = createPawn(row, col, "black", "pawn");
-          // }
-          // if (row === 0 && col === 0) {
-          //   board[row][col] = createPawn(row, col, "black", "pawn");
-          // }
-          //situation 8
-          // if (row === 1 && col === 1)
-          //   board[row][col] = createPawn(row, col, "black", "pawn");
-          // if (row === 1 && col === 2)
-          //   board[row][col] = createPawn(row, col, "black", "pawn");
-          // if (row === 1 && col === 3)
-          //   board[row][col] = createPawn(row, col, "black", "pawn");
-          // if (row === 1 && col === 7)
-          //   board[row][col] = createPawn(row, col, "black", "pawn");
-          // if (row === 0 && col === 2)
-          //   board[row][col] = createPawn(row, col, "black", "king");
           //importnant
           if (row === 6)
             board[row][col] = createPawn(row, col, "white", "pawn");
@@ -308,6 +195,14 @@ export const GameContextProvider = ({ children }: any) => {
     } else {
       setActivePiece(null);
       setAvailablePositions([]);
+    }
+
+    if (game.drawOffererId) {
+      setDrawOffered(true);
+      setOpenDrawOffer(true);
+    } else {
+      setOpenDrawOffer(false);
+      setDrawOffered(false);
     }
 
     setMessages(game.messages);
@@ -1229,6 +1124,10 @@ export const GameContextProvider = ({ children }: any) => {
     messages,
     setMessages,
     activePiece,
+    drawOffered,
+    setDrawOffered,
+    setOpenDrawOffer,
+    openDrawOffer,
   };
 
   return (

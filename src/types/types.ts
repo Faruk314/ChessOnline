@@ -49,4 +49,5 @@ export interface Game {
   movedPieces: Piece[];
   stalemate: boolean;
   messages: [];
+  drawOffererId: number | null;
 }
