@@ -50,7 +50,7 @@ const Friends = ({ setOpenFriends }: Props) => {
 
           <div className="flex text-black flex-col px-1 py-2 space-y-3 overflow-y-auto max-h-[12rem]">
             {friends.length === 0 && (
-              <p className="text-center text-white">Friend list empty</p>
+              <p className="ml-2 text-gray-400 ">Friend list empty</p>
             )}
             {friends.map((user) => (
               <PlayerCard key={user.userId} friendRequestInfo={user} />

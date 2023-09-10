@@ -76,7 +76,7 @@ const Board = ({ movePiece, highlight }: Props) => {
                   }
                   key={cellIndex}
                   className={classNames(
-                    "relative flex items-center justify-center w-10 h-10 md:w-[5.8rem] md:h-[5.8rem]",
+                    "relative flex items-center justify-center w-[2.7rem] h-[2.7rem] md:w-[5.8rem] md:h-[5.8rem]",
                     {
                       "bg-amber-900":
                         ((rowIndex + 1) % 2 !== 0 &&
@@ -90,23 +90,23 @@ const Board = ({ movePiece, highlight }: Props) => {
                   )}
                 >
                   {isAvailablePosition && cell === null && (
-                    <div className="w-5 h-5 bg-black rounded-full"></div>
+                    <div className="bg-black opacity-[0.6] rounded-full h-[1rem] w-[1rem] md:w-5 md:h-5"></div>
                   )}
 
                   {rowIndex === 7 && (
-                    <span className="absolute font-bold bottom-1 right-2">
+                    <span className="absolute hidden font-bold md:block bottom-1 right-2">
                       {letters[cellIndex]}
                     </span>
                   )}
 
                   {cellIndex === 0 && (
-                    <span className="absolute font-bold top-2 left-2">
+                    <span className="absolute hidden font-bold md:block top-2 left-2">
                       {numbers[rowIndex]}
                     </span>
                   )}
 
                   {isAvailablePosition && cell && (
-                    <div className="absolute w-[5rem] h-[5rem] border-2 border-black rounded-full"></div>
+                    <div className="absolute h-[2.6rem] w-[2.6rem] md:w-[5rem] md:h-[5rem] border-2 border-black rounded-full"></div>
                   )}
                   {/* {`${rowIndex}${cellIndex}`} */}
                   {cell?.color === "white" ? (

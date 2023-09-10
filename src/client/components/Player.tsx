@@ -12,7 +12,8 @@ import blackPawn from "../assets/images/pawn_b.png";
 import blackBishop from "../assets/images/bishop_b .png";
 import blackKnight from "../assets/images/knight_b.png";
 import blackRook from "../assets/images/rook_b.png";
-import avatar from "../assets/images/avatar.png";
+import blackDefault from "../assets/images/blackDefault.png";
+import whiteDefault from "../assets/images/whiteDefault.png";
 
 interface Props {
   index: number;
@@ -21,6 +22,8 @@ interface Props {
 }
 
 const Player = ({ index, playerName, image }: Props) => {
+  const defaultPic = [whiteDefault, blackDefault];
+
   const { players } = useContext(GameContext);
 
   const pawns = players[index]?.enemyPieces.filter(
@@ -51,7 +54,7 @@ const Player = ({ index, playerName, image }: Props) => {
     <div className="flex space-x-2">
       <div>
         <img
-          src={image || avatar}
+          src={image || defaultPic[index]}
           className="w-[3.5rem] border-black rounded-md"
         ></img>
       </div>

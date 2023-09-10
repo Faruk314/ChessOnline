@@ -5,6 +5,7 @@ import { UserRequest } from "../../types/types";
 import { FriendContext } from "../context/FriendContext";
 import { IoClose } from "react-icons/io5";
 import { IoCheckmarkSharp } from "react-icons/io5";
+import whiteDefault from "../assets/images/whiteDefault.png";
 
 interface Props {
   friendRequestInfo: UserRequest;
@@ -69,7 +70,7 @@ const PlayerCard = ({ friendRequestInfo }: Props) => {
     <div className="flex items-center bg-amber-100 justify-between p-2 mx-1 shadow-[0_3px_10px_rgb(0,0,0,0.2)] rounded-md">
       <div className="flex space-x-2">
         <img
-          src={friendRequestInfo.image || ""}
+          src={friendRequestInfo.image || whiteDefault}
           alt=""
           className="w-[3rem] h-[3rem] border rounded-lg relative"
         />
