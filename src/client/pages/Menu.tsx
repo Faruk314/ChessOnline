@@ -11,12 +11,19 @@ import { SocketContext } from "../context/SocketContext";
 import UserInfo from "../components/UserInfo";
 import ChangeAvatar from "../modals/ChangeAvatar";
 import { AuthContext } from "../context/AuthContext";
+import { BiSearch } from "react-icons/bi";
+import FriendRequests from "../modals/FriendRequests";
+import Friends from "../modals/Friends";
+import { FriendContext } from "../context/FriendContext";
 
 const Menu = () => {
   const { socket } = useContext(SocketContext);
   const { playSound } = useContext(SoundContext);
+  const { friendRequests } = useContext(FriendContext);
   const [openFindMatch, setOpenFindMatch] = useState(false);
+  const [openFriends, setOpenFriends] = useState(false);
   const { openChangeAvatar } = useContext(AuthContext);
+  const [openFriendReq, setOpenFriendReq] = useState(false);
   const navigate = useNavigate();
 
   const logoutHandler = async () => {
@@ -31,8 +38,23 @@ const Menu = () => {
 
   return (
     <section className="h-[100vh] bg-amber-100 text-white font-bold flex flex-col justify-center items-center">
-      <div className="fixed top-0 flex justify-between w-full p-4">
+      <div className="fixed top-0 flex w-full p-4 space-x-2">
         <SoundButton />
+
+        <div className="relative">
+          <button
+            onClick={() => setOpenFriendReq((prev) => !prev)}
+            className="p-2 rounded-md bg-amber-900"
+          >
+            <ImUsers size={20} />
+          </button>
+
+          {friendRequests.length > 0 && (
+            <span className="absolute px-2 bg-red-600 rounded-full top-[-0.5rem] right-[-1rem]">
+              {friendRequests.length}
+            </span>
+          )}
+        </div>
       </div>
 
       <div className="fixed top-4 right-4">
@@ -61,8 +83,17 @@ const Menu = () => {
           onMouseEnter={() => playSound(moveSound)}
           className="flex items-center justify-center px-10 py-4 space-x-2 text-xl border-2 rounded-md shadow-lg border-amber-900 bg-amber-900 hover:bg-transparent hover:text-amber-900"
         >
+          <BiSearch size={30} className="" />
+          <span>FIND MATCH</span>
+        </button>
+
+        <button
+          onClick={() => setOpenFriends(true)}
+          onMouseEnter={() => playSound(moveSound)}
+          className="flex items-center justify-center px-10 py-4 space-x-2 text-xl border-2 rounded-md shadow-lg border-amber-900 bg-amber-900 hover:bg-transparent hover:text-amber-900"
+        >
           <ImUsers size={30} className="" />
-          <span>MULTIPLAYER</span>
+          <span>FRIENDS</span>
         </button>
 
         <button
@@ -76,6 +107,8 @@ const Menu = () => {
 
       {openFindMatch && <FindMatch setOpenFindMatch={setOpenFindMatch} />}
       {openChangeAvatar && <ChangeAvatar />}
+      {openFriends && <Friends setOpenFriends={setOpenFriends} />}
+      {openFriendReq && <FriendRequests />}
     </section>
   );
 };

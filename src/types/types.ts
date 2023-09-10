@@ -20,6 +20,11 @@ export interface UserInfo {
   image: string | null;
 }
 
+export interface UserRequest extends UserInfo {
+  id?: number;
+  status?: string;
+}
+
 export interface Position {
   row: number;
   col: number;
@@ -50,4 +55,10 @@ export interface Game {
   stalemate: boolean;
   messages: [];
   drawOffererId: number | null;
+}
+
+export interface FriendRequestStatus {
+  status: number;
+  sender?: number;
+  receiver?: number;
 }
