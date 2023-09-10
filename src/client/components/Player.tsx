@@ -63,7 +63,7 @@ const Player = ({ index, playerName, image }: Props) => {
         <div className="text-[1rem] flex space-x-1 font-bold">
           <h2>{playerName}</h2>
         </div>
-        <div className="flex space-x-1">
+        <div className="flex space-x-1 flex-wrap  max-w-[17rem] md:max-w-none">
           <div className="flex">
             {pawns?.map((pawn, index) => (
               <img

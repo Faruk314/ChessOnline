@@ -11,6 +11,8 @@ import SinglePlayer from "./pages/SinglePlayer";
 import { GameContext } from "./context/GameContext";
 import OpponentLeft from "./modals/OpponentLeft";
 import Draw from "./modals/Draw";
+import { UserRequest } from "../types/types";
+import { FriendContext } from "./context/FriendContext";
 
 axios.defaults.withCredentials = true;
 // axios.defaults.baseURL = process.env.FRONTEND_URL;
@@ -18,10 +20,12 @@ axios.defaults.withCredentials = true;
 function App() {
   const { socket } = useContext(SocketContext);
   const { gameId, setDrawOffered } = useContext(GameContext);
+  const { setFriendRequests, setFriends } = useContext(FriendContext);
   const { setIsLoggedIn, setLoggedUserInfo, isLoggedIn } =
     useContext(AuthContext);
   const [openOpponentLeft, setOpenOpponentLeft] = useState(false);
   const [openDrawModal, setOpenDrawModal] = useState(false);
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -49,6 +53,27 @@ function App() {
       }
     });
   }, [gameId, socket, isLoggedIn]);
+
+  useEffect(() => {
+    socket?.on("getFriendRequest", (request: UserRequest) => {
+      setFriendRequests((prev) => [...prev, request]);
+    });
+
+    return () => {
+      socket?.off("getFriendRequest");
+    };
+  }, [socket]);
+
+  useEffect(() => {
+    socket?.on("deletedFromFriends", (requestId: number) => {
+      console.log("doslo");
+      setFriends((prev) => prev.filter((friend) => friend.id !== requestId));
+    });
+
+    return () => {
+      socket?.off("deletedFromFriends");
+    };
+  }, [socket]);
 
   useEffect(() => {
     socket?.on("gameStart", () => {

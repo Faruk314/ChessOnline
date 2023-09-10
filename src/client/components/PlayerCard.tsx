@@ -39,10 +39,10 @@ const PlayerCard = ({ friendRequestInfo }: Props) => {
   const unfriendHandler = async () => {
     if (friendRequestInfo.id) {
       await deleteFriendRequestHandler();
-      // socket?.emit("deleteFriend", {
-      //   userId: friendRequestInfo.userId,
-      //   requestId: friendRequestInfo.id,
-      // });
+      socket?.emit("deleteFriend", {
+        userId: friendRequestInfo.userId,
+        requestId: friendRequestInfo.id,
+      });
     }
   };
 
@@ -58,11 +58,10 @@ const PlayerCard = ({ friendRequestInfo }: Props) => {
     }
   };
 
-  const friendRequestHandler = async () => {
+  const friendRequestHandler = async (e: any) => {
+    e.stopPropagation();
     await sendFriendRequest(friendRequestInfo.userId);
-    // socket?.emit("sendFriendRequest", {
-    //   receiverId: friendRequestInfo.userId,
-    // });
+    socket?.emit("sendFriendRequest", friendRequestInfo.userId);
     await checkFriendRequestStatus(friendRequestInfo);
   };
 

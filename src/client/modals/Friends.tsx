@@ -53,7 +53,7 @@ const Friends = ({ setOpenFriends }: Props) => {
               <p className="ml-2 text-gray-400 ">Friend list empty</p>
             )}
             {friends.map((user) => (
-              <PlayerCard key={user.userId} friendRequestInfo={user} />
+              <PlayerCard key={user.id} friendRequestInfo={user} />
             ))}
           </div>
         </div>

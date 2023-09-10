@@ -94,6 +94,32 @@ export default function setupSocket() {
       console.log("disconnected");
     });
 
+    //friend requests
+    socket.on("sendFriendRequest", async (receiverId: number) => {
+      const receiverSocketId = getUser(receiverId);
+      const senderId = socket.userId;
+
+      if (!receiverSocketId) return;
+
+      let q = `SELECT u.userId, u.userName, u.image, fr.id, fr.status
+        FROM friend_requests fr JOIN users u ON u.userId = fr.sender WHERE fr.sender = ?`;
+
+      let result: any = await query(q, [senderId]);
+
+      io.to(receiverSocketId).emit("getFriendRequest", result[0]);
+    });
+
+    socket.on(
+      "deleteFriend",
+      async ({ userId, requestId }: { userId: number; requestId: number }) => {
+        const userSocketId = getUser(userId);
+
+        if (!userSocketId) return;
+
+        io.to(userSocketId).emit("deletedFromFriends", requestId);
+      }
+    );
+
     socket.on("findMatch", async () => {
       if (!socket.userId) return;
 

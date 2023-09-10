@@ -13,6 +13,8 @@ type FriendContextType = {
   friendRequestStatus: FriendRequestStatus | null;
   friendRequests: UserRequest[];
   friends: UserRequest[];
+  setFriendRequests: React.Dispatch<React.SetStateAction<UserRequest[]>>;
+  setFriends: React.Dispatch<React.SetStateAction<UserRequest[]>>;
 };
 
 export const FriendContext = createContext<FriendContextType>({
@@ -25,6 +27,8 @@ export const FriendContext = createContext<FriendContextType>({
   friendRequestStatus: null,
   friendRequests: [],
   friends: [],
+  setFriendRequests: () => {},
+  setFriends: () => {},
 });
 
 type FriendProviderProps = {
@@ -158,7 +162,9 @@ export const FriendContextProvider = ({ children }: FriendProviderProps) => {
         deleteFriendRequest,
         friendRequestStatus,
         friendRequests,
+        setFriendRequests,
         friends,
+        setFriends,
       }}
     >
       {children}
