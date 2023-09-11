@@ -8,7 +8,12 @@ import query from "./db";
 import { client } from "./main";
 import { createGame } from "./game/pieceFunctions";
 import { movePiece } from "./game/pieceFunctions";
-import { deleteGameState, getGameState, highlight } from "./game/gameFunctions";
+import {
+  deleteGameState,
+  getGameState,
+  highlight,
+  insertGameInDb,
+} from "./game/gameFunctions";
 import { Piece } from "../client/classes/Piece.js";
 import { promotePawn } from "./game/specialMoves";
 import { getUser, addUser, removeUser } from "./game/UserFunctions";
@@ -44,6 +49,8 @@ export default function setupSocket() {
 
   io.on("connection", (socket: Socket) => {
     if (socket.userId) addUser(socket.userId, socket.id);
+
+    console.log("User connected", socket.userId);
 
     socket.on("reconnectToRoom", (gameId: string) => {
       if (socket.userId === undefined) return;
@@ -107,17 +114,20 @@ export default function setupSocket() {
         const playerOneSocket = io.sockets.sockets.get(playerOnesocketId);
         const playerTwoSocket = io.sockets.sockets.get(playerTwoSocketId);
 
-        let gameId = uuidv4();
-
         if (!playerOneSocket || !playerTwoSocket) return;
+
+        let gameId = uuidv4();
 
         playerOneSocket.join(gameId);
         playerTwoSocket.join(gameId);
 
-        let q =
-          "INSERT INTO games (`gameId`,`playerOne`,`playerTwo`) VALUES (?,?,?)";
+        let gameInDb = await insertGameInDb(
+          gameId,
+          firstPlayerId,
+          secondPlayerId
+        );
 
-        let data = await query(q, [gameId, firstPlayerId, secondPlayerId]);
+        if (!gameInDb) return;
 
         let players = [firstPlayerId, secondPlayerId];
 

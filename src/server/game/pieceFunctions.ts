@@ -589,8 +589,6 @@ const findPawnPositions = (
       validMoves.push(leftDiagonal);
     }
 
-    console.log("black validMoves before going in ell passant", validMoves);
-
     //check for el passant
     validMoves = elPassant(piece, validMoves, gameState);
   }
