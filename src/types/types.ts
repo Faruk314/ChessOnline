@@ -11,6 +11,12 @@ declare global {
   }
 }
 
+declare module "socket.io" {
+  interface Socket {
+    userId?: number;
+  }
+}
+
 export type Square = Piece | null;
 
 export interface UserInfo {

@@ -3,6 +3,8 @@ import { Piece } from "../../client/classes/Piece";
 import { Square } from "../../types/types";
 import { Game } from "../../types/types";
 import { createPawn } from "../../client/classes/Piece";
+import query from "../db";
+import { client } from "../main";
 import {
   highlightKing,
   highlightBishop,
@@ -17,6 +19,27 @@ import {
   findPawnPositions,
   findKnightPositions,
 } from "./pieceFunctions";
+
+export const getGameState = async (gameId: string) => {
+  const gameData = await client.get(gameId);
+
+  let gameState = JSON.parse(gameData!);
+
+  return gameState;
+};
+
+export const deleteGameState = async (gameId: string) => {
+  try {
+    let q = "DELETE FROM games WHERE `gameId`= ?";
+
+    await query(q, [gameId]);
+    await client.del(gameId);
+
+    return true;
+  } catch (error) {
+    throw new Error("could not delete game state");
+  }
+};
 
 export const switchTurns = (gameState: Game) => {
   const nextPlayer = gameState.players.find(

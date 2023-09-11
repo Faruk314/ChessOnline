@@ -8,17 +8,11 @@ import query from "./db";
 import { client } from "./main";
 import { createGame } from "./game/pieceFunctions";
 import { movePiece } from "./game/pieceFunctions";
-import { highlight } from "./game/gameFunctions";
+import { deleteGameState, getGameState, highlight } from "./game/gameFunctions";
 import { Piece } from "../client/classes/Piece.js";
 import { promotePawn } from "./game/specialMoves";
-import { Game, Msg } from "../types/types";
+import { getUser, addUser, removeUser } from "./game/UserFunctions";
 dotenv.config();
-
-declare module "socket.io" {
-  interface Socket {
-    userId?: number;
-  }
-}
 
 export default function setupSocket() {
   const server = http.createServer();
@@ -46,34 +40,9 @@ export default function setupSocket() {
     }
   });
 
-  let users = new Map();
-
-  //users that are searching for 2 players match
   let playersQueue: number[] = [];
 
-  const addUser = (userId: number, socketId: string) => {
-    if (!users.has(userId)) {
-      users.set(userId, socketId);
-    }
-  };
-
-  const removeUser = (socketId: string) => {
-    const userEntries = [...users.entries()];
-
-    const usersEntriesFilterd = userEntries.filter(
-      ([_, value]) => value !== socketId
-    );
-
-    users = new Map(usersEntriesFilterd);
-  };
-
-  const getUser = (userId: number) => {
-    return users.get(userId);
-  };
-
   io.on("connection", (socket: Socket) => {
-    console.log("new socket connection", socket.userId);
-
     if (socket.userId) addUser(socket.userId, socket.id);
 
     socket.on("reconnectToRoom", (gameId: string) => {
@@ -81,17 +50,15 @@ export default function setupSocket() {
 
       const userSocketId = getUser(socket.userId);
 
-      if (userSocketId) {
-        const userSocket = io.sockets.sockets.get(userSocketId);
+      if (!userSocketId) return console.log("Could not reconnect user");
 
-        console.log(gameId, "gameid");
-        if (userSocket) userSocket.join(gameId);
-      }
+      const userSocket = io.sockets.sockets.get(userSocketId);
+
+      if (userSocket) userSocket.join(gameId);
     });
 
-    socket.on("disconnect", () => {
+    socket.on("disconnect", async () => {
       removeUser(socket.id);
-      console.log("disconnected");
     });
 
     //friend requests
@@ -169,9 +136,7 @@ export default function setupSocket() {
     socket.on(
       "highlightPiece",
       async (data: { gameId: string; piece: Piece }) => {
-        const gameData = await client.get(data.gameId);
-
-        let gameState = JSON.parse(gameData!);
+        let gameState = await getGameState(data.gameId);
 
         if (!socket.userId) return;
 
@@ -194,9 +159,7 @@ export default function setupSocket() {
           senderName: data.senderName,
         };
 
-        const gameData = await client.get(data.gameId);
-
-        const gameState = JSON.parse(gameData!);
+        let gameState = await getGameState(data.gameId);
 
         gameState.messages.push(msg);
 
@@ -209,9 +172,7 @@ export default function setupSocket() {
     socket.on(
       "movePiece",
       async (data: { gameId: string; row: number; col: number }) => {
-        const gameData = await client.get(data.gameId);
-
-        let gameState = JSON.parse(gameData!);
+        let gameState = await getGameState(data.gameId);
 
         movePiece(data.row, data.col, gameState);
 
@@ -222,9 +183,7 @@ export default function setupSocket() {
     );
 
     socket.on("promotePawn", async (data: { gameId: string; type: string }) => {
-      const gameData = await client.get(data.gameId);
-
-      let gameState = JSON.parse(gameData!);
+      let gameState = await getGameState(data.gameId);
 
       promotePawn(data.type, gameState);
 
@@ -241,12 +200,9 @@ export default function setupSocket() {
         const senderId = socket.userId;
         const gameId = data.gameId;
 
-        const gameData = await client.get(gameId);
-        let gameState: Game = JSON.parse(gameData!);
+        let gameState = await getGameState(gameId);
 
         if (senderId) gameState.drawOffererId = senderId;
-
-        console.log(gameState, "gameState");
 
         await client.set(gameId, JSON.stringify(gameState));
 
@@ -260,21 +216,12 @@ export default function setupSocket() {
         const gameId = response.gameId;
 
         if (response.accept) {
-          try {
-            let q = "DELETE FROM games WHERE `gameId`= ?";
-
-            await query(q, [gameId]);
-            await client.del(gameId);
-
-            return io.to(gameId).emit("draw");
-          } catch (error) {
-            throw new Error("could not delete game state");
-          }
+          let gameDeleted = await deleteGameState(gameId);
+          if (gameDeleted) io.to(gameId).emit("draw");
+          return;
         }
 
-        const gameData = await client.get(gameId);
-
-        let gameState: Game = JSON.parse(gameData!);
+        let gameState = await getGameState(gameId);
 
         gameState.drawOffererId = null;
 
@@ -285,17 +232,9 @@ export default function setupSocket() {
     );
 
     socket.on("resign", async (gameId: string) => {
-      try {
-        let q = "DELETE FROM games WHERE `gameId`= ?";
+      let gameDeleted = await deleteGameState(gameId);
 
-        await query(q, [gameId]);
-        await client.del(gameId);
-      } catch (error) {
-        throw new Error("could not delete game state");
-      }
-      socket.leave(gameId);
-
-      io.to(gameId).emit("opponentResigned");
+      if (gameDeleted) io.to(gameId).emit("opponentResigned");
     });
   });
 
