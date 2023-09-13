@@ -28,7 +28,7 @@ interface GameContextProps {
   checkmate: boolean;
   players: Player[];
   stalemate: boolean;
-  getGameStatus: () => Promise<void>;
+  getGameStatus: () => Promise<boolean>;
   gameId: string;
   updateGameState: (game: Game) => void;
   setMessages: React.Dispatch<React.SetStateAction<Msg[]>>;
@@ -51,7 +51,7 @@ export const GameContext = createContext<GameContextProps>({
   checkmate: false,
   players: [],
   stalemate: false,
-  getGameStatus: async () => {},
+  getGameStatus: async () => false,
   gameId: "",
   updateGameState: (game) => {},
   setMessages: () => {},
@@ -227,9 +227,15 @@ export const GameContextProvider = ({ children }: any) => {
       );
 
       const game = response.data;
+
+      if (!game.gameId) return false;
+
       updateGameState(game);
+
+      return true;
     } catch (error) {
       console.log(error);
+      return false;
     }
   };
 

@@ -20,6 +20,17 @@ import {
   findKnightPositions,
 } from "./pieceFunctions";
 
+export const findOpponentId = (gameState: Game, userId: number) => {
+  if (!gameState)
+    return console.log("Game state does not exist in findOpponentId method");
+
+  const opponentId = gameState.players?.find(
+    (player) => player.playerData?.userId !== userId
+  )?.playerData?.userId;
+
+  return opponentId;
+};
+
 export const getGameState = async (gameId: string) => {
   const gameData = await client.get(gameId);
 

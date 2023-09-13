@@ -10,13 +10,21 @@ import { createGame } from "./game/pieceFunctions";
 import { movePiece } from "./game/pieceFunctions";
 import {
   deleteGameState,
+  findOpponentId,
   getGameState,
   highlight,
   insertGameInDb,
 } from "./game/gameFunctions";
 import { Piece } from "../client/classes/Piece.js";
 import { promotePawn } from "./game/specialMoves";
-import { getUser, addUser, removeUser } from "./game/UserFunctions";
+import { getUser, addUser, removeUser } from "./game/usersMap";
+import {
+  addToGameMap,
+  games,
+  getGameId,
+  removeUserFromGameMap,
+} from "./game/gamesMap";
+import { Game } from "../types/types";
 dotenv.config();
 
 export default function setupSocket() {
@@ -52,7 +60,7 @@ export default function setupSocket() {
 
     console.log("User connected", socket.userId);
 
-    socket.on("reconnectToRoom", (gameId: string) => {
+    socket.on("reconnectToRoom", async (gameId: string) => {
       if (socket.userId === undefined) return;
 
       const userSocketId = getUser(socket.userId);
@@ -61,11 +69,47 @@ export default function setupSocket() {
 
       const userSocket = io.sockets.sockets.get(userSocketId);
 
-      if (userSocket) userSocket.join(gameId);
+      if (userSocket) {
+        userSocket.join(gameId);
+        addToGameMap(socket.userId, gameId);
+      }
     });
 
     socket.on("disconnect", async () => {
       removeUser(socket.id);
+      //Find a gameId when a player disconnects so I can have access to game state
+      const userId = socket.userId;
+
+      if (!userId)
+        return console.log("User id does not exist in disconnect method");
+
+      //getGameId and remove the user
+      let gameId = getGameId(userId);
+      removeUserFromGameMap(userId);
+
+      if (!gameId)
+        return console.log("Could not get the game id in disconnect method");
+
+      let gameState: Game = await getGameState(gameId);
+
+      const opponentId = findOpponentId(gameState, userId);
+
+      if (!opponentId)
+        return console.log("Could not get opponentId in disconnect function");
+
+      const opponentSocketId = getUser(opponentId);
+
+      setTimeout(async () => {
+        if (!games.has(userId)) {
+          let gameDeleted = await deleteGameState(gameId!);
+
+          if (gameDeleted) io.to(opponentSocketId).emit("opponentResigned");
+        }
+
+        if (!games.has(userId) && !games.has(opponentId)) {
+          await deleteGameState(gameId!);
+        }
+      }, 10000);
     });
 
     //friend requests
@@ -134,6 +178,9 @@ export default function setupSocket() {
         let gameState = await createGame(players, gameId);
 
         await client.set(gameId, JSON.stringify(gameState));
+
+        addToGameMap(firstPlayerId, gameId);
+        addToGameMap(secondPlayerId, gameId);
 
         io.to(gameId).emit("gameStart", gameId);
       }
@@ -243,6 +290,8 @@ export default function setupSocket() {
 
     socket.on("resign", async (gameId: string) => {
       let gameDeleted = await deleteGameState(gameId);
+
+      socket.leave(gameId);
 
       if (gameDeleted) io.to(gameId).emit("opponentResigned");
     });

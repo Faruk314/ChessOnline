@@ -16,6 +16,7 @@ import Resign from "../modals/Resign";
 import { BsFillChatLeftDotsFill } from "react-icons/bs";
 import DrawOffer from "../modals/DrawOffer";
 import { AuthContext } from "../context/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 const Multiplayer = () => {
   const { socket } = useContext(SocketContext);
@@ -38,6 +39,7 @@ const Multiplayer = () => {
   const { movePiece, higlightPiece, promotePawn, offerDraw } =
     useContext(MultiplayerContext);
   const { loggedUserInfo } = useContext(AuthContext);
+  const navigate = useNavigate();
 
   const handleDrawOffer = () => {
     const opponentId = players.find(
@@ -54,12 +56,23 @@ const Multiplayer = () => {
 
   useEffect(() => {
     const retrieveGame = async () => {
-      await getGameStatus();
+      const gameState = await getGameStatus();
+
+      if (!gameState) return navigate("/menu");
+
       setIsLoading(false);
     };
 
     retrieveGame();
   }, []);
+
+  useEffect(() => {
+    return () => {
+      if (!isLoading) {
+        socket?.emit("resign", gameId);
+      }
+    };
+  }, [isLoading]);
 
   useEffect(() => {
     socket?.on("drawRejected", () => {
