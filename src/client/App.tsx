@@ -13,6 +13,8 @@ import OpponentLeft from "./modals/OpponentLeft";
 import Draw from "./modals/Draw";
 import { UserRequest } from "../types/types";
 import { FriendContext } from "./context/FriendContext";
+import AuthProtection from "./protection/AuthProtection";
+import ProtectedRoute from "./protection/ProtectedRoute";
 
 axios.defaults.withCredentials = true;
 // axios.defaults.baseURL = process.env.FRONTEND_URL;
@@ -111,11 +113,46 @@ function App() {
   return (
     <div>
       <Routes>
-        <Route path="/" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/menu" element={<Menu />} />
-        <Route path="/multiplayer" element={<Multiplayer />} />
-        <Route path="/singlePlayer" element={<SinglePlayer />} />
+        <Route
+          path="/"
+          element={
+            <AuthProtection>
+              <Login />
+            </AuthProtection>
+          }
+        />
+        <Route
+          path="/register"
+          element={
+            <AuthProtection>
+              <Register />
+            </AuthProtection>
+          }
+        />
+        <Route
+          path="/menu"
+          element={
+            <ProtectedRoute>
+              <Menu />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/multiplayer"
+          element={
+            <ProtectedRoute>
+              <Multiplayer />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/singlePlayer"
+          element={
+            <ProtectedRoute>
+              <SinglePlayer />
+            </ProtectedRoute>
+          }
+        />
       </Routes>
       {openOpponentLeft && (
         <OpponentLeft setOpenOpponentLeft={setOpenOpponentLeft} />

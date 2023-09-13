@@ -22,14 +22,14 @@ const Menu = () => {
   const { friendRequests } = useContext(FriendContext);
   const [openFindMatch, setOpenFindMatch] = useState(false);
   const [openFriends, setOpenFriends] = useState(false);
-  const { openChangeAvatar } = useContext(AuthContext);
+  const { openChangeAvatar, setIsLoggedIn } = useContext(AuthContext);
   const [openFriendReq, setOpenFriendReq] = useState(false);
   const navigate = useNavigate();
 
   const logoutHandler = async () => {
     try {
       await axios.get("http://localhost:3000/api/auth/logout");
-
+      setIsLoggedIn(false);
       navigate("/");
     } catch (error) {
       console.log(error);
