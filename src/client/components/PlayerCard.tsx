@@ -6,6 +6,7 @@ import { FriendContext } from "../context/FriendContext";
 import { IoClose } from "react-icons/io5";
 import { IoCheckmarkSharp } from "react-icons/io5";
 import whiteDefault from "../assets/images/whiteDefault.png";
+import { FriendRequestStatus } from "../../types/types";
 
 interface Props {
   friendRequestInfo: UserRequest;
@@ -19,12 +20,15 @@ const PlayerCard = ({ friendRequestInfo }: Props) => {
     acceptFriendRequest,
     checkFriendRequestStatus,
     deleteFriendRequest,
-    friendRequestStatus,
   } = useContext(FriendContext);
+  const [friendRequestStatus, setFriendRequestStatus] =
+    useState<FriendRequestStatus | null>(null);
 
   useEffect(() => {
     const getFriendshipStatus = async () => {
-      await checkFriendRequestStatus(friendRequestInfo);
+      let status = await checkFriendRequestStatus(friendRequestInfo);
+
+      if (status) setFriendRequestStatus(status);
     };
 
     getFriendshipStatus();
@@ -59,14 +63,14 @@ const PlayerCard = ({ friendRequestInfo }: Props) => {
   };
 
   const friendRequestHandler = async (e: any) => {
-    e.stopPropagation();
     await sendFriendRequest(friendRequestInfo.userId);
     socket?.emit("sendFriendRequest", friendRequestInfo.userId);
-    await checkFriendRequestStatus(friendRequestInfo);
+    let status = await checkFriendRequestStatus(friendRequestInfo);
+    if (status) setFriendRequestStatus(status);
   };
 
   return (
-    <div className="flex items-center bg-amber-100 justify-between p-2 mx-1 shadow-[0_3px_10px_rgb(0,0,0,0.2)] rounded-md">
+    <div className="flex items-center bg-amber-100 max-w-[25rem] justify-between p-2 mx-1 shadow-[0_3px_10px_rgb(0,0,0,0.2)] rounded-md">
       <div className="flex space-x-2">
         <img
           src={friendRequestInfo.image || whiteDefault}

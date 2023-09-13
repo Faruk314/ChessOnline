@@ -1,4 +1,4 @@
-import { createContext, useEffect, useState } from "react";
+import { createContext, useCallback, useEffect, useState } from "react";
 import { FriendRequestStatus, UserRequest } from "../../types/types";
 import axios from "axios";
 import FriendRequests from "../modals/FriendRequests";
@@ -6,11 +6,12 @@ import FriendRequests from "../modals/FriendRequests";
 type FriendContextType = {
   sendFriendRequest: (receiverId: number) => Promise<void>;
   getFriends: () => Promise<void>;
-  checkFriendRequestStatus: (friendRequestInfo: UserRequest) => Promise<void>;
+  checkFriendRequestStatus: (
+    friendRequestInfo: UserRequest
+  ) => Promise<FriendRequestStatus | null>;
   getFriendRequests: () => Promise<void>;
   acceptFriendRequest: (id: number) => Promise<void>;
   deleteFriendRequest: (id: number) => Promise<void>;
-  friendRequestStatus: FriendRequestStatus | null;
   friendRequests: UserRequest[];
   friends: UserRequest[];
   setFriendRequests: React.Dispatch<React.SetStateAction<UserRequest[]>>;
@@ -20,11 +21,10 @@ type FriendContextType = {
 export const FriendContext = createContext<FriendContextType>({
   sendFriendRequest: async (receiverId) => {},
   getFriends: async () => {},
-  checkFriendRequestStatus: async (friendRequestInfo) => {},
+  checkFriendRequestStatus: async (friendRequestInfo) => null,
   getFriendRequests: async () => {},
   acceptFriendRequest: async (id) => {},
   deleteFriendRequest: async () => {},
-  friendRequestStatus: null,
   friendRequests: [],
   friends: [],
   setFriendRequests: () => {},
@@ -38,21 +38,22 @@ type FriendProviderProps = {
 export const FriendContextProvider = ({ children }: FriendProviderProps) => {
   const [friends, setFriends] = useState<UserRequest[]>([]);
   const [friendRequests, setFriendRequests] = useState<UserRequest[]>([]);
-  const [friendRequestStatus, setFriendRequestStatus] =
-    useState<FriendRequestStatus | null>(null);
 
-  const checkFriendRequestStatus = async (friendRequestInfo: UserRequest) => {
-    try {
-      const response = await axios.post(
-        `http://localhost:3000/api/friends/checkFriendRequestStatus`,
-        { personB: friendRequestInfo.userId }
-      );
+  const checkFriendRequestStatus = useCallback(
+    async (friendRequestInfo: UserRequest) => {
+      try {
+        const response = await axios.post(
+          `http://localhost:3000/api/friends/checkFriendRequestStatus`,
+          { personB: friendRequestInfo.userId }
+        );
 
-      setFriendRequestStatus(response.data);
-    } catch (error) {
-      console.log(error);
-    }
-  };
+        return response.data;
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    []
+  ); // Add dependencies as needed
 
   const getFriends = async () => {
     try {
@@ -160,7 +161,6 @@ export const FriendContextProvider = ({ children }: FriendProviderProps) => {
         getFriendRequests,
         acceptFriendRequest,
         deleteFriendRequest,
-        friendRequestStatus,
         friendRequests,
         setFriendRequests,
         friends,
