@@ -17,6 +17,7 @@ import { BsFillChatLeftDotsFill } from "react-icons/bs";
 import DrawOffer from "../modals/DrawOffer";
 import { AuthContext } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
+import Loader from "../components/Loader";
 
 const Multiplayer = () => {
   const { socket } = useContext(SocketContext);
@@ -64,8 +65,13 @@ const Multiplayer = () => {
   }, []);
 
   useEffect(() => {
-    return () => {
+    const handleUnload = () => {
       socket?.emit("resign", gameId);
+    };
+
+    return () => {
+      console.log("triggered");
+      handleUnload();
     };
   }, []);
 
@@ -110,11 +116,7 @@ const Multiplayer = () => {
   }, [socket]);
 
   if (isLoading) {
-    return (
-      <div className="flex items-center justify-center h-[100vh]">
-        <div className="loader"></div>
-      </div>
-    );
+    return <Loader />;
   }
 
   return (

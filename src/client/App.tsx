@@ -13,8 +13,9 @@ import OpponentLeft from "./modals/OpponentLeft";
 import Draw from "./modals/Draw";
 import { UserRequest } from "../types/types";
 import { FriendContext } from "./context/FriendContext";
-import AuthProtection from "./protection/AuthProtection";
-import ProtectedRoute from "./protection/ProtectedRoute";
+import ProtectedAuthPages from "./protection/ProtectedAuthPages";
+import ProtectedRoutes from "./protection/ProtectedRoutes";
+import Loader from "./components/Loader";
 
 axios.defaults.withCredentials = true;
 // axios.defaults.baseURL = process.env.FRONTEND_URL;
@@ -27,8 +28,8 @@ function App() {
     useContext(AuthContext);
   const [openOpponentLeft, setOpenOpponentLeft] = useState(false);
   const [openDrawModal, setOpenDrawModal] = useState(false);
-
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const getLoginStatus = async () => {
@@ -37,6 +38,7 @@ function App() {
           "http://localhost:3000/api/auth/getLoginStatus"
         );
 
+        setLoading(false);
         setIsLoggedIn(response.data.status);
         setLoggedUserInfo(response.data.userInfo);
       } catch (error) {
@@ -110,50 +112,25 @@ function App() {
     };
   }, [socket, navigate]);
 
+  if (loading) {
+    return <Loader />;
+  }
+
   return (
     <div>
       <Routes>
-        <Route
-          path="/"
-          element={
-            <AuthProtection>
-              <Login />
-            </AuthProtection>
-          }
-        />
-        <Route
-          path="/register"
-          element={
-            <AuthProtection>
-              <Register />
-            </AuthProtection>
-          }
-        />
-        <Route
-          path="/menu"
-          element={
-            <ProtectedRoute>
-              <Menu />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/multiplayer"
-          element={
-            <ProtectedRoute>
-              <Multiplayer />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/singlePlayer"
-          element={
-            <ProtectedRoute>
-              <SinglePlayer />
-            </ProtectedRoute>
-          }
-        />
+        <Route element={<ProtectedAuthPages />}>
+          <Route path="/" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+        </Route>
+
+        <Route element={<ProtectedRoutes />}>
+          <Route path="/menu" element={<Menu />} />
+          <Route path="/multiplayer" element={<Multiplayer />} />
+          <Route path="/singlePlayer" element={<SinglePlayer />} />
+        </Route>
       </Routes>
+
       {openOpponentLeft && (
         <OpponentLeft setOpenOpponentLeft={setOpenOpponentLeft} />
       )}

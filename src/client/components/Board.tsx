@@ -35,9 +35,12 @@ const Board = ({ movePiece, highlight }: Props) => {
 
   return (
     <div
-      className={classNames("my-2 shadow-[0_3px_10px_rgb(0,0,0,0.4)]", {
-        "rotate-180": rotateHandler(),
-      })}
+      className={classNames(
+        "my-2 shadow-[0_3px_10px_rgb(0,0,0,0.4)] noSelect",
+        {
+          "rotate-180": rotateHandler(),
+        }
+      )}
     >
       {board.map((row, rowIndex) => {
         return (
