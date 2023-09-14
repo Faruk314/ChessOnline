@@ -65,11 +65,9 @@ const Multiplayer = () => {
 
   useEffect(() => {
     return () => {
-      if (!isLoading) {
-        socket?.emit("resign", gameId);
-      }
+      socket?.emit("resign", gameId);
     };
-  }, [isLoading]);
+  }, []);
 
   useEffect(() => {
     socket?.on("drawRejected", () => {

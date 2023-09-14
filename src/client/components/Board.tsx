@@ -1,25 +1,13 @@
-import React, { useContext, useRef } from "react";
-import whiteKing from "../assets/images/king_w.png";
-import whiteQueen from "../assets/images/queen_w.png";
-import whitePawn from "../assets/images/pawn_w.png";
-import whiteBishop from "../assets/images/bishop_w.png";
-import whiteKnight from "../assets/images/knight_w.png";
-import whiteRook from "../assets/images/rook_w.png";
-import blackKing from "../assets/images/king_b.png";
-import blackQueen from "../assets/images/queen_b.png";
-import blackPawn from "../assets/images/pawn_b.png";
-import blackBishop from "../assets/images/bishop_b .png";
-import blackKnight from "../assets/images/knight_b.png";
-import blackRook from "../assets/images/rook_b.png";
+import React, { useContext } from "react";
 import { GameContext } from "../context/GameContext";
 import classNames from "classnames";
+import Notations from "./Notations";
+import Pieces from "./Pieces";
 import {
   Data,
   MoveData,
   MultiplayerContext,
 } from "../context/MultiplayerContext";
-import Notations from "./Notations";
-import { AuthContext } from "../context/AuthContext";
 
 interface Props {
   movePiece: (moveData: MoveData) => Promise<void> | void;
@@ -27,32 +15,9 @@ interface Props {
 }
 
 const Board = ({ movePiece, highlight }: Props) => {
-  const { board, availablePositions, playerTurn, gameId, activePiece } =
+  const { board, availablePositions, gameId, activePiece } =
     useContext(GameContext);
   const { rotateHandler } = useContext(MultiplayerContext);
-
-  const handleDragStart = (e: any, data: Data) => {
-    e.dataTransfer.effectAllowed = "move";
-
-    console.log(e.target, "target");
-    const img = new Image();
-    img.src = e.target.children[0].getAttribute("src");
-    img.style.background = "transparent";
-
-    const offsetX = img.width / 2;
-    const offsetY = img.height / 2;
-
-    e.dataTransfer.setDragImage(img, offsetX, offsetY);
-
-    highlight(data);
-    setTimeout(() => {
-      e.target.style.display = "none";
-    });
-  };
-
-  const handleDragEnd = (e: any) => {
-    e.target.style.display = "block";
-  };
 
   const handleDragOver = (e: any) => {
     e.preventDefault();
@@ -118,53 +83,7 @@ const Board = ({ movePiece, highlight }: Props) => {
                     <div className="absolute h-[2.6rem] w-[2.6rem] md:w-[5rem] md:h-[5rem] border-2 border-black rounded-full"></div>
                   )}
                   {/* {`${rowIndex}${cellIndex}`} */}
-                  {cell?.color === "white" ? (
-                    <div
-                      className={classNames("cursor-grab", {
-                        "rotate-180": rotateHandler(),
-                      })}
-                      draggable
-                      onDragStart={(e) => {
-                        playerTurn?.color === "white" &&
-                          handleDragStart(e, { piece: cell, gameId });
-                      }}
-                      onDragEnd={handleDragEnd}
-                      onClick={() =>
-                        playerTurn?.color === "white" &&
-                        highlight({ piece: cell, gameId })
-                      }
-                    >
-                      {cell.type === "pawn" && <img src={whitePawn} />}
-                      {cell.type === "king" && <img src={whiteKing} />}
-                      {cell.type === "queen" && <img src={whiteQueen} />}
-                      {cell.type === "bishop" && <img src={whiteBishop} />}
-                      {cell.type === "knight" && <img src={whiteKnight} />}
-                      {cell.type === "rook" && <img src={whiteRook} />}
-                    </div>
-                  ) : (
-                    <div
-                      className={classNames("cursor-grab", {
-                        "rotate-180": rotateHandler(),
-                      })}
-                      draggable
-                      onDragStart={(e) => {
-                        playerTurn?.color === "black" &&
-                          handleDragStart(e, { piece: cell!, gameId });
-                      }}
-                      onDragEnd={handleDragEnd}
-                      onClick={() =>
-                        playerTurn?.color === "black" &&
-                        highlight({ piece: cell!, gameId })
-                      }
-                    >
-                      {cell?.type === "pawn" && <img src={blackPawn} />}
-                      {cell?.type === "king" && <img src={blackKing} />}
-                      {cell?.type === "queen" && <img src={blackQueen} />}
-                      {cell?.type === "bishop" && <img src={blackBishop} />}
-                      {cell?.type === "knight" && <img src={blackKnight} />}
-                      {cell?.type === "rook" && <img src={blackRook} />}
-                    </div>
-                  )}
+                  <Pieces highlight={highlight} cell={cell} />
                 </div>
               );
             })}
