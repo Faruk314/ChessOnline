@@ -54,7 +54,7 @@ export const MultiplayerContextProvider = ({
   const { loggedUserInfo } = useContext(AuthContext);
 
   const rotateHandler = () => {
-    const player = players.find(
+    const player = players?.find(
       (player) =>
         player.playerData?.userId === loggedUserInfo?.userId &&
         player.color === "white"

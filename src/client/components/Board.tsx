@@ -33,6 +33,17 @@ const Board = ({ movePiece, highlight }: Props) => {
 
   const handleDragStart = (e: any, data: Data) => {
     e.dataTransfer.effectAllowed = "move";
+
+    console.log(e.target, "target");
+    const img = new Image();
+    img.src = e.target.children[0].getAttribute("src");
+    img.style.background = "transparent";
+
+    const offsetX = img.width / 2;
+    const offsetY = img.height / 2;
+
+    e.dataTransfer.setDragImage(img, offsetX, offsetY);
+
     highlight(data);
     setTimeout(() => {
       e.target.style.display = "none";
