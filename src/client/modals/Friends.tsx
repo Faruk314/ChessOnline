@@ -28,7 +28,7 @@ const Friends = ({ setOpenFriends }: Props) => {
   }, []);
 
   const fetchUsers = async () => {
-    // if (searchQuery.length < 1) return;
+    if (searchQuery.length < 1) return;
 
     try {
       const response = await axios.get(

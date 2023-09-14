@@ -32,6 +32,8 @@ const ChangeAvatar = () => {
         ...prev,
         image: avatar,
       }));
+
+      setOpenChangeAvatar(false);
     } catch (error) {
       console.log(error);
     }

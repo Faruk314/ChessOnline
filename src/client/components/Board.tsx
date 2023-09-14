@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useRef } from "react";
 import whiteKing from "../assets/images/king_w.png";
 import whiteQueen from "../assets/images/queen_w.png";
 import whitePawn from "../assets/images/pawn_w.png";
@@ -13,8 +13,13 @@ import blackKnight from "../assets/images/knight_b.png";
 import blackRook from "../assets/images/rook_b.png";
 import { GameContext } from "../context/GameContext";
 import classNames from "classnames";
-import { Piece } from "../classes/Piece";
-import { Data, MoveData, PromotionData } from "../context/MultiplayerContext";
+import {
+  Data,
+  MoveData,
+  MultiplayerContext,
+} from "../context/MultiplayerContext";
+import Notations from "./Notations";
+import { AuthContext } from "../context/AuthContext";
 
 interface Props {
   movePiece: (moveData: MoveData) => Promise<void> | void;
@@ -24,8 +29,7 @@ interface Props {
 const Board = ({ movePiece, highlight }: Props) => {
   const { board, availablePositions, playerTurn, gameId, activePiece } =
     useContext(GameContext);
-  const letters = ["a", "b", "c", "d", "e", "f", "g", "h"];
-  const numbers = [1, 2, 3, 4, 5, 6, 7, 8].reverse();
+  const { rotateHandler } = useContext(MultiplayerContext);
 
   const handleDragStart = (e: any, data: Data) => {
     e.dataTransfer.effectAllowed = "move";
@@ -54,7 +58,11 @@ const Board = ({ movePiece, highlight }: Props) => {
   };
 
   return (
-    <div className="my-2 shadow-[0_3px_10px_rgb(0,0,0,0.4)]">
+    <div
+      className={classNames("my-2 shadow-[0_3px_10px_rgb(0,0,0,0.4)]", {
+        "rotate-180": rotateHandler(),
+      })}
+    >
       {board.map((row, rowIndex) => {
         return (
           <div key={rowIndex} className="flex">
@@ -93,17 +101,7 @@ const Board = ({ movePiece, highlight }: Props) => {
                     <div className="bg-black opacity-[0.6] rounded-full h-[1rem] w-[1rem] md:w-5 md:h-5"></div>
                   )}
 
-                  {rowIndex === 7 && (
-                    <span className="absolute hidden font-bold md:block bottom-1 right-2">
-                      {letters[cellIndex]}
-                    </span>
-                  )}
-
-                  {cellIndex === 0 && (
-                    <span className="absolute hidden font-bold md:block top-2 left-2">
-                      {numbers[rowIndex]}
-                    </span>
-                  )}
+                  <Notations rowIndex={rowIndex} cellIndex={cellIndex} />
 
                   {isAvailablePosition && cell && (
                     <div className="absolute h-[2.6rem] w-[2.6rem] md:w-[5rem] md:h-[5rem] border-2 border-black rounded-full"></div>
@@ -111,7 +109,9 @@ const Board = ({ movePiece, highlight }: Props) => {
                   {/* {`${rowIndex}${cellIndex}`} */}
                   {cell?.color === "white" ? (
                     <div
-                      className="cursor-grab"
+                      className={classNames("cursor-grab", {
+                        "rotate-180": rotateHandler(),
+                      })}
                       draggable
                       onDragStart={(e) => {
                         playerTurn?.color === "white" &&
@@ -132,7 +132,9 @@ const Board = ({ movePiece, highlight }: Props) => {
                     </div>
                   ) : (
                     <div
-                      className="cursor-grab"
+                      className={classNames("cursor-grab", {
+                        "rotate-180": rotateHandler(),
+                      })}
                       draggable
                       onDragStart={(e) => {
                         playerTurn?.color === "black" &&

@@ -40,16 +40,13 @@ const Multiplayer = () => {
     useContext(MultiplayerContext);
   const { loggedUserInfo } = useContext(AuthContext);
   const navigate = useNavigate();
+  const opponent = players.find(
+    (player) => player.playerData?.userId !== loggedUserInfo?.userId
+  );
 
   const handleDrawOffer = () => {
-    const opponentId = players.find(
-      (player) => player.playerData?.userId !== loggedUserInfo?.userId
-    )?.playerData?.userId;
-
-    console.log(opponentId, "opponentId");
-
-    if (opponentId) {
-      offerDraw(opponentId, gameId);
+    if (opponent) {
+      offerDraw(opponent.playerData?.userId!, gameId);
       setDrawOffered(true);
     }
   };
@@ -159,19 +156,19 @@ const Multiplayer = () => {
 
       {openChat && <Chat setOpenChat={setOpenChat} />}
 
-      <div>
+      <div className="">
         <Player
           index={1}
-          playerName={players[1].playerData?.userName}
-          image={players[1].playerData?.image}
+          playerName={opponent?.playerData?.userName}
+          image={opponent?.playerData?.image}
         />
 
         <Board movePiece={movePiece} highlight={higlightPiece} />
 
         <Player
           index={0}
-          playerName={players[0].playerData?.userName}
-          image={players[0].playerData?.image}
+          playerName={loggedUserInfo?.userName}
+          image={loggedUserInfo?.image}
         />
       </div>
 

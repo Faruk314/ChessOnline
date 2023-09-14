@@ -4,6 +4,8 @@ import { useContext } from "react";
 import { Piece } from "../classes/Piece";
 import { SocketContext } from "./SocketContext";
 import moveSound from "../assets/sounds/move.mp3";
+import { GameContext } from "./GameContext";
+import { AuthContext } from "./AuthContext";
 
 export interface Data {
   gameId: string;
@@ -27,6 +29,7 @@ type MultiplayerContextType = {
   promotePawn: (data: PromotionData) => void;
   resign: (gameId: string) => void;
   offerDraw: (receiverId: number, gameId: string) => void;
+  rotateHandler: () => boolean;
 };
 
 export const MultiplayerContext = createContext<MultiplayerContextType>({
@@ -35,6 +38,7 @@ export const MultiplayerContext = createContext<MultiplayerContextType>({
   promotePawn: (data) => {},
   resign: (gameId) => {},
   offerDraw: (receiverId, gameId) => {},
+  rotateHandler: () => false,
 });
 
 type MultiplayerProviderProps = {
@@ -46,6 +50,20 @@ export const MultiplayerContextProvider = ({
 }: MultiplayerProviderProps) => {
   const { socket } = useContext(SocketContext);
   const { playSound } = useContext(SoundContext);
+  const { players } = useContext(GameContext);
+  const { loggedUserInfo } = useContext(AuthContext);
+
+  const rotateHandler = () => {
+    const player = players.find(
+      (player) =>
+        player.playerData?.userId === loggedUserInfo?.userId &&
+        player.color === "white"
+    );
+
+    if (player) return false;
+
+    return true;
+  };
 
   const resign = (gameId: string) => {
     socket?.emit("resign", gameId);
@@ -76,6 +94,7 @@ export const MultiplayerContextProvider = ({
         promotePawn,
         resign,
         offerDraw,
+        rotateHandler,
       }}
     >
       {children}
