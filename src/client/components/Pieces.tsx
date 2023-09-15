@@ -29,6 +29,10 @@ const Pieces = ({ cell, highlight }: Props) => {
   const { loggedUserInfo } = useContext(AuthContext);
 
   const isDraggable = (color: string) => {
+    if (!gameId) {
+      return playerTurn?.color === color;
+    }
+
     const isDraggable =
       playerTurn?.color === color &&
       playerTurn.playerData?.userId === loggedUserInfo?.userId;

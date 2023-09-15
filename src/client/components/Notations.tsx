@@ -10,13 +10,20 @@ interface Props {
 }
 
 const Notations = ({ rowIndex, cellIndex }: Props) => {
-  const { players } = useContext(GameContext);
+  const { players, gameId } = useContext(GameContext);
   const { loggedUserInfo } = useContext(AuthContext);
   const letters = ["a", "b", "c", "d", "e", "f", "g", "h"];
   const numbers = [1, 2, 3, 4, 5, 6, 7, 8].reverse();
-  const opponent = players.find(
-    (player) => player.playerData?.userId !== loggedUserInfo?.userId
-  );
+
+  let opponent;
+
+  if (gameId) {
+    opponent = players.find(
+      (player) => player.playerData?.userId !== loggedUserInfo?.userId
+    );
+  } else {
+    opponent = players.find((player) => player.color === "black");
+  }
 
   return (
     <div>
