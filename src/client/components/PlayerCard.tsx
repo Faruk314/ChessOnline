@@ -7,6 +7,8 @@ import { IoClose } from "react-icons/io5";
 import { IoCheckmarkSharp } from "react-icons/io5";
 import whiteDefault from "../assets/images/whiteDefault.png";
 import { FriendRequestStatus } from "../../types/types";
+import { MultiplayerContext } from "../context/MultiplayerContext";
+import { toast } from "react-toastify";
 
 interface Props {
   friendRequestInfo: UserRequest;
@@ -14,6 +16,7 @@ interface Props {
 
 const PlayerCard = ({ friendRequestInfo }: Props) => {
   const { loggedUserInfo } = useContext(AuthContext);
+  const { addInviteToDb } = useContext(MultiplayerContext);
   const { socket } = useContext(SocketContext);
   const {
     sendFriendRequest,
@@ -23,6 +26,12 @@ const PlayerCard = ({ friendRequestInfo }: Props) => {
   } = useContext(FriendContext);
   const [friendRequestStatus, setFriendRequestStatus] =
     useState<FriendRequestStatus | null>(null);
+
+  const notify = (message: string) => {
+    toast.success(message, {
+      position: "top-left",
+    });
+  };
 
   useEffect(() => {
     const getFriendshipStatus = async () => {
@@ -35,6 +44,11 @@ const PlayerCard = ({ friendRequestInfo }: Props) => {
   }, []);
 
   const inviteHandler = async () => {
+    const isInvited = await addInviteToDb(friendRequestInfo.userId);
+
+    if (isInvited) {
+      notify("Invite sent!");
+    }
     // socket?.emit("sendInvite", {
     //   receiverId: friendRequestInfo.userId,
     // });

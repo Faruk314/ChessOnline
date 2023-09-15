@@ -1,5 +1,4 @@
 import express from "express";
-import { getLoginStatus, login, logout, register } from "../controllers/auth";
 import {
   changeAvatar,
   retrieveGameStatus,

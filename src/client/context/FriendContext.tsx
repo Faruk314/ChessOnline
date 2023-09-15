@@ -5,7 +5,7 @@ import FriendRequests from "../modals/FriendRequests";
 
 type FriendContextType = {
   sendFriendRequest: (receiverId: number) => Promise<void>;
-  getFriends: () => Promise<void>;
+  getFriends: () => Promise<boolean>;
   checkFriendRequestStatus: (
     friendRequestInfo: UserRequest
   ) => Promise<FriendRequestStatus | null>;
@@ -20,7 +20,7 @@ type FriendContextType = {
 
 export const FriendContext = createContext<FriendContextType>({
   sendFriendRequest: async (receiverId) => {},
-  getFriends: async () => {},
+  getFriends: async () => false,
   checkFriendRequestStatus: async (friendRequestInfo) => null,
   getFriendRequests: async () => {},
   acceptFriendRequest: async (id) => {},
@@ -61,9 +61,16 @@ export const FriendContextProvider = ({ children }: FriendProviderProps) => {
         `http://localhost:3000/api/friends/getFriends`
       );
 
-      setFriends(response.data);
+      if (response.data) {
+        setFriends(response.data);
+
+        return true;
+      }
+
+      return false;
     } catch (error) {
       console.log(error);
+      return false;
     }
   };
 

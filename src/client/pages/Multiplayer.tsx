@@ -64,16 +64,7 @@ const Multiplayer = () => {
     retrieveGame();
   }, []);
 
-  useEffect(() => {
-    const handleUnload = () => {
-      socket?.emit("resign", gameId);
-    };
-
-    return () => {
-      console.log("triggered");
-      handleUnload();
-    };
-  }, []);
+  useEffect(() => {}, []);
 
   useEffect(() => {
     socket?.on("drawRejected", () => {

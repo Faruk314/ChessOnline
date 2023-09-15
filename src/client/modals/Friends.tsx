@@ -20,8 +20,9 @@ const Friends = ({ setOpenFriends }: Props) => {
 
   useEffect(() => {
     const fetchFriends = async () => {
-      await getFriends();
-      setIsLoading(false);
+      let friends = await getFriends();
+
+      if (friends) setIsLoading(false);
     };
 
     fetchFriends();
@@ -40,14 +41,6 @@ const Friends = ({ setOpenFriends }: Props) => {
       console.error("Error fetching users:", error);
     }
   };
-
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center h-[100vh]">
-        <div className="loader"></div>
-      </div>
-    );
-  }
 
   return (
     <div className="fixed inset-0 z-30 bg-[rgba(0,0,0,0.6)] flex items-center justify-center">
@@ -98,9 +91,10 @@ const Friends = ({ setOpenFriends }: Props) => {
             {friends.length === 0 && (
               <p className="ml-2 text-black">Friend list empty</p>
             )}
-            {friends.map((user) => (
-              <PlayerCard key={user.id} friendRequestInfo={user} />
-            ))}
+            {!isLoading &&
+              friends.map((user) => (
+                <PlayerCard key={user.id} friendRequestInfo={user} />
+              ))}
           </div>
         )}
 
@@ -125,10 +119,13 @@ const Friends = ({ setOpenFriends }: Props) => {
             {users.length === 0 && <p className="py-2">No users found</p>}
 
             <div className="flex flex-col py-5 space-y-3 overflow-y-auto h-[22rem] max-h-[22rem]">
-              {Array.isArray(users) &&
+              {users ? (
                 users.map((user) => (
                   <PlayerCard key={user.userId} friendRequestInfo={user} />
-                ))}
+                ))
+              ) : (
+                <div className="loader"></div>
+              )}
             </div>
           </div>
         )}

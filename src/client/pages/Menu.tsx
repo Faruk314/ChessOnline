@@ -11,16 +11,22 @@ import { SocketContext } from "../context/SocketContext";
 import UserInfo from "../components/UserInfo";
 import ChangeAvatar from "../modals/ChangeAvatar";
 import { AuthContext } from "../context/AuthContext";
-import { BiSearch } from "react-icons/bi";
+import { BiEnvelope, BiSearch } from "react-icons/bi";
 import FriendRequests from "../modals/FriendRequests";
 import Friends from "../modals/Friends";
 import { FriendContext } from "../context/FriendContext";
+import { BiEnvelopeOpen } from "react-icons/bi";
+import Invites from "../modals/Invites";
+import classNames from "classnames";
+import { MultiplayerContext } from "../context/MultiplayerContext";
 
 const Menu = () => {
   const { socket } = useContext(SocketContext);
   const { playSound } = useContext(SoundContext);
   const { friendRequests } = useContext(FriendContext);
+  const { gameInvites } = useContext(MultiplayerContext);
   const [openFindMatch, setOpenFindMatch] = useState(false);
+  const [openInvites, setOpenInvites] = useState(false);
   const [openFriends, setOpenFriends] = useState(false);
   const { openChangeAvatar, setIsLoggedIn } = useContext(AuthContext);
   const [openFriendReq, setOpenFriendReq] = useState(false);
@@ -38,13 +44,18 @@ const Menu = () => {
 
   return (
     <section className="h-[100vh] bg-amber-100 text-white font-bold flex flex-col justify-center items-center">
-      <div className="fixed top-0 flex w-full p-4 space-x-2">
+      <div className="fixed top-0 flex items-center w-full p-4 space-x-2">
         <SoundButton />
 
         <div className="relative">
           <button
-            onClick={() => setOpenFriendReq((prev) => !prev)}
-            className="p-2 rounded-md bg-amber-900"
+            onClick={() => {
+              setOpenInvites(false);
+              setOpenFriendReq((prev) => !prev);
+            }}
+            className={classNames("p-2 border rounded-md bg-amber-900", {
+              "bg-transparent border-amber-900 text-amber-900": openFriendReq,
+            })}
           >
             <ImUsers size={20} />
           </button>
@@ -54,6 +65,27 @@ const Menu = () => {
               {friendRequests.length}
             </span>
           )}
+        </div>
+
+        <div className="relative">
+          <button
+            onClick={() => {
+              setOpenFriendReq(false);
+              setOpenInvites((prev) => !prev);
+            }}
+            className={classNames("p-2 border rounded-md bg-amber-900", {
+              "bg-transparent border-amber-900 text-amber-900": openInvites,
+            })}
+          >
+            {openInvites && <BiEnvelopeOpen size={20} />}
+            {!openInvites && <BiEnvelope size={20} />}
+
+            {gameInvites.length > 0 && (
+              <span className="absolute px-2 bg-red-600 rounded-full top-[-0.5rem] right-[-1rem]">
+                {gameInvites.length}
+              </span>
+            )}
+          </button>
         </div>
       </div>
 
@@ -109,6 +141,7 @@ const Menu = () => {
       {openChangeAvatar && <ChangeAvatar />}
       {openFriends && <Friends setOpenFriends={setOpenFriends} />}
       {openFriendReq && <FriendRequests />}
+      {openInvites && <Invites />}
     </section>
   );
 };

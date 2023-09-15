@@ -6,6 +6,8 @@ import { SocketContext } from "./SocketContext";
 import moveSound from "../assets/sounds/move.mp3";
 import { GameContext } from "./GameContext";
 import { AuthContext } from "./AuthContext";
+import axios from "axios";
+import { UserInfo } from "../../types/types";
 
 export interface Data {
   gameId: string;
@@ -30,6 +32,9 @@ type MultiplayerContextType = {
   resign: (gameId: string) => void;
   offerDraw: (receiverId: number, gameId: string) => void;
   rotateHandler: () => boolean;
+  addInviteToDb: (receiverId: number) => Promise<boolean>;
+  gameInvites: UserInfo[];
+  getGameInvites: () => Promise<void>;
 };
 
 export const MultiplayerContext = createContext<MultiplayerContextType>({
@@ -39,6 +44,9 @@ export const MultiplayerContext = createContext<MultiplayerContextType>({
   resign: (gameId) => {},
   offerDraw: (receiverId, gameId) => {},
   rotateHandler: () => false,
+  addInviteToDb: async (receiverId) => false,
+  gameInvites: [],
+  getGameInvites: async () => {},
 });
 
 type MultiplayerProviderProps = {
@@ -50,10 +58,13 @@ export const MultiplayerContextProvider = ({
 }: MultiplayerProviderProps) => {
   const { socket } = useContext(SocketContext);
   const { playSound } = useContext(SoundContext);
-  const { players } = useContext(GameContext);
+  const { players, gameId } = useContext(GameContext);
   const { loggedUserInfo } = useContext(AuthContext);
+  const [gameInvites, setGameInvites] = useState<UserInfo[]>([]);
 
   const rotateHandler = () => {
+    if (!gameId) return false;
+
     const player = players?.find(
       (player) =>
         player.playerData?.userId === loggedUserInfo?.userId &&
@@ -63,6 +74,40 @@ export const MultiplayerContextProvider = ({
     if (player) return false;
 
     return true;
+  };
+
+  const getGameInvites = async () => {
+    try {
+      let response = await axios.get(
+        "http://localhost:3000/api/invite/getInvites"
+      );
+
+      if (response.data) {
+        setGameInvites(response.data);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const addInviteToDb = async (receiverId: number) => {
+    try {
+      let response = await axios.post(
+        "http://localhost:3000/api/invite/sendInvite",
+        {
+          receiverId,
+        }
+      );
+
+      if (response.status === 200) {
+        return true;
+      }
+
+      return false;
+    } catch (error) {
+      console.log(error);
+      return false;
+    }
   };
 
   const resign = (gameId: string) => {
@@ -95,6 +140,9 @@ export const MultiplayerContextProvider = ({
         resign,
         offerDraw,
         rotateHandler,
+        addInviteToDb,
+        gameInvites,
+        getGameInvites,
       }}
     >
       {children}

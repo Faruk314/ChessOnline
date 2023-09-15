@@ -12,6 +12,7 @@ import { Square, Position, Game } from "../../types/types";
 import _, { cloneDeep, find, first, update } from "lodash";
 import { SoundContext } from "./SoundContext";
 import move from "../assets/sounds/move.mp3";
+import capture from "../assets/sounds/capture.mp3";
 import axios from "axios";
 import { Data, MoveData, PromotionData } from "./MultiplayerContext";
 import { AuthContext } from "./AuthContext";
@@ -988,7 +989,6 @@ export const GameContextProvider = ({ children }: any) => {
     );
     const updatedPlayers = [...players];
     setCheckPositions([]);
-    playSound(move);
 
     if (!activePiece) return;
 
@@ -1046,8 +1046,11 @@ export const GameContextProvider = ({ children }: any) => {
     const enemyPiece = updatedBoard[row][col];
 
     if (enemyPiece) {
+      playSound(capture);
       updatedPlayers[currentPlayerIndex].enemyPieces.push(enemyPiece);
       setPlayers(updatedPlayers);
+    } else {
+      playSound(move);
     }
 
     updatedBoard[row][col] = updatedActivePiece;
@@ -1058,6 +1061,7 @@ export const GameContextProvider = ({ children }: any) => {
       elPassantMove?.row === row &&
       elPassantMove.col === col
     ) {
+      playSound(capture);
       const piece =
         updatedBoard[elPassantCaptureMove?.row!][elPassantCaptureMove?.col!];
 

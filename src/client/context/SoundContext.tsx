@@ -44,7 +44,7 @@ export const SoundContextProvider = ({ children }: SoundProviderProps) => {
       src: [soundUrl],
     });
 
-    isSoundEnabled && sound.play();
+    sound.play();
   };
 
   return (
