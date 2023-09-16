@@ -61,7 +61,7 @@ const Menu = () => {
           </button>
 
           {friendRequests.length > 0 && (
-            <span className="absolute px-2 bg-red-600 rounded-full top-[-0.5rem] right-[-1rem]">
+            <span className="absolute px-2 bg-red-600 text-white rounded-full top-[-0.5rem] right-[-1rem]">
               {friendRequests.length}
             </span>
           )}
@@ -81,7 +81,7 @@ const Menu = () => {
             {!openInvites && <BiEnvelope size={20} />}
 
             {gameInvites.length > 0 && (
-              <span className="absolute px-2 bg-red-600 rounded-full top-[-0.5rem] right-[-1rem]">
+              <span className="absolute px-2 bg-red-600 text-white rounded-full top-[-0.5rem] right-[-1rem]">
                 {gameInvites.length}
               </span>
             )}

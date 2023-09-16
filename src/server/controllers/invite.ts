@@ -47,3 +47,36 @@ export const getInvites = asyncHandler(async (req: Request, res: Response) => {
     res.status(200).json(results);
   }
 });
+
+export const acceptInvite = asyncHandler(
+  async (req: Request, res: Response) => {
+    const userId = req.user?.userId;
+
+    try {
+      let q = `DELETE FROM invites i WHERE i.sender = ? OR i.receiver = ?;`;
+
+      await query(q, [userId, userId]);
+
+      res.status(200).json("Invites deleted");
+    } catch (error) {
+      res.status(400).json("Could not delete invites");
+    }
+  }
+);
+
+export const rejectInvite = asyncHandler(
+  async (req: Request, res: Response) => {
+    const receiverId = req.user?.userId;
+    const senderId = req.body.senderId;
+
+    try {
+      let q = "DELETE FROM invites i WHERE i.sender = ? AND i.receiver = ?";
+
+      await query(q, [senderId, receiverId]);
+
+      res.status(200).json("Invite deleted");
+    } catch (error) {
+      res.status(400).json("Could not delete invite");
+    }
+  }
+);
