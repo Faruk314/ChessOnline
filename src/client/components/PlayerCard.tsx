@@ -48,10 +48,8 @@ const PlayerCard = ({ friendRequestInfo }: Props) => {
 
     if (isInvited) {
       notify("Invite sent!");
+      socket?.emit("sendInvite", friendRequestInfo.userId);
     }
-    // socket?.emit("sendInvite", {
-    //   receiverId: friendRequestInfo.userId,
-    // });
   };
 
   const unfriendHandler = async () => {
@@ -192,9 +190,6 @@ const PlayerCard = ({ friendRequestInfo }: Props) => {
           </div>
         )}
       </div>
-      {/* {invitePendingModalOpen && (
-    <GameInvitePending invitedUserId={friendRequestInfo.userId} />
-  )} */}
     </div>
   );
 };

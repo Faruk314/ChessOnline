@@ -11,11 +11,12 @@ import SinglePlayer from "./pages/SinglePlayer";
 import { GameContext } from "./context/GameContext";
 import OpponentLeft from "./modals/OpponentLeft";
 import Draw from "./modals/Draw";
-import { UserRequest } from "../types/types";
+import { UserInfo, UserRequest } from "../types/types";
 import { FriendContext } from "./context/FriendContext";
 import ProtectedAuthPages from "./protection/ProtectedAuthPages";
 import ProtectedRoutes from "./protection/ProtectedRoutes";
 import Loader from "./components/Loader";
+import { MultiplayerContext } from "./context/MultiplayerContext";
 
 axios.defaults.withCredentials = true;
 // axios.defaults.baseURL = process.env.FRONTEND_URL;
@@ -26,6 +27,7 @@ function App() {
   const { setFriendRequests, setFriends } = useContext(FriendContext);
   const { setIsLoggedIn, setLoggedUserInfo, isLoggedIn } =
     useContext(AuthContext);
+  const { addGameInvite } = useContext(MultiplayerContext);
   const [openOpponentLeft, setOpenOpponentLeft] = useState(false);
   const [openDrawModal, setOpenDrawModal] = useState(false);
   const navigate = useNavigate();
@@ -57,6 +59,17 @@ function App() {
       }
     });
   }, [gameId, socket, isLoggedIn]);
+
+  useEffect(() => {
+    socket?.on("receiveInvite", (userInfo: UserInfo) => {
+      console.log(userInfo, "userInfo");
+      addGameInvite(userInfo);
+    });
+
+    return () => {
+      socket?.off("receiveInvite");
+    };
+  }, [socket]);
 
   useEffect(() => {
     socket?.on("getFriendRequest", (request: UserRequest) => {

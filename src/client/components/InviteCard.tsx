@@ -3,19 +3,27 @@ import whiteDefault from "../assets/images/whiteDefault.png";
 import { UserRequest } from "../../types/types";
 import { IoCheckmarkSharp, IoClose } from "react-icons/io5";
 import { MultiplayerContext } from "../context/MultiplayerContext";
+import { SocketContext } from "../context/SocketContext";
 
 interface Props {
   inviter: UserRequest;
 }
 
 const InviteCard = ({ inviter }: Props) => {
-  const { rejectGameInvite } = useContext(MultiplayerContext);
+  const { rejectGameInvite, acceptGameInvite } = useContext(MultiplayerContext);
+  const { socket } = useContext(SocketContext);
+
+  const inviteHandler = async () => {
+    let inviteAccepted = await acceptGameInvite();
+
+    if (inviteAccepted) socket?.emit("inviteAccepted");
+  };
 
   return (
     <div className="flex items-center bg-amber-100 max-w-[25rem] justify-between p-2 mx-1 shadow-[0_3px_10px_rgb(0,0,0,0.2)] rounded-md">
       <div className="flex space-x-2">
         <img
-          src={whiteDefault}
+          src={inviter.image || whiteDefault}
           alt=""
           className="w-[3rem] h-[3rem] border rounded-lg relative"
         />
@@ -27,7 +35,10 @@ const InviteCard = ({ inviter }: Props) => {
       </div>
 
       <div className="flex space-x-1">
-        <button className="p-2 rounded-md hover:bg-amber-900 hover:text-white">
+        <button
+          onClick={inviteHandler}
+          className="p-2 rounded-md hover:bg-amber-900 hover:text-white"
+        >
           <IoCheckmarkSharp size={20} className="text-green-500" />
         </button>
         <button

@@ -36,6 +36,8 @@ type MultiplayerContextType = {
   gameInvites: UserInfo[];
   getGameInvites: () => Promise<void>;
   rejectGameInvite: (senderId: number) => Promise<boolean>;
+  acceptGameInvite: () => Promise<boolean>;
+  addGameInvite: (userInfo: UserInfo) => void;
 };
 
 export const MultiplayerContext = createContext<MultiplayerContextType>({
@@ -49,6 +51,8 @@ export const MultiplayerContext = createContext<MultiplayerContextType>({
   gameInvites: [],
   getGameInvites: async () => {},
   rejectGameInvite: async (senderId) => false,
+  acceptGameInvite: async () => false,
+  addGameInvite: (userInfo) => {},
 });
 
 type MultiplayerProviderProps = {
@@ -76,6 +80,33 @@ export const MultiplayerContextProvider = ({
     if (player) return false;
 
     return true;
+  };
+
+  const addGameInvite = (userInfo: UserInfo) => {
+    const inviteExists = gameInvites.find(
+      (invite) => userInfo.userId === invite.userId
+    );
+
+    console.log(inviteExists, "inviteExi");
+
+    if (!inviteExists) {
+      setGameInvites((prev) => [...prev, userInfo]);
+    }
+  };
+
+  const acceptGameInvite = async () => {
+    try {
+      const response = await axios.post(
+        "http://localhost:3000/api/invite/acceptInvite"
+      );
+
+      if (response.status === 200) return true;
+
+      return false;
+    } catch (error) {
+      console.log(error);
+      return false;
+    }
   };
 
   const rejectGameInvite = async (senderId: number) => {
@@ -171,6 +202,8 @@ export const MultiplayerContextProvider = ({
         gameInvites,
         getGameInvites,
         rejectGameInvite,
+        acceptGameInvite,
+        addGameInvite,
       }}
     >
       {children}

@@ -112,6 +112,20 @@ export default function setupSocket() {
       }, 10000);
     });
 
+    socket.on("sendInvite", async (receiverId: number) => {
+      const receiverSocketId = getUser(receiverId);
+      const senderSocketId = getUser(socket.userId!);
+
+      let q =
+        "SELECT `userId`, `userName`,`image` FROM users WHERE `userId`= ?";
+
+      let senderInfo: any = await query(q, [senderSocketId]);
+
+      console.log(senderInfo, "senderInfo");
+
+      io.to(receiverSocketId).emit("receiveInvite", senderInfo[0]);
+    });
+
     //friend requests
     socket.on("sendFriendRequest", async (receiverId: number) => {
       const receiverSocketId = getUser(receiverId);
