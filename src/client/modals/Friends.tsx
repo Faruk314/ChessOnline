@@ -12,21 +12,10 @@ interface Props {
 }
 
 const Friends = ({ setOpenFriends }: Props) => {
-  const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [users, setUsers] = useState<UserInfo[]>([]);
-  const { getFriends, friends } = useContext(FriendContext);
+  const { friends } = useContext(FriendContext);
   const [opened, setOpened] = useState("friends");
-
-  useEffect(() => {
-    const fetchFriends = async () => {
-      let friends = await getFriends();
-
-      if (friends) setIsLoading(false);
-    };
-
-    fetchFriends();
-  }, []);
 
   const fetchUsers = async () => {
     if (searchQuery.length < 1) return;
@@ -91,10 +80,9 @@ const Friends = ({ setOpenFriends }: Props) => {
             {friends.length === 0 && (
               <p className="ml-2 text-black">Friend list empty</p>
             )}
-            {!isLoading &&
-              friends.map((user) => (
-                <PlayerCard key={user.id} friendRequestInfo={user} />
-              ))}
+            {friends.map((user) => (
+              <PlayerCard key={user.id} friendRequestInfo={user} />
+            ))}
           </div>
         )}
 

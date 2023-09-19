@@ -4,15 +4,7 @@ import { MultiplayerContext } from "../context/MultiplayerContext";
 import InviteCard from "../components/InviteCard";
 
 const Invites = () => {
-  const { getGameInvites, gameInvites } = useContext(MultiplayerContext);
-
-  useEffect(() => {
-    const getInvites = async () => {
-      await getGameInvites();
-    };
-
-    getInvites();
-  }, []);
+  const { gameInvites } = useContext(MultiplayerContext);
 
   return (
     <div className="absolute text-black shadow-[0_3px_10px_rgb(0,0,0,0.2)] top-[4rem] left-4 h-[20rem] w-[19rem] px-2 rounded-md z-30 bg-amber-100 border-md">

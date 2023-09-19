@@ -38,6 +38,7 @@ type MultiplayerContextType = {
   rejectGameInvite: (senderId: number) => Promise<boolean>;
   acceptGameInvite: () => Promise<boolean>;
   addGameInvite: (userInfo: UserInfo) => void;
+  setGameInvites: React.Dispatch<React.SetStateAction<UserInfo[]>>;
 };
 
 export const MultiplayerContext = createContext<MultiplayerContextType>({
@@ -53,6 +54,7 @@ export const MultiplayerContext = createContext<MultiplayerContextType>({
   rejectGameInvite: async (senderId) => false,
   acceptGameInvite: async () => false,
   addGameInvite: (userInfo) => {},
+  setGameInvites: () => {},
 });
 
 type MultiplayerProviderProps = {
@@ -83,11 +85,9 @@ export const MultiplayerContextProvider = ({
   };
 
   const addGameInvite = (userInfo: UserInfo) => {
-    const inviteExists = gameInvites.find(
+    const inviteExists = gameInvites.some(
       (invite) => userInfo.userId === invite.userId
     );
-
-    console.log(inviteExists, "inviteExi");
 
     if (!inviteExists) {
       setGameInvites((prev) => [...prev, userInfo]);
@@ -204,6 +204,7 @@ export const MultiplayerContextProvider = ({
         rejectGameInvite,
         acceptGameInvite,
         addGameInvite,
+        setGameInvites,
       }}
     >
       {children}

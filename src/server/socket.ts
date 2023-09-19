@@ -6,14 +6,13 @@ import dotenv from "dotenv";
 import { v4 as uuidv4 } from "uuid";
 import query from "./db";
 import { client } from "./main";
-import { createGame } from "./game/pieceFunctions";
 import { movePiece } from "./game/pieceFunctions";
 import {
+  createGameRoom,
   deleteGameState,
   findOpponentId,
   getGameState,
   highlight,
-  insertGameInDb,
 } from "./game/gameFunctions";
 import { Piece } from "../client/classes/Piece.js";
 import { promotePawn } from "./game/specialMoves";
@@ -114,16 +113,21 @@ export default function setupSocket() {
 
     socket.on("sendInvite", async (receiverId: number) => {
       const receiverSocketId = getUser(receiverId);
-      const senderSocketId = getUser(socket.userId!);
 
       let q =
-        "SELECT `userId`, `userName`,`image` FROM users WHERE `userId`= ?";
+        "SELECT u.userId, u.userName, u.image FROM users u WHERE u.userId= ?";
 
-      let senderInfo: any = await query(q, [senderSocketId]);
+      let senderInfo: any = await query(q, [socket.userId]);
 
       console.log(senderInfo, "senderInfo");
 
       io.to(receiverSocketId).emit("receiveInvite", senderInfo[0]);
+    });
+
+    socket.on("acceptInvite", async (receiverId: number) => {
+      const gameId = await createGameRoom(io, socket.userId!, receiverId);
+
+      io.to(gameId!).emit("gameStart", gameId);
     });
 
     //friend requests
@@ -162,41 +166,9 @@ export default function setupSocket() {
         const firstPlayerId = playersQueue.splice(0, 1)[0];
         const secondPlayerId = playersQueue.splice(0, 1)[0];
 
-        const playerOnesocketId = getUser(firstPlayerId);
-        const playerTwoSocketId = getUser(secondPlayerId);
+        const gameId = await createGameRoom(io, firstPlayerId, secondPlayerId);
 
-        if (!playerOnesocketId || !playerTwoSocketId) {
-          return console.log("playerSocketId not found!");
-        }
-
-        const playerOneSocket = io.sockets.sockets.get(playerOnesocketId);
-        const playerTwoSocket = io.sockets.sockets.get(playerTwoSocketId);
-
-        if (!playerOneSocket || !playerTwoSocket) return;
-
-        let gameId = uuidv4();
-
-        playerOneSocket.join(gameId);
-        playerTwoSocket.join(gameId);
-
-        let gameInDb = await insertGameInDb(
-          gameId,
-          firstPlayerId,
-          secondPlayerId
-        );
-
-        if (!gameInDb) return;
-
-        let players = [firstPlayerId, secondPlayerId];
-
-        let gameState = await createGame(players, gameId);
-
-        await client.set(gameId, JSON.stringify(gameState));
-
-        addToGameMap(firstPlayerId, gameId);
-        addToGameMap(secondPlayerId, gameId);
-
-        io.to(gameId).emit("gameStart", gameId);
+        io.to(gameId!).emit("gameStart", gameId);
       }
     });
 

@@ -10,13 +10,20 @@ interface Props {
 }
 
 const InviteCard = ({ inviter }: Props) => {
-  const { rejectGameInvite, acceptGameInvite } = useContext(MultiplayerContext);
+  const { rejectGameInvite, acceptGameInvite, setGameInvites } =
+    useContext(MultiplayerContext);
   const { socket } = useContext(SocketContext);
 
   const inviteHandler = async () => {
     let inviteAccepted = await acceptGameInvite();
 
-    if (inviteAccepted) socket?.emit("inviteAccepted");
+    if (inviteAccepted) {
+      setGameInvites((prev) =>
+        prev.filter((invite) => invite.userId !== inviter.userId)
+      );
+
+      socket?.emit("acceptInvite", inviter.userId);
+    }
   };
 
   return (

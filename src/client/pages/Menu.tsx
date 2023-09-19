@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import menuImage from "../assets/images/menu.png";
 import { ImUser, ImUsers } from "react-icons/im";
 import SoundButton from "../components/SoundButton";
@@ -23,8 +23,8 @@ import { MultiplayerContext } from "../context/MultiplayerContext";
 const Menu = () => {
   const { socket } = useContext(SocketContext);
   const { playSound } = useContext(SoundContext);
-  const { friendRequests } = useContext(FriendContext);
-  const { gameInvites } = useContext(MultiplayerContext);
+  const { friendRequests, getFriends } = useContext(FriendContext);
+  const { gameInvites, getGameInvites } = useContext(MultiplayerContext);
   const [openFindMatch, setOpenFindMatch] = useState(false);
   const [openInvites, setOpenInvites] = useState(false);
   const [openFriends, setOpenFriends] = useState(false);
@@ -41,6 +41,22 @@ const Menu = () => {
       console.log(error);
     }
   };
+
+  useEffect(() => {
+    const fetchFriends = async () => {
+      await getFriends();
+    };
+
+    fetchFriends();
+  }, []);
+
+  useEffect(() => {
+    const getInvites = async () => {
+      await getGameInvites();
+    };
+
+    getInvites();
+  }, []);
 
   return (
     <section className="h-[100vh] bg-amber-100 text-white font-bold flex flex-col justify-center items-center">

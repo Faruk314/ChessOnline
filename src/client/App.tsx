@@ -27,7 +27,7 @@ function App() {
   const { setFriendRequests, setFriends } = useContext(FriendContext);
   const { setIsLoggedIn, setLoggedUserInfo, isLoggedIn } =
     useContext(AuthContext);
-  const { addGameInvite } = useContext(MultiplayerContext);
+  const { addGameInvite, getGameInvites } = useContext(MultiplayerContext);
   const [openOpponentLeft, setOpenOpponentLeft] = useState(false);
   const [openDrawModal, setOpenDrawModal] = useState(false);
   const navigate = useNavigate();
@@ -61,9 +61,8 @@ function App() {
   }, [gameId, socket, isLoggedIn]);
 
   useEffect(() => {
-    socket?.on("receiveInvite", (userInfo: UserInfo) => {
-      console.log(userInfo, "userInfo");
-      addGameInvite(userInfo);
+    socket?.on("receiveInvite", async (userInfo: UserInfo) => {
+      await getGameInvites();
     });
 
     return () => {

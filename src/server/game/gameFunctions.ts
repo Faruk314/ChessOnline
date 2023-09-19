@@ -2,9 +2,12 @@ import { Position } from "../../types/types";
 import { Piece } from "../../client/classes/Piece";
 import { Square } from "../../types/types";
 import { Game } from "../../types/types";
-import { createPawn } from "../../client/classes/Piece";
+import { UserInfo } from "../../types/types";
+import { Player } from "../../client/classes/Player";
+import { v4 as uuidv4 } from "uuid";
 import query from "../db";
 import { client } from "../main";
+import { getUser } from "./usersMap";
 import {
   highlightKing,
   highlightBishop,
@@ -19,6 +22,138 @@ import {
   findPawnPositions,
   findKnightPositions,
 } from "./pieceFunctions";
+import { createPawn } from "../../client/classes/Piece";
+import { addToGameMap } from "./gamesMap";
+
+export const createGame = async (playerIds: number[], gameId: string) => {
+  let game: Game = {
+    gameId: gameId,
+    board: [],
+    players: [],
+    playerTurn: null,
+    availablePositions: [],
+    activePiece: null,
+    isPromotion: false,
+    checkPositions: [],
+    checkmate: false,
+    lastMovePositions: [],
+    elPassantMove: null,
+    elPassantCaptureMove: null,
+    movedPieces: [],
+    stalemate: false,
+    messages: [],
+    drawOffererId: null,
+  };
+
+  const board = new Array(8).fill(null).map(() => new Array(8).fill(null));
+
+  for (let row = 0; row < 8; row++) {
+    for (let col = 0; col < 8; col++) {
+      // if (row === 7 && col === 5) {
+      //   board[row][col] = createPawn(row, col, "white", "pawn");
+      // }
+
+      // if (row === 1 && col === 1)
+      //   board[row][col] = createPawn(row, col, "black", "pawn");
+      // if (row === 1 && col === 2)
+      //   board[row][col] = createPawn(row, col, "black", "pawn");
+      // if (row === 1 && col === 3)
+      //   board[row][col] = createPawn(row, col, "black", "pawn");
+      // if (row === 1 && col === 7)
+      //   board[row][col] = createPawn(row, col, "black", "pawn");
+      // if (row === 0 && col === 2)
+      //   board[row][col] = createPawn(row, col, "black", "king");
+
+      //importnant
+      if (row === 6) board[row][col] = createPawn(row, col, "white", "pawn");
+      if (row === 7) {
+        if (col === 0)
+          board[row][col] = createPawn(row, col, "white", "rook", "queenSide");
+        if (col === 7)
+          board[row][col] = createPawn(row, col, "white", "rook", "kingSide");
+        board[row][4] = createPawn(row, 4, "white", "king");
+        board[row][3] = createPawn(row, 3, "white", "queen");
+        if (col === 1 || col === 6)
+          board[row][col] = createPawn(row, col, "white", "knight");
+        if (col === 2 || col === 5)
+          board[row][col] = createPawn(row, col, "white", "bishop");
+      }
+      if (row === 1) board[row][col] = createPawn(row, col, "black", "pawn");
+      if (row === 0) {
+        if (col === 0)
+          board[row][col] = createPawn(row, col, "black", "rook", "queenSide");
+        if (col === 7)
+          board[row][col] = createPawn(row, col, "black", "rook", "kingSide");
+        board[row][4] = createPawn(row, 4, "black", "king");
+        board[row][3] = createPawn(row, 3, "black", "queen");
+        if (col === 1 || col === 6)
+          board[row][col] = createPawn(row, col, "black", "knight");
+        if (col === 2 || col === 5)
+          board[row][col] = createPawn(row, col, "black", "bishop");
+      }
+    }
+  }
+
+  game.board = board;
+  const shuffledIds = playerIds.sort(() => Math.random() - 0.5);
+  let playersData: UserInfo[] = [];
+
+  for (let i = 0; i < shuffledIds.length; i++) {
+    let playerId = shuffledIds[i];
+
+    let playerInfoQuery =
+      "SELECT u.userName, u.userId, u.image FROM users u WHERE u.userId = ?";
+    let playerData: any = await query(playerInfoQuery, [playerId]);
+
+    playersData.push(playerData[0]);
+  }
+
+  const whitePlayer = new Player("white", playersData[0]);
+  const blackPlayer = new Player("black", playersData[1]);
+
+  game.players = [whitePlayer, blackPlayer];
+  game.playerTurn = whitePlayer;
+
+  return game;
+};
+
+export const createGameRoom = async (
+  io: any,
+  firstPlayerId: number,
+  secondPlayerId: number
+) => {
+  const playerOnesocketId = getUser(firstPlayerId);
+  const playerTwoSocketId = getUser(secondPlayerId);
+
+  if (!playerOnesocketId || !playerTwoSocketId) {
+    return console.log("playerSocketId not found!");
+  }
+
+  const playerOneSocket = io.sockets.sockets.get(playerOnesocketId);
+  const playerTwoSocket = io.sockets.sockets.get(playerTwoSocketId);
+
+  if (!playerOneSocket || !playerTwoSocket) return;
+
+  let gameId = uuidv4();
+
+  playerOneSocket.join(gameId);
+  playerTwoSocket.join(gameId);
+
+  let gameInDb = await insertGameInDb(gameId, firstPlayerId, secondPlayerId);
+
+  if (!gameInDb) return;
+
+  let players = [firstPlayerId, secondPlayerId];
+
+  let gameState = await createGame(players, gameId);
+
+  await client.set(gameId, JSON.stringify(gameState));
+
+  addToGameMap(firstPlayerId, gameId);
+  addToGameMap(secondPlayerId, gameId);
+
+  return gameId;
+};
 
 export const findOpponentId = (gameState: Game, userId: number) => {
   if (!gameState)
