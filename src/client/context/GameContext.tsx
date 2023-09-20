@@ -229,8 +229,6 @@ export const GameContextProvider = ({ children }: any) => {
 
       const game = response.data;
 
-      if (!game) return false;
-
       updateGameState(game);
 
       return true;

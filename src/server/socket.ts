@@ -215,11 +215,15 @@ export default function setupSocket() {
     socket.on(
       "movePiece",
       async (data: { gameId: string; row: number; col: number }) => {
-        let gameState = await getGameState(data.gameId);
+        let gameState: Game = await getGameState(data.gameId);
 
         movePiece(data.row, data.col, gameState);
 
         await client.set(data.gameId, JSON.stringify(gameState));
+
+        if (gameState.checkmate || gameState.stalemate) {
+          await deleteGameState(data.gameId);
+        }
 
         io.to(data.gameId).emit("pieceMoved", gameState);
       }
@@ -231,6 +235,10 @@ export default function setupSocket() {
       promotePawn(data.type, gameState);
 
       await client.set(data.gameId, JSON.stringify(gameState));
+
+      if (gameState.checkmate || gameState.stalemate) {
+        await deleteGameState(data.gameId);
+      }
 
       io.to(data.gameId).emit("pieceMoved", gameState);
     });

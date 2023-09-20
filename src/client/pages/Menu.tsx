@@ -19,6 +19,7 @@ import { BiEnvelopeOpen } from "react-icons/bi";
 import Invites from "../modals/Invites";
 import classNames from "classnames";
 import { MultiplayerContext } from "../context/MultiplayerContext";
+import { GameContext } from "../context/GameContext";
 
 const Menu = () => {
   const { socket } = useContext(SocketContext);
@@ -116,7 +117,9 @@ const Menu = () => {
       <div className="grid gap-4 mt-[10rem] z-20">
         <button
           onMouseEnter={() => playSound(moveSound)}
-          onClick={() => navigate("/singlePlayer")}
+          onClick={() => {
+            navigate("/singlePlayer");
+          }}
           className="flex items-center justify-center px-10 py-4 space-x-2 text-xl border-2 rounded-md shadow-md border-amber-900 bg-amber-900 hover:bg-transparent hover:text-amber-900"
         >
           <ImUser size={30} className="" />
