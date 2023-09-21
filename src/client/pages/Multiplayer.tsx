@@ -41,7 +41,6 @@ const Multiplayer = () => {
     useContext(MultiplayerContext);
   const { loggedUserInfo } = useContext(AuthContext);
   const navigate = useNavigate();
-  const location = useLocation();
   const opponent = players.find(
     (player) => player.playerData?.userId !== loggedUserInfo?.userId
   );

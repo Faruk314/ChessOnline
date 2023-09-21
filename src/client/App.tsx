@@ -1,6 +1,6 @@
 import { useContext, useEffect, useState } from "react";
 import Menu from "./pages/Menu";
-import { Routes, Route, useNavigate } from "react-router-dom";
+import { Routes, Route, useNavigate, useLocation } from "react-router-dom";
 import Login from "./pages/Login";
 import axios from "axios";
 import Register from "./pages/Register";
@@ -17,13 +17,14 @@ import ProtectedAuthPages from "./protection/ProtectedAuthPages";
 import ProtectedRoutes from "./protection/ProtectedRoutes";
 import Loader from "./components/Loader";
 import { MultiplayerContext } from "./context/MultiplayerContext";
+import { Msg } from "../types/types";
 
 axios.defaults.withCredentials = true;
 // axios.defaults.baseURL = process.env.FRONTEND_URL;
 
 function App() {
   const { socket } = useContext(SocketContext);
-  const { gameId, setDrawOffered } = useContext(GameContext);
+  const { gameId, setDrawOffered, setMessages } = useContext(GameContext);
   const { setFriendRequests, setFriends } = useContext(FriendContext);
   const { setIsLoggedIn, setLoggedUserInfo, isLoggedIn } =
     useContext(AuthContext);
@@ -32,6 +33,7 @@ function App() {
   const [openDrawModal, setOpenDrawModal] = useState(false);
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
+  const location = useLocation();
 
   useEffect(() => {
     const getLoginStatus = async () => {
@@ -59,6 +61,16 @@ function App() {
       }
     });
   }, [gameId, socket, isLoggedIn]);
+
+  useEffect(() => {
+    socket?.on("receiveMessage", (message: Msg) => {
+      setMessages((prev) => [...prev, message]);
+    });
+
+    return () => {
+      socket?.off("receiveMessage");
+    };
+  }, [socket]);
 
   useEffect(() => {
     socket?.on("receiveInvite", async (userInfo: UserInfo) => {
@@ -131,6 +143,8 @@ function App() {
   return (
     <div>
       <Routes>
+        <Route path="*" element={<div>Not found</div>} />
+
         <Route element={<ProtectedAuthPages />}>
           <Route path="/" element={<Login />} />
           <Route path="/register" element={<Register />} />

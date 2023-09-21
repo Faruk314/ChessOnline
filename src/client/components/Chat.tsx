@@ -1,8 +1,7 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useState } from "react";
 import { SocketContext } from "../context/SocketContext";
 import { AuthContext } from "../context/AuthContext";
 import { GameContext } from "../context/GameContext";
-import { Msg } from "../../types/types";
 import { IoClose } from "react-icons/io5";
 
 interface Props {
@@ -10,21 +9,11 @@ interface Props {
 }
 
 const Chat = ({ setOpenChat }: Props) => {
-  const { messages, setMessages } = useContext(GameContext);
+  const { messages } = useContext(GameContext);
   const { gameId } = useContext(GameContext);
   const { socket } = useContext(SocketContext);
   const { loggedUserInfo } = useContext(AuthContext);
   const [message, setMessage] = useState("");
-
-  useEffect(() => {
-    socket?.on("receiveMessage", (message: Msg) => {
-      setMessages((prev) => [...prev, message]);
-    });
-
-    return () => {
-      socket?.off("receiveMessage");
-    };
-  }, [socket]);
 
   return (
     <div className="fixed z-40 flex flex-col bottom-4 right-4">

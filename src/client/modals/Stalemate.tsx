@@ -25,7 +25,7 @@ const Stalemate = () => {
           }}
           className="p-2 mt-2 text-xl font-normal text-white rounded-md bg-amber-900"
         >
-          Next
+          Continue
         </button>
       </div>
     </div>
