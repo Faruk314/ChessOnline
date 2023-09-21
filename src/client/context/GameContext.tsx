@@ -39,6 +39,8 @@ interface GameContextProps {
   setDrawOffered: React.Dispatch<React.SetStateAction<boolean>>;
   setOpenDrawOffer: React.Dispatch<React.SetStateAction<boolean>>;
   openDrawOffer: boolean;
+  resetGame: () => void;
+  initGame: () => void;
 }
 
 export const GameContext = createContext<GameContextProps>({
@@ -62,6 +64,8 @@ export const GameContext = createContext<GameContextProps>({
   setDrawOffered: () => {},
   setOpenDrawOffer: () => {},
   openDrawOffer: false,
+  resetGame: () => {},
+  initGame: () => {},
 });
 
 export const GameContextProvider = ({ children }: any) => {
@@ -86,79 +90,87 @@ export const GameContextProvider = ({ children }: any) => {
   const [drawOffered, setDrawOffered] = useState(false);
   const [openDrawOffer, setOpenDrawOffer] = useState(false);
 
-  useEffect(() => {
-    const initGame = () => {
-      const whitePlayer = new Player("white");
-      const blackPlayer = new Player("black");
+  const initGame = useCallback(() => {
+    const whitePlayer = new Player("white");
+    const blackPlayer = new Player("black");
 
-      //Create board
-      const board = new Array(8).fill(null).map(() => new Array(8).fill(null));
+    // Create board
+    const board = new Array(8).fill(null).map(() => new Array(8).fill(null));
 
-      for (let row = 0; row < 8; row++) {
-        for (let col = 0; col < 8; col++) {
-          //importnant
-          if (row === 6)
-            board[row][col] = createPawn(row, col, "white", "pawn");
-          if (row === 7) {
-            if (col === 0)
-              board[row][col] = createPawn(
-                row,
-                col,
-                "white",
-                "rook",
-                "queenSide"
-              );
-            if (col === 7)
-              board[row][col] = createPawn(
-                row,
-                col,
-                "white",
-                "rook",
-                "kingSide"
-              );
-            board[row][4] = createPawn(row, 4, "white", "king");
-            board[row][3] = createPawn(row, 3, "white", "queen");
-            if (col === 1 || col === 6)
-              board[row][col] = createPawn(row, col, "white", "knight");
-            if (col === 2 || col === 5)
-              board[row][col] = createPawn(row, col, "white", "bishop");
-          }
-          if (row === 1)
-            board[row][col] = createPawn(row, col, "black", "pawn");
-          if (row === 0) {
-            if (col === 0)
-              board[row][col] = createPawn(
-                row,
-                col,
-                "black",
-                "rook",
-                "queenSide"
-              );
-            if (col === 7)
-              board[row][col] = createPawn(
-                row,
-                col,
-                "black",
-                "rook",
-                "kingSide"
-              );
-            board[row][4] = createPawn(row, 4, "black", "king");
-            board[row][3] = createPawn(row, 3, "black", "queen");
-            if (col === 1 || col === 6)
-              board[row][col] = createPawn(row, col, "black", "knight");
-            if (col === 2 || col === 5)
-              board[row][col] = createPawn(row, col, "black", "bishop");
-          }
+    for (let row = 0; row < 8; row++) {
+      for (let col = 0; col < 8; col++) {
+        // Important
+        if (row === 6) board[row][col] = createPawn(row, col, "white", "pawn");
+        if (row === 7) {
+          if (col === 0)
+            board[row][col] = createPawn(
+              row,
+              col,
+              "white",
+              "rook",
+              "queenSide"
+            );
+          if (col === 7)
+            board[row][col] = createPawn(row, col, "white", "rook", "kingSide");
+          board[row][4] = createPawn(row, 4, "white", "king");
+          board[row][3] = createPawn(row, 3, "white", "queen");
+          if (col === 1 || col === 6)
+            board[row][col] = createPawn(row, col, "white", "knight");
+          if (col === 2 || col === 5)
+            board[row][col] = createPawn(row, col, "white", "bishop");
+        }
+        if (row === 1) board[row][col] = createPawn(row, col, "black", "pawn");
+        if (row === 0) {
+          if (col === 0)
+            board[row][col] = createPawn(
+              row,
+              col,
+              "black",
+              "rook",
+              "queenSide"
+            );
+          if (col === 7)
+            board[row][col] = createPawn(row, col, "black", "rook", "kingSide");
+          board[row][4] = createPawn(row, 4, "black", "king");
+          board[row][3] = createPawn(row, 3, "black", "queen");
+          if (col === 1 || col === 6)
+            board[row][col] = createPawn(row, col, "black", "knight");
+          if (col === 2 || col === 5)
+            board[row][col] = createPawn(row, col, "black", "bishop");
         }
       }
+    }
 
-      setBoard(board);
-      setPlayers([whitePlayer, blackPlayer]);
-      setPlayerTurn(whitePlayer);
-    };
+    setBoard(board);
+    setPlayers([whitePlayer, blackPlayer]);
+    setPlayerTurn(whitePlayer);
+  }, []);
 
+  // Rest of your component code
+
+  useEffect(() => {
     initGame();
   }, []);
+
+  const resetGame = () => {
+    setGameId("");
+    setBoard([]);
+    setPlayers([]);
+    setPlayerTurn(null);
+    setActivePiece(null);
+    setAvailablePositions([]);
+    setIsPromotion(false);
+    setCheckPositions([]);
+    setCheckmate(false);
+    setLastMovePositions([]);
+    setElPassantMove(null);
+    setElPassantCaptureMove(null);
+    setMovedPieces([]);
+    setStalemate(false);
+    setMessages([]);
+    setDrawOffered(false);
+    setOpenDrawOffer(false);
+  };
 
   const findAttackedPositions = (
     board: Square[][],
@@ -227,9 +239,7 @@ export const GameContextProvider = ({ children }: any) => {
         " http://localhost:3000/api/game/retrieveGameStatus"
       );
 
-      const game = response.data;
-
-      updateGameState(game);
+      updateGameState(response.data);
 
       return true;
     } catch (error) {
@@ -1136,6 +1146,8 @@ export const GameContextProvider = ({ children }: any) => {
     setDrawOffered,
     setOpenDrawOffer,
     openDrawOffer,
+    resetGame,
+    initGame,
   };
 
   return (

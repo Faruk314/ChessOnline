@@ -50,6 +50,7 @@ export const SocketContextProvider = ({
 
     if (isLoggedIn) {
       newSocket = io("http://localhost:5001", {
+        transports: ["websocket"],
         auth: {
           token: getCookie("token"),
         },

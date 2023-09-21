@@ -62,7 +62,7 @@ function App() {
 
   useEffect(() => {
     socket?.on("receiveInvite", async (userInfo: UserInfo) => {
-      await getGameInvites();
+      addGameInvite(userInfo);
     });
 
     return () => {

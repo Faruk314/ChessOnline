@@ -1,8 +1,10 @@
 import React, { useContext } from "react";
 import { GameContext } from "../context/GameContext";
+import { useNavigate } from "react-router-dom";
 
 const Checkmate = () => {
-  const { playerTurn } = useContext(GameContext);
+  const { playerTurn, resetGame, initGame, gameId } = useContext(GameContext);
+  const navigate = useNavigate();
 
   return (
     <div className="fixed inset-0 z-20 flex items-center justify-center">
@@ -11,8 +13,19 @@ const Checkmate = () => {
           <h2>Checkmate!</h2>
           <span>{playerTurn?.color} wins!</span>
         </div>
-        <button className="p-1 mt-2 text-xl font-normal text-white rounded-md bg-amber-900">
-          Next
+        <button
+          onClick={() => {
+            if (!gameId) {
+              resetGame();
+              initGame();
+              return;
+            }
+
+            navigate("/menu");
+          }}
+          className="p-2 mt-2 text-xl font-normal text-white rounded-md bg-amber-900"
+        >
+          Continue
         </button>
       </div>
     </div>
