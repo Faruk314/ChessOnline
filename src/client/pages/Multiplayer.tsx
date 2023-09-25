@@ -16,7 +16,7 @@ import Resign from "../modals/Resign";
 import { BsFillChatLeftDotsFill } from "react-icons/bs";
 import DrawOffer from "../modals/DrawOffer";
 import { AuthContext } from "../context/AuthContext";
-import { useLocation, useNavigate, useBeforeUnload } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import Loader from "../components/Loader";
 
 const Multiplayer = () => {
@@ -44,6 +44,7 @@ const Multiplayer = () => {
   const opponent = players.find(
     (player) => player.playerData?.userId !== loggedUserInfo?.userId
   );
+  const location = useLocation();
 
   const handleDrawOffer = () => {
     if (opponent) {
@@ -63,6 +64,14 @@ const Multiplayer = () => {
 
     retrieveGame();
   }, []);
+
+  useEffect(() => {
+    socket?.emit("reconnectToRoom", gameId);
+
+    return () => {
+      socket?.emit("leaveRoom");
+    };
+  }, [gameId]);
 
   useEffect(() => {
     socket?.on("drawRejected", () => {

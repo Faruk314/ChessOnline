@@ -10,19 +10,14 @@ import { movePiece } from "./game/pieceFunctions";
 import {
   createGameRoom,
   deleteGameState,
-  findOpponentId,
   getGameState,
+  handlePlayerLeaving,
   highlight,
 } from "./game/gameFunctions";
 import { Piece } from "../client/classes/Piece.js";
 import { promotePawn } from "./game/specialMoves";
 import { getUser, addUser, removeUser } from "./game/usersMap";
-import {
-  addToGameMap,
-  games,
-  getGameId,
-  removeUserFromGameMap,
-} from "./game/gamesMap";
+import { addToGameMap } from "./game/gamesMap";
 import { Game } from "../types/types";
 dotenv.config();
 
@@ -74,41 +69,18 @@ export default function setupSocket() {
       }
     });
 
-    socket.on("disconnect", async () => {
-      removeUser(socket.id);
-      //Find a gameId when a player disconnects so I can have access to game state
+    socket.on("leaveRoom", async () => {
       const userId = socket.userId;
 
-      if (!userId)
-        return console.log("User id does not exist in disconnect method");
+      await handlePlayerLeaving(io, userId!);
+    });
 
-      //getGameId and remove the user
-      let gameId = getGameId(userId);
-      removeUserFromGameMap(userId);
+    socket.on("disconnect", async () => {
+      removeUser(socket.id);
 
-      if (!gameId)
-        return console.log("Could not get the game id in disconnect method");
+      const userId = socket.userId;
 
-      let gameState: Game = await getGameState(gameId);
-
-      const opponentId = findOpponentId(gameState, userId);
-
-      if (!opponentId)
-        return console.log("Could not get opponentId in disconnect function");
-
-      const opponentSocketId = getUser(opponentId);
-
-      setTimeout(async () => {
-        if (!games.has(userId)) {
-          let gameDeleted = await deleteGameState(gameId!);
-
-          if (gameDeleted) io.to(opponentSocketId).emit("opponentResigned");
-        }
-
-        if (!games.has(userId) && !games.has(opponentId)) {
-          await deleteGameState(gameId!);
-        }
-      }, 10000);
+      await handlePlayerLeaving(io, userId!);
     });
 
     socket.on("sendInvite", async (receiverId: number) => {

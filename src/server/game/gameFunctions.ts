@@ -24,6 +24,42 @@ import {
 } from "./pieceFunctions";
 import { createPawn } from "../../client/classes/Piece";
 import { addToGameMap } from "./gamesMap";
+import { games, getGameId, removeUserFromGameMap } from "./gamesMap";
+
+export const handlePlayerLeaving = async (io: any, userId: number) => {
+  if (!userId)
+    return console.log("User id does not exist in disconnect method");
+
+  let countdown = 5000;
+
+  //getGameId and remove the user
+  let gameId = getGameId(userId);
+  removeUserFromGameMap(userId);
+
+  if (!gameId)
+    return console.log("Could not get the game id in disconnect method");
+
+  let gameState: Game = await getGameState(gameId);
+
+  const opponentId = findOpponentId(gameState, userId);
+
+  if (!opponentId)
+    return console.log("Could not get opponentId in disconnect function");
+
+  const opponentSocketId = getUser(opponentId);
+
+  setTimeout(async () => {
+    if (!games.has(userId)) {
+      let gameDeleted = await deleteGameState(gameId!);
+
+      if (gameDeleted) io.to(opponentSocketId).emit("opponentResigned");
+    }
+
+    if (!games.has(userId) && !games.has(opponentId)) {
+      await deleteGameState(gameId!);
+    }
+  }, countdown);
+};
 
 export const createGame = async (playerIds: number[], gameId: string) => {
   let game: Game = {
