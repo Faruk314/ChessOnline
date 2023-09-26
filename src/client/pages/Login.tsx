@@ -73,11 +73,6 @@ const Login = () => {
           LOGIN
         </button>
 
-        <button className="flex items-center justify-center px-2 py-3 mt-2 space-x-2 font-bold border-2 rounded-md text-amber-900 border-amber-900">
-          <AiOutlineGoogle size={20} />
-          <span> LOGIN WITH GOOGLE</span>
-        </button>
-
         <Link to="/register" className="mt-5 text-center text-gray-400">
           Create an account
         </Link>

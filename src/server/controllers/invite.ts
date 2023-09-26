@@ -53,7 +53,7 @@ export const acceptInvite = asyncHandler(
     const userId = req.user?.userId;
 
     try {
-      let q = `DELETE FROM invites i WHERE i.sender = ? OR i.receiver = ?;`;
+      let q = `DELETE FROM invites i WHERE i.sender = ? OR i.receiver = ?`;
 
       await query(q, [userId, userId]);
 
