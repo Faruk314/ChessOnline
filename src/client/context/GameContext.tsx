@@ -147,7 +147,6 @@ export const GameContextProvider = ({ children }: any) => {
   }, []);
 
   // Rest of your component code
-
   useEffect(() => {
     initGame();
   }, []);
