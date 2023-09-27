@@ -24,7 +24,8 @@ axios.defaults.withCredentials = true;
 
 function App() {
   const { socket } = useContext(SocketContext);
-  const { gameId, setDrawOffered, setMessages } = useContext(GameContext);
+  const { gameId, setDrawOffered, setMessages, resetGame } =
+    useContext(GameContext);
   const { setFriendRequests, setFriends } = useContext(FriendContext);
   const { setIsLoggedIn, setLoggedUserInfo, isLoggedIn } =
     useContext(AuthContext);
@@ -116,6 +117,7 @@ function App() {
   useEffect(() => {
     socket?.on("opponentResigned", () => {
       setOpenOpponentLeft(true);
+      resetGame();
       navigate("/menu");
     });
 
@@ -128,6 +130,7 @@ function App() {
     socket?.on("draw", () => {
       setOpenDrawModal(true);
       setDrawOffered(false);
+      resetGame();
       navigate("/menu");
     });
 

@@ -31,7 +31,7 @@ const Menu = () => {
   const [openFriends, setOpenFriends] = useState(false);
   const { openChangeAvatar, setIsLoggedIn } = useContext(AuthContext);
   const [openFriendReq, setOpenFriendReq] = useState(false);
-  const { initGame } = useContext(GameContext);
+  const { initGame, resetGame } = useContext(GameContext);
   const navigate = useNavigate();
 
   const logoutHandler = async () => {
@@ -119,6 +119,7 @@ const Menu = () => {
         <button
           onMouseEnter={() => playSound(moveSound)}
           onClick={() => {
+            resetGame();
             initGame();
             navigate("/singlePlayer");
           }}

@@ -36,6 +36,7 @@ const Multiplayer = () => {
     gameId,
     setOpenDrawOffer,
     openDrawOffer,
+    resetGame,
   } = useContext(GameContext);
   const { movePiece, higlightPiece, promotePawn, offerDraw } =
     useContext(MultiplayerContext);
@@ -57,7 +58,10 @@ const Multiplayer = () => {
     const retrieveGame = async () => {
       const gameState = await getGameStatus();
 
-      if (!gameState) return navigate("/menu");
+      if (!gameState) {
+        resetGame();
+        return navigate("/menu");
+      }
 
       setIsLoading(false);
     };
