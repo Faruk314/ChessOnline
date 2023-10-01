@@ -18,7 +18,7 @@ import { Piece } from "../client/classes/Piece.js";
 import { promotePawn } from "./game/specialMoves";
 import { getUser, addUser, removeUser } from "./game/usersMap";
 import { addToGameMap } from "./game/gamesMap";
-import { Game } from "../types/types";
+import { Game, UserInfo } from "../types/types";
 dotenv.config();
 
 export default function setupSocket() {
@@ -100,6 +100,22 @@ export default function setupSocket() {
       const gameId = await createGameRoom(io, socket.userId!, receiverId);
 
       io.to(gameId!).emit("gameStart", gameId);
+    });
+
+    socket.on("acceptFriendRequest", async (receiverId: number) => {
+      const senderSocketId = getUser(socket.userId!);
+      const receiverSocketId = getUser(receiverId);
+
+      if (!senderSocketId || !receiverSocketId)
+        return console.log("SocketId missing in acceptFriendReq");
+
+      let q = `SELECT u.userId, u.userName, u.image, fr.id, fr.status
+       FROM friend_requests fr JOIN users u ON u.userId = fr.receiver WHERE fr.receiver = ?`;
+
+      let results: any = await query(q, [socket.userId]);
+
+      if (results.length > 0)
+        io.to(receiverSocketId).emit("friendRequestAccepted", results[0]);
     });
 
     //friend requests

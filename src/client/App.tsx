@@ -26,7 +26,8 @@ function App() {
   const { socket } = useContext(SocketContext);
   const { gameId, setDrawOffered, setMessages, resetGame } =
     useContext(GameContext);
-  const { setFriendRequests, setFriends } = useContext(FriendContext);
+  const { setFriendRequests, setFriends, updateFriends } =
+    useContext(FriendContext);
   const { setIsLoggedIn, setLoggedUserInfo, isLoggedIn } =
     useContext(AuthContext);
   const { addGameInvite, getGameInvites } = useContext(MultiplayerContext);
@@ -81,6 +82,12 @@ function App() {
     return () => {
       socket?.off("receiveInvite");
     };
+  }, [socket]);
+
+  useEffect(() => {
+    socket?.on("friendRequestAccepted", (userInfo: UserInfo) => {
+      updateFriends(userInfo);
+    });
   }, [socket]);
 
   useEffect(() => {

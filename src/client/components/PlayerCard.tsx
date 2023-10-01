@@ -65,6 +65,7 @@ const PlayerCard = ({ friendRequestInfo }: Props) => {
   const acceptFriendRequestHandler = async () => {
     if (friendRequestInfo.id) {
       await acceptFriendRequest(friendRequestInfo.id);
+      socket?.emit("acceptFriendRequest", friendRequestInfo.userId);
     }
   };
 

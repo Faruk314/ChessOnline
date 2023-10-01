@@ -1,5 +1,5 @@
 import { createContext, useCallback, useEffect, useState } from "react";
-import { FriendRequestStatus, UserRequest } from "../../types/types";
+import { FriendRequestStatus, UserInfo, UserRequest } from "../../types/types";
 import axios from "axios";
 import FriendRequests from "../modals/FriendRequests";
 
@@ -16,6 +16,7 @@ type FriendContextType = {
   friends: UserRequest[];
   setFriendRequests: React.Dispatch<React.SetStateAction<UserRequest[]>>;
   setFriends: React.Dispatch<React.SetStateAction<UserRequest[]>>;
+  updateFriends: (userInfo: UserInfo) => void;
 };
 
 export const FriendContext = createContext<FriendContextType>({
@@ -29,6 +30,7 @@ export const FriendContext = createContext<FriendContextType>({
   friends: [],
   setFriendRequests: () => {},
   setFriends: () => {},
+  updateFriends: (userInfo) => {},
 });
 
 type FriendProviderProps = {
@@ -54,6 +56,16 @@ export const FriendContextProvider = ({ children }: FriendProviderProps) => {
     },
     []
   ); // Add dependencies as needed
+
+  const updateFriends = (userInfo: UserInfo) => {
+    const isFriend = friends.some(
+      (friend) => friend.userId === userInfo.userId
+    );
+
+    if (!isFriend) {
+      setFriends((prev) => [...prev, userInfo]);
+    }
+  };
 
   const getFriends = async () => {
     try {
@@ -172,6 +184,7 @@ export const FriendContextProvider = ({ children }: FriendProviderProps) => {
         setFriendRequests,
         friends,
         setFriends,
+        updateFriends,
       }}
     >
       {children}
