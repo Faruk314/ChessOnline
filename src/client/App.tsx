@@ -75,7 +75,7 @@ function App() {
   }, [socket]);
 
   useEffect(() => {
-    socket?.on("receiveInvite", async (userInfo: UserInfo) => {
+    socket?.on("receiveInvite", (userInfo: UserInfo) => {
       addGameInvite(userInfo);
     });
 

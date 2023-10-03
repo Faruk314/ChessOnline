@@ -53,6 +53,19 @@ export const acceptInvite = asyncHandler(
     const userId = req.user?.userId;
 
     try {
+      let q = "SELECT i.id FROM invites i WHERE i.receiver = ?";
+
+      let data: any = await query(q, [userId]);
+
+      if (data.length === 0) {
+        res.status(400);
+        throw new Error("Invite expired");
+      }
+    } catch (error) {
+      console.log(error);
+    }
+
+    try {
       let q = `DELETE FROM invites i WHERE i.sender = ? OR i.receiver = ?`;
 
       await query(q, [userId, userId]);

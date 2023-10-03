@@ -4,6 +4,7 @@ import { UserRequest } from "../../types/types";
 import { IoCheckmarkSharp, IoClose } from "react-icons/io5";
 import { MultiplayerContext } from "../context/MultiplayerContext";
 import { SocketContext } from "../context/SocketContext";
+import { toast } from "react-toastify";
 
 interface Props {
   inviter: UserRequest;
@@ -18,11 +19,15 @@ const InviteCard = ({ inviter }: Props) => {
     let inviteAccepted = await acceptGameInvite();
 
     if (inviteAccepted) {
+      setGameInvites([]);
+      return socket?.emit("acceptInvite", inviter.userId);
+    } else {
       setGameInvites((prev) =>
-        prev.filter((invite) => invite.userId !== inviter.userId)
+        prev.filter((invite) => invite.userId !== invite.userId)
       );
-
-      socket?.emit("acceptInvite", inviter.userId);
+      toast("Invite expired", {
+        position: "top-left",
+      });
     }
   };
 

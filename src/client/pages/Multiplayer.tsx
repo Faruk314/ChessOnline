@@ -45,7 +45,6 @@ const Multiplayer = () => {
   const opponent = players.find(
     (player) => player.playerData?.userId !== loggedUserInfo?.userId
   );
-  const location = useLocation();
 
   const handleDrawOffer = () => {
     if (opponent) {
@@ -70,10 +69,10 @@ const Multiplayer = () => {
   }, []);
 
   useEffect(() => {
-    socket?.emit("reconnectToRoom", gameId);
+    if (gameId) socket?.emit("reconnectToRoom", gameId);
 
     return () => {
-      socket?.emit("leaveRoom");
+      if (gameId) socket?.emit("leaveRoom");
     };
   }, [gameId]);
 

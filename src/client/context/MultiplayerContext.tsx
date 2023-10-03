@@ -85,13 +85,17 @@ export const MultiplayerContextProvider = ({
   };
 
   const addGameInvite = (userInfo: UserInfo) => {
-    const inviteExists = gameInvites.some(
-      (invite) => userInfo.userId === invite.userId
-    );
+    setGameInvites((prevGameInvites) => {
+      const inviteExists = prevGameInvites.some(
+        (invite) => userInfo.userId === invite.userId
+      );
 
-    if (!inviteExists) {
-      setGameInvites((prev) => [...prev, userInfo]);
-    }
+      if (!inviteExists) {
+        return [...prevGameInvites, userInfo];
+      }
+
+      return prevGameInvites;
+    });
   };
 
   const acceptGameInvite = async () => {
