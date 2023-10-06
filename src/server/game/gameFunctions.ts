@@ -310,7 +310,7 @@ export const findAttackedPositions = (
   let positionsUnderAttack: Position[] = [];
 
   board.flat().forEach((cell) => {
-    if (cell !== null) {
+    if (cell !== null && cell !== undefined) {
       if (cell.color !== pieceColor) {
         if (cell.type === "pawn")
           positionsUnderAttack.push(
@@ -341,7 +341,7 @@ export const findPositions = (
   let positionsUnderAttack: Position[] = [];
 
   board.flat().forEach((cell) => {
-    if (cell !== null) {
+    if (cell !== null && cell !== undefined) {
       if (cell.color !== pieceColor) {
         if (cell.type === "pawn")
           positionsUnderAttack.push(...highlightPawn(cell, gameState, board));
