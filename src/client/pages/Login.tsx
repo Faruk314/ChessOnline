@@ -73,6 +73,20 @@ const Login = () => {
           LOGIN
         </button>
 
+        <span className="mt-2 font-bold">Test accounts:</span>
+
+        <div className="flex space-x-2">
+          <span>guest@gmail.com</span>
+          <span>|</span>
+          <span>guest123</span>
+        </div>
+
+        <div className="flex space-x-2">
+          <span>test@gmail.com</span>
+          <span>|</span>
+          <span>guest123</span>
+        </div>
+
         <Link to="/register" className="mt-5 text-center text-gray-400">
           Create an account
         </Link>
