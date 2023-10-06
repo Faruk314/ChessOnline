@@ -30,7 +30,7 @@ function App() {
     useContext(FriendContext);
   const { setIsLoggedIn, setLoggedUserInfo, isLoggedIn } =
     useContext(AuthContext);
-  const { addGameInvite, getGameInvites } = useContext(MultiplayerContext);
+  const { addGameInvite } = useContext(MultiplayerContext);
   const [openOpponentLeft, setOpenOpponentLeft] = useState(false);
   const [openDrawModal, setOpenDrawModal] = useState(false);
   const navigate = useNavigate();

@@ -50,6 +50,10 @@ export const handlePlayerLeaving = async (io: any, userId: number) => {
 
   setTimeout(async () => {
     if (!games.has(userId)) {
+      const gameStateExists = await getGameState(gameId!);
+
+      if (!gameStateExists) return console.log("Game state does not exist");
+
       let gameDeleted = await deleteGameState(gameId!);
 
       if (gameDeleted) io.to(opponentSocketId).emit("opponentResigned");
