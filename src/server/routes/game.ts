@@ -8,7 +8,7 @@ import { protect } from "../utils/protect";
 
 const router = express.Router();
 
-router.get("/retrieveGameStatus", protect, retrieveGameStatus);
+router.get("/retrieveGameStatus/:gameId", protect, retrieveGameStatus);
 
 router.post("/changeAvatar", protect, changeAvatar);
 

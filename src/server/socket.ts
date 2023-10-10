@@ -18,7 +18,7 @@ import { Piece } from "../client/classes/Piece.js";
 import { promotePawn } from "./game/specialMoves";
 import { getUser, addUser, removeUser } from "./game/usersMap";
 import { addToGameMap, games } from "./game/gamesMap";
-import { Game, UserInfo } from "../types/types";
+import { Game } from "../types/types";
 dotenv.config();
 
 export default function setupSocket() {
@@ -51,8 +51,6 @@ export default function setupSocket() {
 
   io.on("connection", (socket: Socket) => {
     if (socket.userId) addUser(socket.userId, socket.id);
-
-    console.log("User connected", socket.userId);
 
     socket.on("reconnectToRoom", async (gameId: string) => {
       if (socket.userId === undefined) return;

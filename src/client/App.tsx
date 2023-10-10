@@ -36,7 +36,6 @@ function App() {
   const [openDrawModal, setOpenDrawModal] = useState(false);
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
-  const location = useLocation();
 
   useEffect(() => {
     const getLoginStatus = async () => {
@@ -113,8 +112,8 @@ function App() {
   }, [socket]);
 
   useEffect(() => {
-    socket?.on("gameStart", () => {
-      navigate("/multiplayer");
+    socket?.on("gameStart", (gameId: string) => {
+      navigate(`/multiplayer/${gameId}`);
     });
 
     return () => {
@@ -160,6 +159,10 @@ function App() {
     };
   }, [socket]);
 
+  if (loading) {
+    return <Loader />;
+  }
+
   return (
     <div>
       <Routes>
@@ -172,7 +175,7 @@ function App() {
 
         <Route element={<ProtectedRoutes />}>
           <Route path="/menu" element={<Menu />} />
-          <Route path="/multiplayer" element={<Multiplayer />} />
+          <Route path="/multiplayer/:gameId" element={<Multiplayer />} />
           <Route path="/singlePlayer" element={<SinglePlayer />} />
         </Route>
       </Routes>

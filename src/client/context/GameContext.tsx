@@ -29,7 +29,7 @@ interface GameContextProps {
   checkmate: boolean;
   players: Player[];
   stalemate: boolean;
-  getGameStatus: () => Promise<boolean>;
+  getGameStatus: (gameId: string) => Promise<boolean>;
   gameId: string;
   updateGameState: (game: Game) => void;
   setMessages: React.Dispatch<React.SetStateAction<Msg[]>>;
@@ -54,7 +54,7 @@ export const GameContext = createContext<GameContextProps>({
   checkmate: false,
   players: [],
   stalemate: false,
-  getGameStatus: async () => false,
+  getGameStatus: async (gameId) => false,
   gameId: "",
   updateGameState: (game) => {},
   setMessages: () => {},
@@ -232,10 +232,10 @@ export const GameContextProvider = ({ children }: any) => {
     setGameId(game.gameId);
   };
 
-  const getGameStatus = async () => {
+  const getGameStatus = async (gameId: string) => {
     try {
       const response = await axios.get(
-        " http://localhost:3000/api/game/retrieveGameStatus"
+        `http://localhost:3000/api/game/retrieveGameStatus/${gameId}`
       );
 
       updateGameState(response.data);

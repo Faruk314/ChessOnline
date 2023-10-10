@@ -4,13 +4,9 @@ import { client } from "../main";
 import { Request, Response } from "express";
 
 export const retrieveGameStatus = asyncHandler(async (req, res) => {
-  const userId = req.user?.userId;
+  const gameId = req.params.gameId;
 
-  let q = "SELECT `gameId` FROM games WHERE `playerOne` = ? OR `playerTwo` = ?";
-
-  let data: any = await query(q, [userId, userId]);
-
-  const gameData = await client.get(data[0].gameId);
+  const gameData = await client.get(gameId);
 
   const gameState = JSON.parse(gameData!);
 

@@ -179,10 +179,6 @@ export const createGameRoom = async (
   playerOneSocket.join(gameId);
   playerTwoSocket.join(gameId);
 
-  let gameInDb = await insertGameInDb(gameId, firstPlayerId, secondPlayerId);
-
-  if (!gameInDb) return;
-
   let players = [firstPlayerId, secondPlayerId];
 
   let gameState = await createGame(players, gameId);
@@ -214,28 +210,8 @@ export const getGameState = async (gameId: string) => {
   return gameState;
 };
 
-export const insertGameInDb = async (
-  gameId: string,
-  firstPlayerId: number,
-  secondPlayerId: number
-) => {
-  try {
-    let q =
-      "INSERT INTO games (`gameId`,`playerOne`,`playerTwo`) VALUES (?,?,?)";
-
-    let data: any = await query(q, [gameId, firstPlayerId, secondPlayerId]);
-
-    return true;
-  } catch (error) {
-    console.log("Could not insert game in db", error);
-  }
-};
-
 export const deleteGameState = async (gameId: string) => {
   try {
-    let q = "DELETE FROM games WHERE `gameId`= ?";
-
-    await query(q, [gameId]);
     await client.del(gameId);
 
     return true;

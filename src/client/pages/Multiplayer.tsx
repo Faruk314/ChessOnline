@@ -16,7 +16,7 @@ import Resign from "../modals/Resign";
 import { BsFillChatLeftDotsFill } from "react-icons/bs";
 import DrawOffer from "../modals/DrawOffer";
 import { AuthContext } from "../context/AuthContext";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import Loader from "../components/Loader";
 
 const Multiplayer = () => {
@@ -33,7 +33,6 @@ const Multiplayer = () => {
     updateGameState,
     setDrawOffered,
     drawOffered,
-    gameId,
     setOpenDrawOffer,
     openDrawOffer,
     resetGame,
@@ -45,9 +44,10 @@ const Multiplayer = () => {
   const opponent = players.find(
     (player) => player.playerData?.userId !== loggedUserInfo?.userId
   );
+  const { gameId } = useParams();
 
   const handleDrawOffer = () => {
-    if (opponent) {
+    if (opponent && gameId) {
       offerDraw(opponent.playerData?.userId!, gameId);
       setDrawOffered(true);
     }
@@ -55,7 +55,11 @@ const Multiplayer = () => {
 
   useEffect(() => {
     const retrieveGame = async () => {
-      const gameState = await getGameStatus();
+      if (gameId) {
+        console.log(gameId, "gameId");
+      }
+
+      const gameState = await getGameStatus(gameId!);
 
       if (!gameState) {
         resetGame();
