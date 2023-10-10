@@ -12,6 +12,10 @@
   user-select: none;
 }
 
+.bar {
+  background-color: #78350f !important;
+}
+
 .Toastify__progress-bar--success {
   background-color: #78350f !important;
 }

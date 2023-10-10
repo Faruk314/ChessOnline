@@ -17,7 +17,7 @@ import {
 import { Piece } from "../client/classes/Piece.js";
 import { promotePawn } from "./game/specialMoves";
 import { getUser, addUser, removeUser } from "./game/usersMap";
-import { addToGameMap } from "./game/gamesMap";
+import { addToGameMap, games } from "./game/gamesMap";
 import { Game, UserInfo } from "../types/types";
 dotenv.config();
 
@@ -69,6 +69,10 @@ export default function setupSocket() {
       }
     });
 
+    socket.on("logout", () => {
+      removeUser(socket.id);
+    });
+
     socket.on("leaveRoom", async () => {
       const userId = socket.userId;
 
@@ -97,6 +101,15 @@ export default function setupSocket() {
     });
 
     socket.on("acceptInvite", async (receiverId: number) => {
+      const senderSocketId = getUser(socket.userId!);
+      const receiverSocketId = getUser(receiverId);
+
+      if (!receiverSocketId || games.has(receiverId)) {
+        io.to(senderSocketId).emit("invalidInvite");
+
+        return;
+      }
+
       const gameId = await createGameRoom(io, socket.userId!, receiverId);
 
       io.to(gameId!).emit("gameStart", gameId);

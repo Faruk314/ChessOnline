@@ -18,6 +18,7 @@ import ProtectedRoutes from "./protection/ProtectedRoutes";
 import Loader from "./components/Loader";
 import { MultiplayerContext } from "./context/MultiplayerContext";
 import { Msg } from "../types/types";
+import { toast } from "react-toastify";
 
 axios.defaults.withCredentials = true;
 // axios.defaults.baseURL = process.env.FRONTEND_URL;
@@ -146,9 +147,18 @@ function App() {
     };
   }, [socket, navigate]);
 
-  if (loading) {
-    return <Loader />;
-  }
+  useEffect(() => {
+    socket?.on("invalidInvite", () => {
+      toast.error("This invite is no longer valid", {
+        position: "top-center",
+        progressClassName: "bar",
+      });
+    });
+
+    return () => {
+      socket?.off("invalidInvite");
+    };
+  }, [socket]);
 
   return (
     <div>

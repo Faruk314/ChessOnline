@@ -24,7 +24,7 @@ import { GameContext } from "../context/GameContext";
 const Menu = () => {
   const { socket } = useContext(SocketContext);
   const { playSound } = useContext(SoundContext);
-  const { friendRequests, getFriends } = useContext(FriendContext);
+  const { friendRequests, getFriends, setFriends } = useContext(FriendContext);
   const { gameInvites, getGameInvites } = useContext(MultiplayerContext);
   const [openFindMatch, setOpenFindMatch] = useState(false);
   const [openInvites, setOpenInvites] = useState(false);
@@ -38,6 +38,8 @@ const Menu = () => {
     try {
       await axios.get("http://localhost:3000/api/auth/logout");
       setIsLoggedIn(false);
+      socket?.emit("logout");
+      setFriends([]);
       navigate("/");
     } catch (error) {
       console.log(error);
