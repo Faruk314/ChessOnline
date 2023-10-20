@@ -343,57 +343,31 @@ export const findPositions = (
   return positionsUnderAttack;
 };
 
-export const determineCheckmate = (
-  board: Square[][],
-  activePiece: Piece,
-  gameState: Game
-) => {
-  let availablePositions: Position[] = [];
+export const determineCheckmate = (board: Square[][], gameState: Game) => {
   const enemyColor = gameState.players.find(
     (player) => player.color !== gameState.playerTurn?.color
   )?.color;
 
-  //finds availablePositions for a piece that just moved to a new square
-  switch (activePiece?.type) {
-    case "pawn":
-      availablePositions = highlightPawn(activePiece, gameState, board);
-      break;
-    case "knight":
-      availablePositions = highlightKnight(activePiece, gameState, board);
-      break;
-    case "queen":
-      availablePositions = highlightQueen(activePiece, gameState, board);
-      break;
-    case "bishop":
-      availablePositions = highlightBishop(activePiece, gameState, board);
-      break;
-    case "rook":
-      availablePositions = highlightRook(activePiece, gameState, board);
-      break;
-    case "king":
-      availablePositions = highlightKing(activePiece, gameState, board);
-      break;
-  }
-
   //find the position of enemy king
   const enemyKing = findKing(enemyColor!, board);
 
-  //find if the enemy king is in available positions (if it is that means its a checkmate)
-  const kingInCheck = availablePositions.find(
-    (position) =>
-      position.row === enemyKing?.position.row &&
-      position.col === enemyKing.position.col
-  );
-
-  //this will find all possible enemy positions
-  let enemyAttackPositions = findPositions(
+  let playerTurnPositions = findPositions(
     board,
     gameState.playerTurn?.color!,
     gameState
   );
 
+  let enemyAttackPositions = findPositions(board, enemyColor!, gameState);
+
+  //find if the enemy king is in available positions (if it is that means its a checkmate)
+  const kingInCheck = enemyAttackPositions.find(
+    (position) =>
+      position.row === enemyKing?.position.row &&
+      position.col === enemyKing.position.col
+  );
+
   //this is stalemate
-  if (!kingInCheck && enemyAttackPositions.length === 0) {
+  if (!kingInCheck && playerTurnPositions.length === 0) {
     gameState.stalemate = true;
     return false;
   }
@@ -401,31 +375,8 @@ export const determineCheckmate = (
   //no check
   if (!kingInCheck) return false;
 
-  //Now we need to find a path which lead to enemy king (checkPositions)
-  let checkPositions: Position[] = availablePositions.filter(
-    (position) => position.direction === kingInCheck?.direction
-  );
-  //include the active piece in checkPositions
-  checkPositions.push(activePiece!.position);
-
-  //this finds all possible king positions
-  let kingPositions = highlightKing(enemyKing!, gameState, board);
-
-  let positionsThatBlockCheck: Position[] = [];
-
-  //we have to iterate throught all the enemy positions and check
-
-  // if we can find any of those positions in our checkPositions (that means enemy can block the check)
-  checkPositions.forEach((checkPos) => {
-    let position = enemyAttackPositions.find(
-      (enemyPos) =>
-        enemyPos.col === checkPos.col && enemyPos.row === checkPos.row
-    );
-
-    if (position) positionsThatBlockCheck.push(position);
-  });
-
-  if (positionsThatBlockCheck.length === 0 && kingPositions.length === 0) {
+  //checkmate
+  if (kingInCheck && playerTurnPositions.length === 0) {
     gameState.checkmate = true;
     return true;
   }

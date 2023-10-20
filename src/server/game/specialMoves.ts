@@ -167,7 +167,7 @@ export const promotePawn = (type: string, gameState: Game) => {
     newBoard[row!][col!] = createPawn(row!, col!, color!, "bishop");
   }
 
-  const isCheckmate = determineCheckmate(newBoard, newActivePiece!, gameState);
+  const isCheckmate = determineCheckmate(newBoard, gameState);
 
   gameState.board = newBoard;
   gameState.isPromotion = false;

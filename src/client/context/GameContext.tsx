@@ -78,7 +78,6 @@ export const GameContextProvider = ({ children }: any) => {
   const [availablePositions, setAvailablePositions] = useState<Position[]>([]);
   const [activePiece, setActivePiece] = useState<Piece | null>(null);
   const [isPromotion, setIsPromotion] = useState(false);
-  const [checkPositions, setCheckPositions] = useState<Position[]>([]);
   const [checkmate, setCheckmate] = useState(false);
   const [lastMovePositions, setLastMovePositions] = useState<Position[]>([]);
   const [elPassantMove, setElPassantMove] = useState<Position | null>(null);
@@ -99,6 +98,27 @@ export const GameContextProvider = ({ children }: any) => {
 
     for (let row = 0; row < 8; row++) {
       for (let col = 0; col < 8; col++) {
+        // if (row === 4 && col === 4)
+        //   board[row][col] = createPawn(row, col, "white", "bishop");
+
+        // if (row === 0 && col === 0)
+        //   board[row][col] = createPawn(row, col, "white", "rook");
+
+        // if (row === 4 && col === 3)
+        //   board[row][col] = createPawn(row, col, "white", "pawn");
+
+        // if (row === 5 && col === 0)
+        //   board[row][col] = createPawn(row, col, "white", "queen");
+
+        // if (row === 5 && col === 1)
+        //   board[row][col] = createPawn(row, col, "black", "pawn");
+
+        // if (row === 6 && col === 0)
+        //   board[row][col] = createPawn(row, col, "white", "knight");
+
+        // if (row === 7 && col === 0)
+        //   board[row][col] = createPawn(row, col, "black", "king");
+
         // Important
         if (row === 6) board[row][col] = createPawn(row, col, "white", "pawn");
         if (row === 7) {
@@ -159,7 +179,6 @@ export const GameContextProvider = ({ children }: any) => {
     setActivePiece(null);
     setAvailablePositions([]);
     setIsPromotion(false);
-    setCheckPositions([]);
     setCheckmate(false);
     setLastMovePositions([]);
     setElPassantMove(null);
@@ -171,11 +190,7 @@ export const GameContextProvider = ({ children }: any) => {
     setOpenDrawOffer(false);
   };
 
-  const findAttackedPositions = (
-    board: Square[][],
-    pieceColor: string,
-    exclude?: boolean
-  ) => {
+  const findAttackedPositions = (board: Square[][], pieceColor: string) => {
     let positionsUnderAttack: Position[] = [];
 
     board.flat().forEach((cell) => {
@@ -222,7 +237,6 @@ export const GameContextProvider = ({ children }: any) => {
     setPlayers(game.players);
     setPlayerTurn(game.playerTurn);
     setIsPromotion(game.isPromotion);
-    setCheckPositions(game.checkPositions);
     setCheckmate(game.checkmate);
     setLastMovePositions(game.lastMovePositions);
     setElPassantMove(game.elPassantMove);
@@ -235,7 +249,7 @@ export const GameContextProvider = ({ children }: any) => {
   const getGameStatus = async (gameId: string) => {
     try {
       const response = await axios.get(
-        `http://localhost:3000/api/game/retrieveGameStatus/${gameId}`
+        `${import.meta.env.VITE_BACKEND_URL}/game/retrieveGameStatus/${gameId}`
       );
 
       updateGameState(response.data);
@@ -247,11 +261,7 @@ export const GameContextProvider = ({ children }: any) => {
     }
   };
 
-  const findPositions = (
-    board: Square[][],
-    pieceColor: string,
-    exclude?: boolean
-  ) => {
+  const findPositions = (board: Square[][], pieceColor: string) => {
     let positionsUnderAttack: Position[] = [];
 
     board.flat().forEach((cell) => {
@@ -868,49 +878,27 @@ export const GameContextProvider = ({ children }: any) => {
     return safeMoves;
   };
 
-  const determineCheckmate = (board: Square[][], activePiece: Piece) => {
-    let availablePositions: Position[] = [];
+  const determineCheckmate = (board: Square[][]) => {
     const enemyColor = players.find(
       (player) => player.color !== playerTurn?.color
     )?.color;
 
-    //finds availablePositions for a piece that just moved to a new square
-    switch (activePiece?.type) {
-      case "pawn":
-        availablePositions = highlightPawn(activePiece, board);
-        break;
-      case "knight":
-        availablePositions = highlightKnight(activePiece, board);
-        break;
-      case "queen":
-        availablePositions = highlightQueen(activePiece, board);
-        break;
-      case "bishop":
-        availablePositions = highlightBishop(activePiece, board);
-        break;
-      case "rook":
-        availablePositions = highlightRook(activePiece, board);
-        break;
-      case "king":
-        availablePositions = highlightKing(activePiece, board);
-        break;
-    }
-
     //find the position of enemy king
     const enemyKing = findKing(enemyColor!);
 
-    //find if the enemy king is in available positions (if it is that means its a checkmate)
-    const kingInCheck = availablePositions.find(
+    let playerTurnPositions = findPositions(board, playerTurn?.color!);
+    //this will find all possible enemy positions
+    let enemyAttackPositions = findPositions(board, enemyColor!);
+
+    //find if the enemy king is in available positions (if it is that means its a check)
+    const kingInCheck = enemyAttackPositions.find(
       (position) =>
         position.row === enemyKing?.position.row &&
         position.col === enemyKing.position.col
     );
 
-    //this will find all possible enemy positions
-    let enemyAttackPositions = findPositions(board, playerTurn?.color!);
-
     //this is stalemate
-    if (!kingInCheck && enemyAttackPositions.length === 0) {
+    if (!kingInCheck && playerTurnPositions.length === 0) {
       setStalemate(true);
       return false;
     }
@@ -918,31 +906,8 @@ export const GameContextProvider = ({ children }: any) => {
     //no check
     if (!kingInCheck) return false;
 
-    //Now we need to find a path which lead to enemy king (checkPositions)
-    let checkPositions: Position[] = availablePositions.filter(
-      (position) => position.direction === kingInCheck?.direction
-    );
-    //include the active piece in checkPositions
-    checkPositions.push(activePiece!.position);
-
-    //this finds all possible king positions
-    let kingPositions = highlightKing(enemyKing!, board);
-
-    let positionsThatBlockCheck: Position[] = [];
-
-    //we have to iterate throught all the enemy positions and check
-
-    // if we can find any of those positions in our checkPositions (that means enemy can block the check)
-    checkPositions.forEach((checkPos) => {
-      let position = enemyAttackPositions.find(
-        (enemyPos) =>
-          enemyPos.col === checkPos.col && enemyPos.row === checkPos.row
-      );
-
-      if (position) positionsThatBlockCheck.push(position);
-    });
-
-    if (positionsThatBlockCheck.length === 0 && kingPositions.length === 0) {
+    //checkmate
+    if (kingInCheck && playerTurnPositions.length === 0) {
       setCheckmate(true);
       return true;
     }
@@ -978,7 +943,7 @@ export const GameContextProvider = ({ children }: any) => {
       newBoard[row!][col!] = createPawn(row!, col!, color!, "bishop");
     }
 
-    const isCheckmate = determineCheckmate(newBoard, newActivePiece!);
+    const isCheckmate = determineCheckmate(newBoard);
 
     setBoard(newBoard);
     setIsPromotion(false);
@@ -995,7 +960,6 @@ export const GameContextProvider = ({ children }: any) => {
       (player) => player.color === activePiece?.color
     );
     const updatedPlayers = [...players];
-    setCheckPositions([]);
 
     if (!activePiece) return;
 
@@ -1084,9 +1048,7 @@ export const GameContextProvider = ({ children }: any) => {
     }
 
     //determine if it is a check or checkmate
-    let isCheckmate =
-      promotion === false &&
-      determineCheckmate(updatedBoard, updatedActivePiece!);
+    let isCheckmate = promotion === false && determineCheckmate(updatedBoard);
 
     setMovedPieces((prev) => [...prev, updatedActivePiece!]);
 

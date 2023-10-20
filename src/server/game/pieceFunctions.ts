@@ -650,8 +650,7 @@ const movePiece = (row: number, col: number, gameState: Game) => {
 
   //determine if it is a check or checkmate
   let isCheckmate =
-    promotion === false &&
-    determineCheckmate(updatedBoard, updatedActivePiece!, gameState);
+    promotion === false && determineCheckmate(updatedBoard, gameState);
 
   gameState.movedPieces.push(updatedActivePiece!);
   if (promotion === true) gameState.activePiece = updatedActivePiece;
