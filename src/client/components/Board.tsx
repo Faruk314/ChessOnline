@@ -15,7 +15,7 @@ interface Props {
 }
 
 const Board = ({ movePiece, highlight }: Props) => {
-  const { board, availablePositions, gameId, activePiece } =
+  const { board, availablePositions, gameId, activePiece, lastMovePositions } =
     useContext(GameContext);
   const { rotateHandler } = useContext(MultiplayerContext);
 
@@ -50,6 +50,16 @@ const Board = ({ movePiece, highlight }: Props) => {
                 (pos) => pos.row === rowIndex && pos.col === cellIndex
               );
 
+              const isBrown =
+                ((rowIndex + 1) % 2 !== 0 && (cellIndex + 1) % 2 === 0) ||
+                ((rowIndex + 1) % 2 === 0 && (cellIndex + 1) % 2 !== 0);
+
+              const moveHiglight =
+                (lastMovePositions[0]?.row === rowIndex &&
+                  lastMovePositions[0]?.col === cellIndex) ||
+                (lastMovePositions[1]?.row === rowIndex &&
+                  lastMovePositions[1]?.col === cellIndex);
+
               return (
                 <div
                   onDragOver={(e) => handleDragOver(e)}
@@ -63,16 +73,15 @@ const Board = ({ movePiece, highlight }: Props) => {
                   }
                   key={cellIndex}
                   className={classNames(
-                    "relative flex items-center justify-center w-[2.7rem] h-[2.7rem] md:w-[5.8rem] md:h-[5.8rem]",
+                    "relative flex items-center justify-center w-[2.7rem] h-[2.7rem] md:w-[6rem] md:h-[6rem]",
                     {
-                      "bg-amber-900":
-                        ((rowIndex + 1) % 2 !== 0 &&
-                          (cellIndex + 1) % 2 === 0) ||
-                        ((rowIndex + 1) % 2 === 0 && (cellIndex + 1) % 2 !== 0),
+                      "bg-amber-900": isBrown,
                       "cursor-pointer": isAvailablePosition,
                       "bg-green-400":
                         activePiece?.position.row === rowIndex &&
                         activePiece.position.col === cellIndex,
+                      "bg-yellow-200": moveHiglight && !isBrown,
+                      "bg-yellow-300": moveHiglight && isBrown,
                     }
                   )}
                 >

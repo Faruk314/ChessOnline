@@ -41,6 +41,7 @@ interface GameContextProps {
   openDrawOffer: boolean;
   resetGame: () => void;
   initGame: () => void;
+  lastMovePositions: Position[];
 }
 
 export const GameContext = createContext<GameContextProps>({
@@ -66,6 +67,7 @@ export const GameContext = createContext<GameContextProps>({
   openDrawOffer: false,
   resetGame: () => {},
   initGame: () => {},
+  lastMovePositions: [],
 });
 
 export const GameContextProvider = ({ children }: any) => {
@@ -98,28 +100,7 @@ export const GameContextProvider = ({ children }: any) => {
 
     for (let row = 0; row < 8; row++) {
       for (let col = 0; col < 8; col++) {
-        // if (row === 4 && col === 4)
-        //   board[row][col] = createPawn(row, col, "white", "bishop");
-
-        // if (row === 0 && col === 0)
-        //   board[row][col] = createPawn(row, col, "white", "rook");
-
-        // if (row === 4 && col === 3)
-        //   board[row][col] = createPawn(row, col, "white", "pawn");
-
-        // if (row === 5 && col === 0)
-        //   board[row][col] = createPawn(row, col, "white", "queen");
-
-        // if (row === 5 && col === 1)
-        //   board[row][col] = createPawn(row, col, "black", "pawn");
-
-        // if (row === 6 && col === 0)
-        //   board[row][col] = createPawn(row, col, "white", "knight");
-
-        // if (row === 7 && col === 0)
-        //   board[row][col] = createPawn(row, col, "black", "king");
-
-        // Important
+        // Important;
         if (row === 6) board[row][col] = createPawn(row, col, "white", "pawn");
         if (row === 7) {
           if (col === 0)
@@ -1109,6 +1090,7 @@ export const GameContextProvider = ({ children }: any) => {
     openDrawOffer,
     resetGame,
     initGame,
+    lastMovePositions,
   };
 
   return (
