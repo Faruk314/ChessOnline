@@ -22,7 +22,9 @@ const Friends = ({ setOpenFriends }: Props) => {
 
     try {
       const response = await axios.get(
-        `http://localhost:3000/api/game/findUsers?search=${searchQuery}`
+        `${
+          import.meta.env.VITE_BACKEND_URL
+        }/game/findUsers?search=${searchQuery}`
       );
 
       setUsers(response.data);

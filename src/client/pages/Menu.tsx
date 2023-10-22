@@ -36,7 +36,7 @@ const Menu = () => {
 
   const logoutHandler = async () => {
     try {
-      await axios.get("http://localhost:3000/api/auth/logout");
+      await axios.get(import.meta.env.VITE_BACKEND_URL + "/auth/logout");
       setIsLoggedIn(false);
       socket?.emit("logout");
       setFriends([]);

@@ -45,7 +45,7 @@ export const FriendContextProvider = ({ children }: FriendProviderProps) => {
     async (friendRequestInfo: UserRequest) => {
       try {
         const response = await axios.post(
-          `http://localhost:3000/api/friends/checkFriendRequestStatus`,
+          `${import.meta.env.VITE_BACKEND_URL}/friends/checkFriendRequestStatus`,
           { personB: friendRequestInfo.userId }
         );
 
@@ -70,7 +70,7 @@ export const FriendContextProvider = ({ children }: FriendProviderProps) => {
   const getFriends = async () => {
     try {
       const response = await axios.get(
-        `http://localhost:3000/api/friends/getFriends`
+        `${import.meta.env.VITE_BACKEND_URL}/friends/getFriends`
       );
 
       if (response.data) {
@@ -88,9 +88,12 @@ export const FriendContextProvider = ({ children }: FriendProviderProps) => {
 
   const sendFriendRequest = async (receiverId: number) => {
     try {
-      await axios.post(`http://localhost:3000/api/friends/sendFriendRequest`, {
-        receiverId,
-      });
+      await axios.post(
+        `${import.meta.env.VITE_BACKEND_URL}/friends/sendFriendRequest`,
+        {
+          receiverId,
+        }
+      );
     } catch (error) {
       console.log(error);
     }
@@ -99,7 +102,7 @@ export const FriendContextProvider = ({ children }: FriendProviderProps) => {
   const getFriendRequests = async () => {
     try {
       const response = await axios.get(
-        `http://localhost:3000/api/friends/getFriendRequests`
+        `${import.meta.env.VITE_BACKEND_URL}/friends/getFriendRequests`
       );
 
       setFriendRequests(response.data);
@@ -111,7 +114,7 @@ export const FriendContextProvider = ({ children }: FriendProviderProps) => {
   const acceptFriendRequest = async (id: number) => {
     try {
       const response = await axios.put(
-        `http://localhost:3000/api/friends/acceptFriendRequest`,
+        `${import.meta.env.VITE_BACKEND_URL}/friends/acceptFriendRequest`,
         {
           id,
         }
@@ -144,7 +147,7 @@ export const FriendContextProvider = ({ children }: FriendProviderProps) => {
   const deleteFriendRequest = async (id: number) => {
     try {
       const response = await axios.put(
-        `http://localhost:3000/api/friends/deleteFriendRequest`,
+        `${import.meta.env.VITE_BACKEND_URL}/friends/deleteFriendRequest`,
         {
           id,
         }

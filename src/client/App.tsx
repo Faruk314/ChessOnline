@@ -21,7 +21,6 @@ import { Msg } from "../types/types";
 import { toast } from "react-toastify";
 
 axios.defaults.withCredentials = true;
-// axios.defaults.baseURL = process.env.FRONTEND_URL;
 
 function App() {
   const { socket } = useContext(SocketContext);
@@ -41,7 +40,7 @@ function App() {
     const getLoginStatus = async () => {
       try {
         const response = await axios.get(
-          "http://localhost:3000/api/auth/getLoginStatus"
+          import.meta.env.VITE_BACKEND_URL + "/auth/getLoginStatus"
         );
 
         setLoading(false);
@@ -50,6 +49,7 @@ function App() {
       } catch (error) {
         console.log(error);
         setIsLoggedIn(false);
+        setLoading(false);
       }
     };
 

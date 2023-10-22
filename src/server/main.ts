@@ -26,12 +26,22 @@ app.use(
   })
 );
 
+const redisPort = parseInt(
+  process.env.REDIS_PORT ? process.env.REDIS_PORT : "6379"
+);
+
 export const client = new Redis({
-  host: "localhost",
-  port: 6379,
+  host: process.env.REDIS_HOST,
+  port: redisPort,
+  username: process.env.REDIS_USER,
+  password: process.env.REDIS_PASS,
 });
 
-ViteExpress.listen(app, 3000, () =>
+const port = parseInt(
+  process.env.SERVER_PORT ? process.env.SERVER_PORT : "3000"
+);
+
+ViteExpress.listen(app, port, () =>
   console.log("Server is listening on port 3000...")
 );
 

@@ -24,9 +24,12 @@ const ChangeAvatar = () => {
 
   const updateAvatar = async () => {
     try {
-      await axios.post("http://localhost:3000/api/game/changeAvatar", {
-        avatar: avatar,
-      });
+      await axios.post(
+        import.meta.env.VITE_BACKEND_URL + "/game/changeAvatar",
+        {
+          avatar: avatar,
+        }
+      );
 
       setLoggedUserInfo((prev: any) => ({
         ...prev,

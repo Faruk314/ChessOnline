@@ -101,7 +101,7 @@ export const MultiplayerContextProvider = ({
   const acceptGameInvite = async () => {
     try {
       const response = await axios.post(
-        "http://localhost:3000/api/invite/acceptInvite"
+        import.meta.env.VITE_BACKEND_URL + "/invite/acceptInvite"
       );
 
       if (response.status === 200) return true;
@@ -116,7 +116,7 @@ export const MultiplayerContextProvider = ({
   const rejectGameInvite = async (senderId: number) => {
     try {
       const response = await axios.post(
-        "http://localhost:3000/api/invite/rejectInvite",
+        import.meta.env.VITE_BACKEND_URL + "/invite/rejectInvite",
         {
           senderId,
         }
@@ -141,7 +141,7 @@ export const MultiplayerContextProvider = ({
   const getGameInvites = async () => {
     try {
       let response = await axios.get(
-        "http://localhost:3000/api/invite/getInvites"
+        import.meta.env.VITE_BACKEND_URL + "/invite/getInvites"
       );
 
       if (response.data) {
@@ -155,7 +155,7 @@ export const MultiplayerContextProvider = ({
   const addInviteToDb = async (receiverId: number) => {
     try {
       let response = await axios.post(
-        "http://localhost:3000/api/invite/sendInvite",
+        import.meta.env.VITE_BACKEND_URL + "/invite/sendInvite",
         {
           receiverId,
         }
