@@ -34,7 +34,7 @@ export default function setupSocket() {
 
   io.use((socket: Socket, next) => {
     const token = socket.handshake.auth.token;
-
+    console.log(token);
     try {
       const decodedToken = jwt.verify(
         token,
@@ -290,5 +290,5 @@ export default function setupSocket() {
     });
   });
 
-  io.listen(5001);
+  io.listen(process.env.WS_PORT ? parseInt(process.env.WS_PORT) : 3001);
 }

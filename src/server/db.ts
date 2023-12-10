@@ -1,12 +1,16 @@
 import mysql from "mysql2/promise";
+import { ConnectionString } from "connection-string";
 import dotenv from "dotenv";
 dotenv.config();
 
+const dsn = new ConnectionString(process.env.DATABASE_URL);
+
 const connectionPool = mysql.createPool({
-  host: process.env.DB_HOST,
-  user: process.env.DB_USER,
-  password: process.env.DB_PASS,
-  database: process.env.DB_DATABASE,
+  host: dsn.hostname,
+  user: dsn.user,
+  password: dsn.password,
+  database: dsn.path && dsn.path[0] ? dsn.path[0] : "chess",
+  port: dsn.port,
   waitForConnections: true,
   connectionLimit: 100,
   maxIdle: 10,

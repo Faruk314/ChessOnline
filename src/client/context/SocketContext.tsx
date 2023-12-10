@@ -49,7 +49,7 @@ export const SocketContextProvider = ({
     let newSocket: any;
 
     if (isLoggedIn) {
-      newSocket = io("http://localhost:5001", {
+      newSocket = io(import.meta.env.VITE_WS_URL, {
         transports: ["websocket"],
         auth: {
           token: getCookie("token"),

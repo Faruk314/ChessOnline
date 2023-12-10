@@ -220,6 +220,41 @@
   dependencies:
     "@jridgewell/trace-mapping" "0.3.9"
 
+"@dbmate/darwin-arm64@2.8.0":
+  version "2.8.0"
+  resolved "https://registry.yarnpkg.com/@dbmate/darwin-arm64/-/darwin-arm64-2.8.0.tgz#7827d27ccc3ad919459388cc34bd1e57b0dada85"
+  integrity sha512-fDVbQktcQP0cAGoAkxanIf9so5EAcq1LVOKTgHc8JR8VczQGNShEbZ/NygCNu296XGW1kjBbj0THeSkoG7EwmQ==
+
+"@dbmate/darwin-x64@2.8.0":
+  version "2.8.0"
+  resolved "https://registry.yarnpkg.com/@dbmate/darwin-x64/-/darwin-x64-2.8.0.tgz#82c56e3c2c526f24eab9dd5e427625e823d8b9f1"
+  integrity sha512-59KwrTMLw4LJLPk8sSIwHkFqZLz1tUrlhWoNnwv/KyyHykKW11jOdhGn7fVXyR0XLiG7LeCrmwK1KBkstSr3fw==
+
+"@dbmate/linux-arm64@2.8.0":
+  version "2.8.0"
+  resolved "https://registry.yarnpkg.com/@dbmate/linux-arm64/-/linux-arm64-2.8.0.tgz#3afbc0b5b7e709361f41b3a27b87759a92e60ef3"
+  integrity sha512-Fzp7rwHWa979O3Tv6lYM/hhdt3Rdd3jkGeNbuh8A3UCBCTZsqD5R1Qp14kawNW8v57hVVwQA8hopAgHTjGaCaQ==
+
+"@dbmate/linux-arm@2.8.0":
+  version "2.8.0"
+  resolved "https://registry.yarnpkg.com/@dbmate/linux-arm/-/linux-arm-2.8.0.tgz#f97516ed5fd05123d675c6e8c364ed0d96f78df2"
+  integrity sha512-s7SEBR9wabYH+txpu8ktR4F2UJ0TxQYyIo7nJJ8tR6j+T32agSTC9tHFhkMehZphybnYXel4EOvmbaIwr0W20g==
+
+"@dbmate/linux-ia32@2.8.0":
+  version "2.8.0"
+  resolved "https://registry.yarnpkg.com/@dbmate/linux-ia32/-/linux-ia32-2.8.0.tgz#6b5c657bc9a2d6fec7ca2d24f2554065782ee5a0"
+  integrity sha512-VDa20odQ0pSfMTDkdB7ELznrYiqDR3bjVJNP2VvVnttQLsvve0yE3Y2GaH6mOnnIVPu4RScQoGtzrii6DcszWQ==
+
+"@dbmate/linux-x64@2.8.0":
+  version "2.8.0"
+  resolved "https://registry.yarnpkg.com/@dbmate/linux-x64/-/linux-x64-2.8.0.tgz#42780a83e326a5e261278ddef6edc2f0bdb5060f"
+  integrity sha512-6Q/gfhaRLsnMNaR9YHsi/VdB571ENfF3dv0xVNnZEEfagZaeZDIlnSu4bzee/GTjynqXwUD6sE4MG7bIBRbFqg==
+
+"@dbmate/win32-x64@2.8.0":
+  version "2.8.0"
+  resolved "https://registry.yarnpkg.com/@dbmate/win32-x64/-/win32-x64-2.8.0.tgz#e90fef7c3acf4306a2511ed746a33324288b7fab"
+  integrity sha512-VmcKgYq1wNuOVTx4SrBiiqGAxv+LTWK8a5Bss2FXPq4Kwo+kn6d+K/j9tEhs60SfcwtWE0KXfYALQxw1ORlVvw==
+
 "@esbuild/android-arm64@0.18.20":
   version "0.18.20"
   resolved "https://registry.yarnpkg.com/@esbuild/android-arm64/-/android-arm64-0.18.20.tgz#984b4f9c8d0377443cc2dfcef266d02244593622"
@@ -936,6 +971,11 @@ concat-map@0.0.1:
   resolved "https://registry.yarnpkg.com/concat-map/-/concat-map-0.0.1.tgz#d8a96bd77fd68df7793a73036a3ba0d5405d477b"
   integrity sha512-/Srv4dswyQNBfohGpz9o6Yb3Gz3SrUDqBH5rTuhGR7ahtlbYKnVxw2bCFMRljaA7EXHaXZ8wsHdodFvbkhKmqg==
 
+connection-string@^4.4.0:
+  version "4.4.0"
+  resolved "https://registry.yarnpkg.com/connection-string/-/connection-string-4.4.0.tgz#9849dd252f483dc2cbcb75a25865c6b321fb9e90"
+  integrity sha512-D4xsUjSoE8m/B5yMOvCIHY+2ME6FIZhCq0NzBBT57Q8BuL7ArFhBK04osOfReoW4KFr5ztzFwWRdmnv9rCvu2w==
+
 console-control-strings@^1.0.0, console-control-strings@^1.1.0:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/console-control-strings/-/console-control-strings-1.1.0.tgz#3d7cf4464db6446ea644bf4b39507f9851008e8e"
@@ -1008,6 +1048,19 @@ csstype@^3.0.2:
   version "3.1.2"
   resolved "https://registry.yarnpkg.com/csstype/-/csstype-3.1.2.tgz#1d4bf9d572f11c14031f0436e1c10bc1f571f50b"
   integrity sha512-I7K1Uu0MBPzaFKg4nI5Q7Vs2t+3gWWW648spaF+Rg7pI9ds18Ugn+lvg4SHczUdKlHI5LWBXyqfS8+DufyBsgQ==
+
+dbmate@^2.8.0:
+  version "2.8.0"
+  resolved "https://registry.yarnpkg.com/dbmate/-/dbmate-2.8.0.tgz#a270142dc5a32cf0141bb2465a1d46d74f644424"
+  integrity sha512-mXPWCcl/rbQjXBQWdw/KeysKGJ9bMVFweSIEwp2owuw+5jp3ohw0S7nNgWiFvhLhGfdixgTxb82/EQ0zcUj57A==
+  optionalDependencies:
+    "@dbmate/darwin-arm64" "2.8.0"
+    "@dbmate/darwin-x64" "2.8.0"
+    "@dbmate/linux-arm" "2.8.0"
+    "@dbmate/linux-arm64" "2.8.0"
+    "@dbmate/linux-ia32" "2.8.0"
+    "@dbmate/linux-x64" "2.8.0"
+    "@dbmate/win32-x64" "2.8.0"
 
 debug@2.6.9:
   version "2.6.9"
