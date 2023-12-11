@@ -52,7 +52,7 @@ export const register = asyncHandler(async (req, res) => {
     res
       .cookie("token", token, {
         httpOnly: true,
-        sameSite: "strict",
+        sameSite: "none",
         secure: true,
       })
       .status(200)
@@ -104,8 +104,8 @@ export const login = asyncHandler(async (req, res) => {
 
   res
     .cookie("token", token, {
-      httpOnly: false,
-      sameSite: "strict",
+      httpOnly: true,
+      sameSite: "none",
       secure: true,
     })
     .status(200)

@@ -63,7 +63,7 @@ const Menu = () => {
   }, []);
 
   return (
-    <section className="h-[100vh] bg-amber-100 text-white font-bold flex flex-col justify-center items-center">
+    <section className="h-[100vh] overflow-hidden	bg-amber-100 text-white font-bold flex flex-col justify-center items-center">
       <div className="fixed top-0 flex items-center w-full p-4 space-x-2">
         <SoundButton />
 
@@ -113,11 +113,10 @@ const Menu = () => {
         <UserInfo />
       </div>
 
-      <div className="fixed top-[10rem]">
-        <img src={menuImage} className="w-[17rem] h-[20rem]" />
-      </div>
-
       <div className="grid gap-4 mt-[10rem] z-20">
+        <div className="mb-5">
+          <img src={menuImage} className="h-[6rem] w-[15rem]" />
+        </div>
         <button
           onMouseEnter={() => playSound(moveSound)}
           onClick={() => {

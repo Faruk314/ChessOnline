@@ -46,14 +46,14 @@ const Login = () => {
 
   return (
     <section className="flex flex-col space-y-10 items-center justify-center bg-amber-100 h-[100vh]">
-      <div className="fixed top-[7rem]">
-        <img src={menuImage} className="w-[17rem] h-[20rem]" />
-      </div>
-
       <form
         onSubmit={loginHandler}
         className="z-20 flex flex-col p-4 pt-20 text-black rounded-md"
       >
+        <div className="">
+          <img src={menuImage} className="h-[6rem] w-[15rem]" />
+        </div>
+
         <label className="mt-5 text-black">Email</label>
         <input
           value={email}

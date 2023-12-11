@@ -125,7 +125,7 @@ const Multiplayer = () => {
   }
 
   return (
-    <section className="flex flex-col items-center justify-center h-[100vh] bg-amber-100">
+    <section className="flex flex-col items-center justify-center h-[100vh] bg-amber-100 overflow-hidden">
       {checkmate && <Checkmate />}
       {stalemate && <Stalemate />}
       {openResignModal && <Resign setOpenResignModal={setOpenResignModal} />}
