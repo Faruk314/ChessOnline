@@ -7,8 +7,8 @@ import menuImage from "../assets/images/menu.png";
 import { AiOutlineGoogle } from "react-icons/ai";
 
 const Login = () => {
-  const [email, setEmail] = useState("farukspahictz@gmail.com");
-  const [password, setPassword] = useState("ispitivac");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
   const navigate = useNavigate();
   const { setIsLoggedIn, setLoggedUserInfo } = useContext(AuthContext);

@@ -37,8 +37,14 @@ const Multiplayer = () => {
     openDrawOffer,
     resetGame,
   } = useContext(GameContext);
-  const { movePiece, higlightPiece, promotePawn, offerDraw } =
-    useContext(MultiplayerContext);
+  const {
+    movePiece,
+    higlightPiece,
+    promotePawn,
+    offerDraw,
+    setMsgNotif,
+    msgNotif,
+  } = useContext(MultiplayerContext);
   const { loggedUserInfo } = useContext(AuthContext);
   const navigate = useNavigate();
   const opponent = players.find(
@@ -151,11 +157,20 @@ const Multiplayer = () => {
       {!openChat && (
         <div className="fixed flex items-center justify-center bottom-4 right-4">
           <button
-            onClick={() => setOpenChat(true)}
+            onClick={() => {
+              setMsgNotif(false);
+              setOpenChat(true);
+            }}
             className="p-2 text-white rounded-md bg-amber-900"
           >
             <BsFillChatLeftDotsFill size={20} />
           </button>
+
+          {msgNotif && (
+            <span className="absolute px-2 bg-red-600 text-white rounded-full top-[-0.5rem] left-[-1rem]">
+              !
+            </span>
+          )}
         </div>
       )}
 

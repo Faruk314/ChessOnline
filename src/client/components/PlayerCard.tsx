@@ -9,6 +9,8 @@ import whiteDefault from "../assets/images/whiteDefault.png";
 import { FriendRequestStatus } from "../../types/types";
 import { MultiplayerContext } from "../context/MultiplayerContext";
 import { toast } from "react-toastify";
+import { MdDeleteForever } from "react-icons/md";
+import { FcInvite } from "react-icons/fc";
 
 interface Props {
   friendRequestInfo: UserRequest;
@@ -92,14 +94,18 @@ const PlayerCard = ({ friendRequestInfo }: Props) => {
         />
 
         <div className="flex flex-col items-start text-black rounded-md ">
-          <span className="">{friendRequestInfo.userName}</span>
+          <span className="">
+            {friendRequestInfo.userName.length > 10
+              ? `${friendRequestInfo.userName.slice(0, 10)}...`
+              : friendRequestInfo.userName}
+          </span>
           <span className="">id: {friendRequestInfo.userId}</span>
         </div>
       </div>
 
       <div className="flex flex-col font-bold">
         {friendRequestStatus?.status === 0 && (
-          <div>
+          <div className="flex items-center justify-center">
             <button
               onClick={friendRequestHandler}
               className="p-2 rounded-md hover:bg-amber-900 hover:text-white"
@@ -108,10 +114,10 @@ const PlayerCard = ({ friendRequestInfo }: Props) => {
             </button>
 
             <button
-              onClick={inviteHandler}
-              className="p-2 rounded-md hover:bg-amber-900 hover:text-white"
+              onClick={() => inviteHandler()}
+              className="p-2 rounded-md hover:bg-gray-200 hover:text-white"
             >
-              INVITE
+              <FcInvite size={25} />
             </button>
           </div>
         )}
@@ -119,7 +125,7 @@ const PlayerCard = ({ friendRequestInfo }: Props) => {
         {friendRequestStatus?.status === 1 &&
           friendRequestInfo.id &&
           loggedUserInfo?.userId === friendRequestStatus.receiver && (
-            <div className="flex space-x-1">
+            <div className="flex items-center space-x-1">
               <button
                 onClick={acceptFriendRequestHandler}
                 className="p-2 rounded-md hover:bg-amber-900 hover:text-white"
@@ -138,43 +144,43 @@ const PlayerCard = ({ friendRequestInfo }: Props) => {
         {friendRequestStatus?.status === 1 &&
           !friendRequestInfo.id &&
           loggedUserInfo?.userId === friendRequestStatus.receiver && (
-            <div className="flex space-x-2">
+            <div className="flex items-center space-x-2">
               <span className="p-2 rounded-md">PENDING</span>
               <button
-                onClick={inviteHandler}
-                className="p-2 rounded-md hover:bg-amber-900 hover:text-white"
+                onClick={() => inviteHandler()}
+                className="p-2 rounded-md hover:bg-gray-200 hover:text-white"
               >
-                INVITE
+                <FcInvite size={25} />
               </button>
             </div>
           )}
 
         {friendRequestStatus?.status === 1 &&
           loggedUserInfo?.userId === friendRequestStatus.sender && (
-            <div className="flex space-x-2">
+            <div className="flex items-center space-x-2">
               <span className="p-2 rounded-md">SENT</span>
               <button
                 onClick={() => inviteHandler()}
-                className="p-2 rounded-md hover:bg-amber-900 hover:text-white"
+                className="p-2 rounded-md hover:bg-gray-200 hover:text-white"
               >
-                INVITE
+                <FcInvite size={25} />
               </button>
             </div>
           )}
 
         {friendRequestStatus?.status === 2 && friendRequestInfo.id && (
-          <div>
+          <div className="flex items-center justify-center">
             <button
               onClick={unfriendHandler}
-              className="p-2 rounded-md hover:bg-amber-900 hover:text-white"
+              className="p-2 rounded-md hover:bg-gray-200 hover:text-white"
             >
-              UNFRIEND
+              <MdDeleteForever size={25} className="text-red-600" />
             </button>
             <button
               onClick={() => inviteHandler()}
-              className="p-2 rounded-md hover:bg-amber-900 hover:text-white"
+              className="p-2 rounded-md hover:bg-gray-200 hover:text-white"
             >
-              INVITE
+              <FcInvite size={25} />
             </button>
           </div>
         )}
@@ -184,9 +190,9 @@ const PlayerCard = ({ friendRequestInfo }: Props) => {
             <span>FRIENDS</span>
             <button
               onClick={() => inviteHandler()}
-              className="p-2 rounded-md hover:bg-amber-900 hover:text-white"
+              className="p-2 rounded-md hover:bg-gray-200 hover:text-white"
             >
-              INVITE
+              <FcInvite size={25} />
             </button>
           </div>
         )}

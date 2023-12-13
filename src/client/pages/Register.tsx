@@ -5,9 +5,9 @@ import { AuthContext } from "../context/AuthContext";
 import axios from "axios";
 
 const Register = () => {
-  const [userName, setUsername] = useState("faruk");
-  const [email, setEmail] = useState("farukspahictz@gmail.com");
-  const [password, setPassword] = useState("ispitivac");
+  const [userName, setUsername] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
   const navigate = useNavigate();
   const { setIsLoggedIn, setLoggedUserInfo } = useContext(AuthContext);

@@ -30,7 +30,7 @@ function App() {
     useContext(FriendContext);
   const { setIsLoggedIn, setLoggedUserInfo, isLoggedIn } =
     useContext(AuthContext);
-  const { addGameInvite } = useContext(MultiplayerContext);
+  const { addGameInvite, setMsgNotif } = useContext(MultiplayerContext);
   const [openOpponentLeft, setOpenOpponentLeft] = useState(false);
   const [openDrawModal, setOpenDrawModal] = useState(false);
   const navigate = useNavigate();
@@ -67,6 +67,7 @@ function App() {
   useEffect(() => {
     socket?.on("receiveMessage", (message: Msg) => {
       setMessages((prev) => [...prev, message]);
+      setMsgNotif(true);
     });
 
     return () => {
