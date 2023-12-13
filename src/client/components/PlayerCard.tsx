@@ -28,6 +28,7 @@ const PlayerCard = ({ friendRequestInfo }: Props) => {
   } = useContext(FriendContext);
   const [friendRequestStatus, setFriendRequestStatus] =
     useState<FriendRequestStatus | null>(null);
+  const [isHovering, setIsHovering] = useState(false);
 
   const notify = (message: string) => {
     toast.success(message, {
@@ -93,12 +94,26 @@ const PlayerCard = ({ friendRequestInfo }: Props) => {
           className="w-[3rem] h-[3rem] border rounded-lg relative"
         />
 
-        <div className="flex flex-col items-start text-black rounded-md ">
-          <span className="">
-            {friendRequestInfo.userName.length > 10
-              ? `${friendRequestInfo.userName.slice(0, 10)}...`
-              : friendRequestInfo.userName}
-          </span>
+        <div className="flex flex-col items-start text-black rounded-md">
+          {friendRequestInfo.userName.length > 10 ? (
+            <div
+              onMouseEnter={() => setIsHovering(true)}
+              onMouseLeave={() => setIsHovering(false)}
+              className="relative cursor-pointer"
+            >
+              <span>{friendRequestInfo.userName.slice(0, 10)}...</span>
+
+              {isHovering && (
+                <div className="bg-[rgba(0,0,0,0.6)] p-2 rounded-md absolute top-5 left-0">
+                  <span className="text-white">
+                    {friendRequestInfo?.userName}
+                  </span>
+                </div>
+              )}
+            </div>
+          ) : (
+            <span>{friendRequestInfo.userName}</span>
+          )}
           <span className="">id: {friendRequestInfo.userId}</span>
         </div>
       </div>
