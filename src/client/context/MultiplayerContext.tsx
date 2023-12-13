@@ -39,6 +39,8 @@ type MultiplayerContextType = {
   acceptGameInvite: () => Promise<boolean>;
   addGameInvite: (userInfo: UserInfo) => void;
   setGameInvites: React.Dispatch<React.SetStateAction<UserInfo[]>>;
+  msgNotif: boolean;
+  setMsgNotif: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 export const MultiplayerContext = createContext<MultiplayerContextType>({
@@ -55,6 +57,8 @@ export const MultiplayerContext = createContext<MultiplayerContextType>({
   acceptGameInvite: async () => false,
   addGameInvite: (userInfo) => {},
   setGameInvites: () => {},
+  msgNotif: false,
+  setMsgNotif: () => {},
 });
 
 type MultiplayerProviderProps = {
@@ -69,6 +73,7 @@ export const MultiplayerContextProvider = ({
   const { players, gameId } = useContext(GameContext);
   const { loggedUserInfo } = useContext(AuthContext);
   const [gameInvites, setGameInvites] = useState<UserInfo[]>([]);
+  const [msgNotif, setMsgNotif] = useState(false);
 
   const rotateHandler = () => {
     if (!gameId) return false;
@@ -209,6 +214,8 @@ export const MultiplayerContextProvider = ({
         acceptGameInvite,
         addGameInvite,
         setGameInvites,
+        setMsgNotif,
+        msgNotif,
       }}
     >
       {children}

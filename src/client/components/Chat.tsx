@@ -3,17 +3,54 @@ import { SocketContext } from "../context/SocketContext";
 import { AuthContext } from "../context/AuthContext";
 import { GameContext } from "../context/GameContext";
 import { IoClose } from "react-icons/io5";
+import { v4 as uuidv4 } from "uuid";
 
 interface Props {
   setOpenChat: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const Chat = ({ setOpenChat }: Props) => {
-  const { messages } = useContext(GameContext);
-  const { gameId } = useContext(GameContext);
+  const { messages, gameId, setMessages } = useContext(GameContext);
+  const { players } = useContext(GameContext);
   const { socket } = useContext(SocketContext);
   const { loggedUserInfo } = useContext(AuthContext);
   const [message, setMessage] = useState("");
+
+  const messageHandler = () => {
+    if (message.length === 0) return;
+
+    if (!loggedUserInfo?.userId) return;
+
+    const receiver = players.find(
+      (player) => player.playerData?.userId !== loggedUserInfo?.userId
+    );
+
+    if (!receiver) return;
+
+    socket?.emit("sendMessage", {
+      gameId,
+      receiverId: receiver?.playerData?.userId,
+      senderName: loggedUserInfo?.userName,
+      message,
+    });
+
+    const msg = {
+      id: uuidv4(),
+      message,
+      senderName: loggedUserInfo.userName,
+    };
+
+    setMessages((prev) => [...prev, msg]);
+
+    setMessage("");
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      messageHandler();
+    }
+  };
 
   return (
     <div className="fixed z-40 flex flex-col bottom-4 right-4">
@@ -29,8 +66,10 @@ const Chat = ({ setOpenChat }: Props) => {
         {messages.map((message) => (
           <div key={message.id} className="px-2">
             <div className="flex space-x-1">
-              <span className="font-bold">{message.senderName}:</span>
-              <p className="break-all">{message.message}</p>
+              <p className="break-all max-w-[18rem]">
+                <span className="font-bold">{message.senderName}</span>:{" "}
+                {message.message}
+              </p>
             </div>
           </div>
         ))}
@@ -42,20 +81,11 @@ const Chat = ({ setOpenChat }: Props) => {
           onChange={(e) => setMessage(e.target.value)}
           className="h-full px-2 py-1 bg-transparent border border-black outline-none"
           placeholder="Enter your message here"
+          onKeyDown={handleKeyDown}
         />
 
         <button
-          onClick={() => {
-            if (message.length === 0) return;
-
-            socket?.emit("sendMessage", {
-              gameId,
-              senderName: loggedUserInfo?.userName,
-              message,
-            });
-
-            setMessage("");
-          }}
+          onClick={messageHandler}
           className="bg-amber-900 h-full w-[5rem] text-white hover:bg-transparent border-2  border-amber-900 hover:text-amber-900 outline-none"
         >
           SEND

@@ -194,12 +194,18 @@ export default function setupSocket() {
 
     socket.on(
       "sendMessage",
-      async (data: { gameId: string; message: string; senderName: string }) => {
+      async (data: {
+        gameId: string;
+        message: string;
+        senderName: string;
+        receiverId: number;
+      }) => {
         const msg = {
           id: uuidv4(),
           message: data.message,
           senderName: data.senderName,
         };
+        const receiverSocketId = getUser(data.receiverId);
 
         let gameState = await getGameState(data.gameId);
 
@@ -207,7 +213,7 @@ export default function setupSocket() {
 
         await client.set(data.gameId, JSON.stringify(gameState));
 
-        io.to(data.gameId).emit("receiveMessage", msg);
+        io.to(receiverSocketId).emit("receiveMessage", msg);
       }
     );
 
