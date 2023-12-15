@@ -217,7 +217,11 @@ export const GameContextProvider = ({ children }: any) => {
     setBoard(game.board);
     setPlayers(game.players);
     setPlayerTurn(game.playerTurn);
-    setIsPromotion(game.isPromotion);
+    if (game.playerTurn?.playerData?.userId === loggedUserInfo.userId) {
+      setIsPromotion(game.isPromotion);
+    } else {
+      setIsPromotion(false);
+    }
     setCheckmate(game.checkmate);
     setLastMovePositions(game.lastMovePositions);
     setElPassantMove(game.elPassantMove);
