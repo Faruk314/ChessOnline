@@ -3,19 +3,14 @@ import asyncHandler from "express-async-handler";
 import query from "../db";
 
 export const invite = asyncHandler(async (req: Request, res: Response) => {
-  const personA = req.user?.userId;
+  const userId = req.user?.userId;
   const personB: number = req.body.receiverId;
 
   //check if the invite already exists
   const checkQuery =
-    "SELECT i.id FROM invites i WHERE (i.sender = ? AND i.receiver = ?) OR (i.sender = ? AND i.receiver = ?)";
+    "SELECT i.id FROM invites i WHERE i.sender = ? AND i.receiver = ?";
 
-  const checkResult: any = await query(checkQuery, [
-    personA,
-    personB,
-    personB,
-    personA,
-  ]);
+  const checkResult: any = await query(checkQuery, [userId, personB]);
 
   if (checkResult.length > 0) {
     res.json("Invite already exists");
@@ -24,7 +19,7 @@ export const invite = asyncHandler(async (req: Request, res: Response) => {
 
   const q = "INSERT INTO invites (sender, receiver) VALUES (?, ?)";
 
-  const result: any = await query(q, [personA, personB]);
+  const result: any = await query(q, [userId, personB]);
 
   if (result.affectedRows === 1) {
     res.status(200).json("Invite sent");
@@ -53,7 +48,7 @@ export const acceptInvite = asyncHandler(
     const userId = req.user?.userId;
 
     try {
-      let q = "SELECT i.id FROM invites i WHERE i.receiver = ?";
+      let q = "SELECT i.sender FROM invites i WHERE i.receiver = ?";
 
       let data: any = await query(q, [userId]);
 
@@ -61,18 +56,21 @@ export const acceptInvite = asyncHandler(
         res.status(400);
         throw new Error("Invite expired");
       }
-    } catch (error) {
-      console.log(error);
-    }
 
-    try {
-      let q = `DELETE FROM invites WHERE sender = ? OR receiver = ?`;
+      //This deletes all invites where i am sender so they are not valid when i am in game
+      q = `DELETE FROM invites WHERE sender = ?`;
 
-      await query(q, [userId, userId]);
+      await query(q, [userId]);
+
+      //this will delete this invite
+      q = `DELETE FROM invites WHERE sender = ? AND receiver = ?`;
+
+      await query(q, [data[0].sender, userId]);
 
       res.status(200).json("Invites deleted");
     } catch (error) {
-      res.status(400).json("Could not delete invites");
+      console.log(error);
+      throw new Error("Could not handle the invitation");
     }
   }
 );
