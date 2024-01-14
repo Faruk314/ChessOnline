@@ -1,13 +1,35 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useEffect, useRef } from "react";
 import PlayerCard from "../components/PlayerCard";
 import { MultiplayerContext } from "../context/MultiplayerContext";
 import InviteCard from "../components/InviteCard";
 
-const Invites = () => {
+interface Props {
+  setOpenInvites: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
+const Invites = ({ setOpenInvites }: Props) => {
+  const modalRef: any = useRef();
   const { gameInvites } = useContext(MultiplayerContext);
 
+  useEffect(() => {
+    const handleOutsideClick = (event: any) => {
+      if (modalRef.current && !modalRef.current.contains(event.target)) {
+        setOpenInvites(false);
+      }
+    };
+
+    document.addEventListener("click", handleOutsideClick);
+
+    return () => {
+      document.removeEventListener("click", handleOutsideClick);
+    };
+  }, []);
+
   return (
-    <div className="absolute text-black shadow-[0_3px_10px_rgb(0,0,0,0.2)] top-[4rem] left-4 h-[20rem] w-[19rem] px-2 rounded-md z-30 bg-amber-100 border-md">
+    <div
+      ref={modalRef}
+      className="absolute text-black shadow-[0_3px_10px_rgb(0,0,0,0.2)] top-[4rem] left-4 h-[20rem] w-[19rem] px-2 rounded-md z-30 bg-amber-100 border-md"
+    >
       <h2 className="my-2 text-xl text-center">Game invites</h2>
 
       {gameInvites.length === 0 && (

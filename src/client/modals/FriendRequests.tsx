@@ -1,8 +1,13 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useEffect, useRef } from "react";
 import { FriendContext } from "../context/FriendContext";
 import PlayerCard from "../components/PlayerCard";
 
-const FriendRequests = () => {
+interface Props {
+  setOpenFriendReq: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
+const FriendRequests = ({ setOpenFriendReq }: Props) => {
+  const modalRef: any = useRef();
   const { friendRequests, getFriendRequests } = useContext(FriendContext);
 
   useEffect(() => {
@@ -13,8 +18,25 @@ const FriendRequests = () => {
     getRequests();
   }, []);
 
+  useEffect(() => {
+    const handleOutsideClick = (event: any) => {
+      if (modalRef.current && !modalRef.current.contains(event.target)) {
+        setOpenFriendReq(false);
+      }
+    };
+
+    document.addEventListener("click", handleOutsideClick);
+
+    return () => {
+      document.removeEventListener("click", handleOutsideClick);
+    };
+  }, []);
+
   return (
-    <div className="absolute text-black shadow-[0_3px_10px_rgb(0,0,0,0.2)] top-[4rem] left-4 h-[20rem] w-[19rem] px-2 rounded-md z-30 bg-amber-100 border-md">
+    <div
+      ref={modalRef}
+      className="absolute text-black shadow-[0_3px_10px_rgb(0,0,0,0.2)] top-[4rem] left-4 h-[20rem] w-[19rem] px-2 rounded-md z-30 bg-amber-100 border-md"
+    >
       <h2 className="my-2 text-xl text-center">Friend requests</h2>
 
       {friendRequests.length === 0 && (

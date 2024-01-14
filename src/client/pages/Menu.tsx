@@ -163,8 +163,8 @@ const Menu = () => {
       {openFindMatch && <FindMatch setOpenFindMatch={setOpenFindMatch} />}
       {openChangeAvatar && <ChangeAvatar />}
       {openFriends && <Friends setOpenFriends={setOpenFriends} />}
-      {openFriendReq && <FriendRequests />}
-      {openInvites && <Invites />}
+      {openFriendReq && <FriendRequests setOpenFriendReq={setOpenFriendReq} />}
+      {openInvites && <Invites setOpenInvites={setOpenInvites} />}
     </section>
   );
 };
