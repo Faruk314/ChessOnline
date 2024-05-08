@@ -83,6 +83,7 @@ export const createGame = async (playerIds: number[], gameId: string) => {
     stalemate: false,
     messages: [],
     drawOffererId: null,
+    isCheck: false,
   };
 
   const board = new Array(8).fill(null).map(() => new Array(8).fill(null));
@@ -365,6 +366,10 @@ export const determineCheckmate = (board: Square[][], gameState: Game) => {
       position.row === enemyKing?.position.row &&
       position.col === enemyKing.position.col
   );
+
+  if (kingInCheck) {
+    gameState.isCheck = true;
+  }
 
   //this is stalemate
   if (!kingInCheck && playerTurnPositions.length === 0) {

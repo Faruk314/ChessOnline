@@ -61,6 +61,7 @@ export interface Game {
   stalemate: boolean;
   messages: [];
   drawOffererId: number | null;
+  isCheck: boolean;
 }
 
 export interface FriendRequestStatus {

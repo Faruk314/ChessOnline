@@ -90,6 +90,7 @@ export const GameContextProvider = ({ children }: any) => {
   const [messages, setMessages] = useState<Msg[]>([]);
   const [drawOffered, setDrawOffered] = useState(false);
   const [openDrawOffer, setOpenDrawOffer] = useState(false);
+  const [isCheck, setIsCheck] = useState(false);
 
   const initGame = useCallback(() => {
     const whitePlayer = new Player("white");
@@ -715,6 +716,10 @@ export const GameContextProvider = ({ children }: any) => {
     let kingLeftPositionCol = 3;
     let leftCastleMove: null | Position = null;
 
+    if (isCheck) {
+      return safeMoves;
+    }
+
     //check if the king already moved and if yes then return from func
     let kingMoved = movedPieces.find(
       (movedPiece) =>
@@ -882,6 +887,10 @@ export const GameContextProvider = ({ children }: any) => {
         position.col === enemyKing.position.col
     );
 
+    if (kingInCheck) {
+      setIsCheck(true);
+    }
+
     //this is stalemate
     if (!kingInCheck && playerTurnPositions.length === 0) {
       setStalemate(true);
@@ -945,6 +954,8 @@ export const GameContextProvider = ({ children }: any) => {
       (player) => player.color === activePiece?.color
     );
     const updatedPlayers = [...players];
+
+    setIsCheck(false);
 
     if (!activePiece) return;
 

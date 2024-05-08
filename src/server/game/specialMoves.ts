@@ -24,6 +24,10 @@ export const castling = (
   let kingLeftPositionCol = 3;
   let leftCastleMove: null | Position = null;
 
+  if (gameState.isCheck) {
+    return safeMoves;
+  }
+
   //check if the king already moved and if yes then return from func
   let kingMoved = gameState.movedPieces.find(
     (movedPiece) =>

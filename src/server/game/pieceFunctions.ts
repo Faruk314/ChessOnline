@@ -553,6 +553,7 @@ const highlightPawn = (piece: Piece, gameState: Game, newBoard: Square[][]) => {
 };
 
 const movePiece = (row: number, col: number, gameState: Game) => {
+  gameState.isCheck = false;
   let updatedActivePiece = _.cloneDeep(gameState.activePiece);
   let updatedBoard = _.cloneDeep(gameState.board);
   let promotion = false;
