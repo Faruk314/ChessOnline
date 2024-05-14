@@ -375,6 +375,7 @@ export const GameContextProvider = ({ children }: any) => {
       }
 
       if (
+        currentCol + 1 < 8 &&
         board[currentRow - 1][currentCol + 1] !== null &&
         board[currentRow - 1][currentCol + 1]?.color !== piece.color
       ) {
@@ -382,6 +383,7 @@ export const GameContextProvider = ({ children }: any) => {
       }
 
       if (
+        currentCol - 1 >= 0 &&
         board[currentRow - 1][currentCol - 1] !== null &&
         board[currentRow - 1][currentCol - 1]?.color !== piece.color
       ) {
@@ -419,6 +421,7 @@ export const GameContextProvider = ({ children }: any) => {
       }
 
       if (
+        currentCol + 1 < 8 &&
         board[currentRow + 1][currentCol + 1] !== null &&
         board[currentRow + 1][currentCol + 1]?.color !== piece.color
       ) {
@@ -426,6 +429,7 @@ export const GameContextProvider = ({ children }: any) => {
       }
 
       if (
+        currentCol - 1 >= 0 &&
         board[currentRow + 1][currentCol - 1] !== null &&
         board[currentRow + 1][currentCol - 1]?.color !== piece.color
       ) {
