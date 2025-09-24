@@ -51,7 +51,7 @@ export const register = asyncHandler(async (req, res) => {
 
     res
       .cookie("token", token, {
-        httpOnly: false,
+        httpOnly: true,
         sameSite: "none",
         secure: true,
       })
@@ -104,7 +104,7 @@ export const login = asyncHandler(async (req, res) => {
 
   res
     .cookie("token", token, {
-      httpOnly: false,
+      httpOnly: true,
       sameSite: "none",
       secure: true,
     })
@@ -122,7 +122,7 @@ export const login = asyncHandler(async (req, res) => {
 export const logout = asyncHandler(async (req, res) => {
   res
     .clearCookie("token", {
-      httpOnly: false,
+      httpOnly: true,
       sameSite: "none",
       secure: true,
     })
