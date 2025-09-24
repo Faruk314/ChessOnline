@@ -69,7 +69,8 @@ const Menu = () => {
 
         <div className="relative">
           <button
-            onClick={() => {
+            onClick={(e) => {
+              e.stopPropagation();
               setOpenInvites(false);
               setOpenFriendReq((prev) => !prev);
             }}
@@ -89,7 +90,8 @@ const Menu = () => {
 
         <div className="relative">
           <button
-            onClick={() => {
+            onClick={(e) => {
+              e.stopPropagation();
               setOpenFriendReq(false);
               setOpenInvites((prev) => !prev);
             }}
