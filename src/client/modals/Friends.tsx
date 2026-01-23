@@ -1,10 +1,10 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { IoClose } from "react-icons/io5";
 import axios from "axios";
 import { UserInfo } from "../../types/types";
 import PlayerCard from "../components/PlayerCard";
 import { BiSearch } from "react-icons/bi";
-import { FriendContext } from "../context/FriendContext";
+import { useFriendStore } from "../store/useFriendStore";
 import classNames from "classnames";
 
 interface Props {
@@ -14,7 +14,7 @@ interface Props {
 const Friends = ({ setOpenFriends }: Props) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [users, setUsers] = useState<UserInfo[]>([]);
-  const { friends } = useContext(FriendContext);
+  const { friends } = useFriendStore();
   const [opened, setOpened] = useState("friends");
 
   const fetchUsers = async () => {
@@ -24,7 +24,7 @@ const Friends = ({ setOpenFriends }: Props) => {
       const response = await axios.get(
         `${
           import.meta.env.VITE_BACKEND_URL
-        }/game/findUsers?search=${searchQuery}`
+        }/api/game/findUsers?search=${searchQuery}`
       );
 
       setUsers(response.data);
@@ -32,6 +32,8 @@ const Friends = ({ setOpenFriends }: Props) => {
       console.error("Error fetching users:", error);
     }
   };
+
+  console.log(users);
 
   return (
     <div className="fixed inset-0 z-30 bg-[rgba(0,0,0,0.6)] flex items-center justify-center">
@@ -110,7 +112,7 @@ const Friends = ({ setOpenFriends }: Props) => {
 
             <div className="flex flex-col py-5 space-y-3 overflow-y-auto h-[22rem] max-h-[22rem]">
               {users ? (
-                users.map((user) => (
+                users?.map((user) => (
                   <PlayerCard key={user.userId} friendRequestInfo={user} />
                 ))
               ) : (

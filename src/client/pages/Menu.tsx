@@ -13,19 +13,27 @@ import ChangeAvatar from "../modals/ChangeAvatar";
 import { BiEnvelope, BiSearch } from "react-icons/bi";
 import FriendRequests from "../modals/FriendRequests";
 import Friends from "../modals/Friends";
-import { FriendContext } from "../context/FriendContext";
 import { BiEnvelopeOpen } from "react-icons/bi";
 import Invites from "../modals/Invites";
 import classNames from "classnames";
 import { MultiplayerContext } from "../context/MultiplayerContext";
 import { useAuthStore } from "../store/useAuthStore";
 import { useLogoutMutation } from "../api/queries/auth";
+import { useFriendStore } from "../store/useFriendStore";
+import {
+  useFriendRequestsQuery,
+  useFriendsQuery,
+} from "../api/queries/friends";
 
 const Menu = () => {
   const { mutate: logoutUser } = useLogoutMutation();
   const { socket } = useContext(SocketContext);
   const { playSound } = useContext(SoundContext);
-  const { friendRequests, getFriends, setFriends } = useContext(FriendContext);
+  const { friendRequests } = useFriendStore();
+  
+  useFriendsQuery();
+  useFriendRequestsQuery();
+
   const { gameInvites, getGameInvites } = useContext(MultiplayerContext);
   const [openFindMatch, setOpenFindMatch] = useState(false);
   const [openInvites, setOpenInvites] = useState(false);
@@ -33,14 +41,6 @@ const Menu = () => {
   const { openChangeAvatar, setIsLoggedIn } = useAuthStore();
   const [openFriendReq, setOpenFriendReq] = useState(false);
   const navigate = useNavigate();
-
-  useEffect(() => {
-    const fetchFriends = async () => {
-      await getFriends();
-    };
-
-    fetchFriends();
-  }, []);
 
   useEffect(() => {
     const getInvites = async () => {

@@ -1,7 +1,6 @@
 import { useContext, useEffect, useState } from "react";
 import { SocketContext } from "../context/SocketContext";
 import { UserRequest } from "../../types/types";
-import { FriendContext } from "../context/FriendContext";
 import { IoClose } from "react-icons/io5";
 import { IoCheckmarkSharp } from "react-icons/io5";
 import whiteDefault from "../assets/images/whiteDefault.png";
@@ -11,6 +10,12 @@ import { toast } from "react-toastify";
 import { MdDeleteForever } from "react-icons/md";
 import { FcInvite } from "react-icons/fc";
 import { useAuthStore } from "../store/useAuthStore";
+import {
+  useAcceptFriendRequestMutation,
+  useCheckFriendRequestStatusMutation,
+  useDeleteFriendRequestMutation,
+  useSendFriendRequestMutation,
+} from "../api/queries/friends";
 
 interface Props {
   friendRequestInfo: UserRequest;
@@ -20,12 +25,12 @@ const PlayerCard = ({ friendRequestInfo }: Props) => {
   const { loggedUserInfo } = useAuthStore();
   const { addInviteToDb } = useContext(MultiplayerContext);
   const { socket } = useContext(SocketContext);
-  const {
-    sendFriendRequest,
-    acceptFriendRequest,
-    checkFriendRequestStatus,
-    deleteFriendRequest,
-  } = useContext(FriendContext);
+  const { mutateAsync: sendFriendRequest } = useSendFriendRequestMutation();
+  const { mutateAsync: acceptFriendRequest } = useAcceptFriendRequestMutation();
+  const { mutateAsync: checkFriendRequestStatus } =
+    useCheckFriendRequestStatusMutation();
+  const { mutateAsync: deleteFriendRequest } = useDeleteFriendRequestMutation();
+
   const [friendRequestStatus, setFriendRequestStatus] =
     useState<FriendRequestStatus | null>(null);
   const [isHovering, setIsHovering] = useState(false);
@@ -38,7 +43,7 @@ const PlayerCard = ({ friendRequestInfo }: Props) => {
 
   useEffect(() => {
     const getFriendshipStatus = async () => {
-      let status = await checkFriendRequestStatus(friendRequestInfo);
+      let status = await checkFriendRequestStatus(friendRequestInfo.userId);
 
       if (status) setFriendRequestStatus(status);
     };
@@ -81,7 +86,7 @@ const PlayerCard = ({ friendRequestInfo }: Props) => {
   const friendRequestHandler = async (e: any) => {
     await sendFriendRequest(friendRequestInfo.userId);
     socket?.emit("sendFriendRequest", friendRequestInfo.userId);
-    let status = await checkFriendRequestStatus(friendRequestInfo);
+    let status = await checkFriendRequestStatus(friendRequestInfo.userId);
     if (status) setFriendRequestStatus(status);
   };
 

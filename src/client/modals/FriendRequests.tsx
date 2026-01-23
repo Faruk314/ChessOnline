@@ -1,5 +1,6 @@
-import React, { useContext, useEffect, useRef } from "react";
-import { FriendContext } from "../context/FriendContext";
+import React, { useEffect, useRef } from "react";
+import { useFriendStore } from "../store/useFriendStore";
+import { useFriendRequestsQuery } from "../api/queries/friends";
 import PlayerCard from "../components/PlayerCard";
 
 interface Props {
@@ -8,15 +9,8 @@ interface Props {
 
 const FriendRequests = ({ setOpenFriendReq }: Props) => {
   const modalRef: any = useRef();
-  const { friendRequests, getFriendRequests } = useContext(FriendContext);
-
-  useEffect(() => {
-    const getRequests = async () => {
-      await getFriendRequests();
-    };
-
-    getRequests();
-  }, []);
+  const { friendRequests } = useFriendStore();
+  useFriendRequestsQuery();
 
   useEffect(() => {
     const handleOutsideClick = (event: any) => {

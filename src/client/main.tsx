@@ -5,7 +5,6 @@ import { SocketProvider } from "./context/SocketContext";
 import { GameContextProvider } from "./context/GameContext";
 import { SoundContextProvider } from "./context/SoundContext";
 import { MultiplayerContextProvider } from "./context/MultiplayerContext";
-import { FriendContextProvider } from "./context/FriendContext";
 import App from "./App";
 import { HashRouter as BrowserRouter } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
@@ -18,18 +17,16 @@ ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   <React.StrictMode>
     <QueryClientProvider client={queryClient}>
       <SocketProvider>
-        <FriendContextProvider>
-          <SoundContextProvider>
-            <GameContextProvider>
-              <MultiplayerContextProvider>
-                <BrowserRouter>
-                  <App />
-                  <ToastContainer />
-                </BrowserRouter>
-              </MultiplayerContextProvider>
-            </GameContextProvider>
-          </SoundContextProvider>
-        </FriendContextProvider>
+        <SoundContextProvider>
+          <GameContextProvider>
+            <MultiplayerContextProvider>
+              <BrowserRouter>
+                <App />
+                <ToastContainer />
+              </BrowserRouter>
+            </MultiplayerContextProvider>
+          </GameContextProvider>
+        </SoundContextProvider>
       </SocketProvider>
     </QueryClientProvider>
   </React.StrictMode>
