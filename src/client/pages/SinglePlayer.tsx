@@ -1,5 +1,4 @@
 import { useContext, useRef } from "react";
-import { GameContext } from "../context/GameContext";
 import Promotion from "../modals/Promotion";
 import Checkmate from "../modals/Checkmate";
 import Player from "../components/Player";
@@ -7,24 +6,16 @@ import Stalemate from "../modals/Stalemate";
 import Board from "../components/Board";
 import { IoClose } from "react-icons/io5";
 import SoundButton from "../components/SoundButton";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { SocketContext } from "../context/SocketContext";
+import { useGameStore } from "../store/useGameStore";
+import { useGameActions } from "../hooks/useGameActions";
 
 const SinglePlayer = () => {
-  const {
-    isPromotion,
-    checkmate,
-    stalemate,
-    movePiece,
-    highlight,
-    promotePawn,
-    gameId,
-    getGameStatus,
-  } = useContext(GameContext);
+  const { isPromotion, checkmate, stalemate, gameId } = useGameStore();
+  const { movePiece, highlight, promotePawn } = useGameActions();
   const { socket } = useContext(SocketContext);
   const navigate = useNavigate();
-  const { gameId: paramGameId } = useParams();
-  const gameIdRef = useRef(gameId);
 
   return (
     <section className="flex flex-col items-center justify-center h-[100vh] bg-amber-100 overflow-hidden">

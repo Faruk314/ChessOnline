@@ -30,7 +30,7 @@ const Menu = () => {
   const { socket } = useContext(SocketContext);
   const { playMoveSound } = useSoundStore();
   const { friendRequests } = useFriendStore();
-  
+
   useFriendsQuery();
   useFriendRequestsQuery();
   useGameInvitesQuery();
@@ -39,13 +39,8 @@ const Menu = () => {
   const [openFindMatch, setOpenFindMatch] = useState(false);
   const [openInvites, setOpenInvites] = useState(false);
   const [openFriends, setOpenFriends] = useState(false);
-  const { openChangeAvatar, setIsLoggedIn } = useAuthStore();
+  const { openChangeAvatar } = useAuthStore();
   const [openFriendReq, setOpenFriendReq] = useState(false);
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    // Queries are auto-fetching now, no need for manual effect
-  }, []);
 
   return (
     <section className="h-[100vh] overflow-hidden	bg-amber-100 text-white font-bold flex flex-col justify-center items-center">

@@ -79,21 +79,19 @@ export function useAcceptFriendRequestMutation() {
   return useMutation({
     mutationFn: acceptFriendRequest,
     onSuccess: (data, variables) => {
-      // variables is the argument passed to mutate (id: number)
       const requestId = variables;
-      const status = data.status; // 2 means accepted
+      const status = data.status;
 
       if (status === 2) {
         const request = friendRequests.find((req) => req.id === requestId);
         if (request) {
-            removeFriendRequest(requestId);
-            addFriend({ ...request, status: "accepted" }); // Update local store
-            
-            // Also invalidate queries to ensure sync
-            queryClient.invalidateQueries({ queryKey: ["friends"] });
-            queryClient.invalidateQueries({ queryKey: ["friendRequests"] });
-            
-            toastSuccess("Friend request accepted");
+          removeFriendRequest(requestId);
+          addFriend({ ...request, status: "accepted" });
+
+          queryClient.invalidateQueries({ queryKey: ["friends"] });
+          queryClient.invalidateQueries({ queryKey: ["friendRequests"] });
+
+          toastSuccess("Friend request accepted");
         }
       }
     },
@@ -111,22 +109,19 @@ export function useDeleteFriendRequestMutation() {
   return useMutation({
     mutationFn: deleteFriendRequest,
     onSuccess: (data, variables) => {
-        const requestId = data.id || variables; // data.id might come from server
-        const status = data.status; // 0 means deleted
+      const requestId = data.id || variables;
+      const status = data.status;
 
-        if (status === 0) {
-            // Update local store
-            removeFriendRequest(requestId);
-            
-            // Also check if it was in friends list (sometimes 'delete' removes a friend too?)
-            // The original code did: setFriends(friends.filter(req => req.id !== requestId))
-            setFriends(friends.filter((f) => f.id !== requestId));
+      if (status === 0) {
+        removeFriendRequest(requestId);
 
-            queryClient.invalidateQueries({ queryKey: ["friends"] });
-            queryClient.invalidateQueries({ queryKey: ["friendRequests"] });
-            
-            toastSuccess("Friend request deleted");
-        }
+        setFriends(friends.filter((f) => f.id !== requestId));
+
+        queryClient.invalidateQueries({ queryKey: ["friends"] });
+        queryClient.invalidateQueries({ queryKey: ["friendRequests"] });
+
+        toastSuccess("Friend request deleted");
+      }
     },
     onError: (error) => {
       toastError(getErrorMessage(error));

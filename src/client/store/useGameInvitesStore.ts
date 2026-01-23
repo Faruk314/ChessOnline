@@ -1,18 +1,18 @@
 import { create } from "zustand";
 import { UserInfo } from "../../types/types";
 
-interface MultiplayerState {
+interface GameInviteState {
   gameInvites: UserInfo[];
   msgNotif: boolean;
 
   setGameInvites: (invites: UserInfo[]) => void;
   setMsgNotif: (notif: boolean) => void;
-  
+
   addGameInvite: (userInfo: UserInfo) => void;
   removeGameInvite: (senderId: number) => void;
 }
 
-export const useGameInvitesStore = create<MultiplayerState>((set, get) => ({
+export const useGameInvitesStore = create<GameInviteState>((set, get) => ({
   gameInvites: [],
   msgNotif: false,
 
@@ -33,7 +33,7 @@ export const useGameInvitesStore = create<MultiplayerState>((set, get) => ({
   removeGameInvite: (senderId) => {
     const { gameInvites } = get();
     set({
-        gameInvites: gameInvites.filter((invite) => invite.userId !== senderId)
-    })
-  }
+      gameInvites: gameInvites.filter((invite) => invite.userId !== senderId),
+    });
+  },
 }));

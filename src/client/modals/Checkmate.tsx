@@ -1,9 +1,9 @@
-import React, { useContext } from "react";
-import { GameContext } from "../context/GameContext";
+import React from "react";
 import { useNavigate } from "react-router-dom";
+import { useGameStore } from "../store/useGameStore";
 
 const Checkmate = () => {
-  const { playerTurn, resetGame, initGame, gameId } = useContext(GameContext);
+  const { playerTurn } = useGameStore();
   const navigate = useNavigate();
 
   return (
@@ -15,12 +15,6 @@ const Checkmate = () => {
         </div>
         <button
           onClick={() => {
-            if (!gameId) {
-              resetGame();
-              initGame();
-              return;
-            }
-
             navigate("/menu");
           }}
           className="p-2 mt-2 text-xl font-normal text-white rounded-md bg-amber-900"

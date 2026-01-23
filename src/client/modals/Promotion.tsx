@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React from "react";
 import blackRook from "../assets/images/rook_b.png";
 import blackKnight from "../assets/images/knight_b.png";
 import blackBishop from "../assets/images/bishop_b .png";
@@ -7,16 +7,16 @@ import whiteRook from "../assets/images/rook_w.png";
 import whiteKnight from "../assets/images/knight_w.png";
 import whiteBishop from "../assets/images/bishop_w.png";
 import whiteQueen from "../assets/images/queen_w.png";
-import { GameContext } from "../context/GameContext";
 import classNames from "classnames";
-import { PromotionData } from "../context/MultiplayerContext";
+import { PromotionData } from "../../types/types";
+import { useGameStore } from "../store/useGameStore";
 
 interface Props {
   promotePawn: (data: PromotionData) => void;
 }
 
 const Promotion = ({ promotePawn }: Props) => {
-  const { playerTurn, gameId } = useContext(GameContext);
+  const { playerTurn, gameId } = useGameStore();
 
   const promotionPieces =
     playerTurn?.color === "black"

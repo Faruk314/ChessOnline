@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React from "react";
 import { Square } from "../../types/types";
 import classNames from "classnames";
 import whiteKing from "../assets/images/king_w.png";
@@ -13,10 +13,10 @@ import blackPawn from "../assets/images/pawn_b.png";
 import blackBishop from "../assets/images/bishop_b .png";
 import blackKnight from "../assets/images/knight_b.png";
 import blackRook from "../assets/images/rook_b.png";
-import { GameContext } from "../context/GameContext";
 import { MoveData } from "../../types/types";
 import { useAuthStore } from "../store/useAuthStore";
 import { useBoardRotation } from "../hooks/useBoardRotation";
+import { useGameStore } from "../store/useGameStore";
 
 interface Props {
   cell: Square;
@@ -25,7 +25,7 @@ interface Props {
 
 const Pieces = ({ cell, highlight }: Props) => {
   const { shouldRotate } = useBoardRotation();
-  const { playerTurn, gameId } = useContext(GameContext);
+  const { playerTurn, gameId } = useGameStore();
   const { loggedUserInfo } = useAuthStore();
 
   const isDraggable = (color: string) => {

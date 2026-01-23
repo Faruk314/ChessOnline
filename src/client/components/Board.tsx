@@ -1,10 +1,10 @@
-import React, { useContext } from "react";
-import { GameContext } from "../context/GameContext";
+import React from "react";
 import classNames from "classnames";
 import Notations from "./Notations";
 import Pieces from "./Pieces";
 import { MoveData } from "../../types/types";
 import { useBoardRotation } from "../hooks/useBoardRotation";
+import { useGameStore } from "../store/useGameStore";
 
 interface Props {
   movePiece: (moveData: MoveData) => Promise<void> | void;
@@ -14,7 +14,7 @@ interface Props {
 const Board = ({ movePiece, highlight }: Props) => {
   const { shouldRotate } = useBoardRotation();
   const { board, availablePositions, gameId, activePiece, lastMovePositions } =
-    useContext(GameContext);
+    useGameStore();
 
   const handleDragOver = (e: any) => {
     e.preventDefault();

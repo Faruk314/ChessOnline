@@ -92,3 +92,8 @@ export interface FriendRequestStatus {
   sender?: number;
   receiver?: number;
 }
+
+export interface PromotionData {
+  gameId: string;
+  type: string;
+}

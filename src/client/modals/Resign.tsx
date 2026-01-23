@@ -1,5 +1,5 @@
-import React, { useContext } from "react";
-import { GameContext } from "../context/GameContext";
+import React from "react";
+import { useGameStore } from "../store/useGameStore";
 import { useNavigate } from "react-router-dom";
 import { useMultiplayerActions } from "../hooks/useMultiplayerActions";
 
@@ -8,7 +8,7 @@ interface Props {
 }
 
 const Resign = ({ setOpenResignModal }: Props) => {
-  const { gameId } = useContext(GameContext);
+  const { gameId } = useGameStore();
   const { resign } = useMultiplayerActions();
   const navigate = useNavigate();
 

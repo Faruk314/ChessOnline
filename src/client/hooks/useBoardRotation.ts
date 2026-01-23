@@ -1,9 +1,8 @@
-import { useContext } from "react";
-import { GameContext } from "../context/GameContext";
+import { useGameStore } from "../store/useGameStore";
 import { useAuthStore } from "../store/useAuthStore";
 
 export const useBoardRotation = () => {
-  const { players, gameId } = useContext(GameContext);
+  const { players, gameId } = useGameStore();
   const { loggedUserInfo } = useAuthStore();
 
   const shouldRotate = () => {

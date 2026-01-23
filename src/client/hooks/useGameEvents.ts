@@ -4,14 +4,15 @@ import { SocketContext } from "../context/SocketContext";
 import { useNavigate } from "react-router-dom";
 import { useGameInvitesStore } from "../store/useGameInvitesStore";
 import { Msg, UserInfo } from "../../types/types";
-import { GameContext } from "../context/GameContext";
+import { useGameStore } from "../store/useGameStore";
 import { toast } from "react-toastify";
+import { useSoundStore } from "../store/useSoundStore";
 
 export const useGameEvents = () => {
   const { socket } = useContext(SocketContext);
-
   const { addGameInvite, setMsgNotif } = useGameInvitesStore();
-  const { setDrawOffered, handleUpdateGame } = useContext(GameContext);
+  const { setDrawOffered, updateGame, setOpenDrawOffer, addMessage } = useGameStore();
+  const { playMoveSound } = useSoundStore();
   const [openOpponentLeft, setOpenOpponentLeft] = useState(false);
   const [openDrawModal, setOpenDrawModal] = useState(false);
   const navigate = useNavigate();
@@ -45,6 +46,7 @@ export const useGameEvents = () => {
   });
 
   useSocketEvent(socket, "receiveMessage", (message: Msg) => {
+    addMessage(message);
     setMsgNotif(true);
   });
 
@@ -61,13 +63,18 @@ export const useGameEvents = () => {
     navigate("/menu");
   });
 
-  useSocketEvent(socket, "updateGame", handleUpdateGame);
+  useSocketEvent(socket, "updateGame", (data) => {
+    if (data.action === "pieceMoved") {
+      playMoveSound();
+    }
+    updateGame(data);
+  });
 
   useSocketEvent(socket, "drawRejected", () => {
     setDrawOffered(false);
   });
 
   useSocketEvent(socket, "drawOffered", () => {
-    // setOpenDrawOffer(true);
+    setOpenDrawOffer(true);
   });
 };

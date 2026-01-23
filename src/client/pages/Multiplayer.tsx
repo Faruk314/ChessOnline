@@ -1,6 +1,4 @@
 import { useEffect, useState } from "react";
-import { useContext } from "react";
-import { GameContext } from "../context/GameContext";
 import Checkmate from "../modals/Checkmate";
 import Stalemate from "../modals/Stalemate";
 import Player from "../components/Player";
@@ -16,30 +14,31 @@ import { useParams } from "react-router-dom";
 import Loader from "../components/Loader";
 import { useGameInvitesStore } from "../store/useGameInvitesStore";
 import { useMultiplayerActions } from "../hooks/useMultiplayerActions";
+import { useGameStore } from "../store/useGameStore";
+import { useGameStatusQuery } from "../api/queries/game";
+import { useGameActions } from "../hooks/useGameActions";
 
 const Multiplayer = () => {
   const [openChat, setOpenChat] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
   const [openResignModal, setOpenResignModal] = useState(false);
   const {
     isPromotion,
     checkmate,
     stalemate,
     players,
-    getGameStatus,
     setDrawOffered,
     drawOffered,
     setOpenDrawOffer,
     openDrawOffer,
-    movePiece,
-    highlight,
-    promotePawn,
-  } = useContext(GameContext);
+  } = useGameStore();
+  const { movePiece, highlight, promotePawn } = useGameActions();
   const { offerDraw } = useMultiplayerActions();
   const { setMsgNotif, msgNotif } = useGameInvitesStore();
   const user = players[0];
   const opponent = players[1];
   const { gameId } = useParams();
+
+  const { isLoading } = useGameStatusQuery(gameId);
 
   const handleDrawOffer = () => {
     if (opponent && gameId) {
@@ -47,18 +46,6 @@ const Multiplayer = () => {
       setDrawOffered(true);
     }
   };
-
-  useEffect(() => {
-    const getGame = async () => {
-      if (!gameId) return console.error("game id misisng");
-
-      await getGameStatus(gameId);
-
-      setIsLoading(false);
-    };
-
-    getGame();
-  }, []);
 
   if (isLoading) {
     return <Loader />;
@@ -69,7 +56,11 @@ const Multiplayer = () => {
       {checkmate && <Checkmate />}
       {stalemate && <Stalemate />}
       {openResignModal && <Resign setOpenResignModal={setOpenResignModal} />}
-      {openDrawOffer && <DrawOffer setOpenDrawOffer={setOpenDrawOffer} />}
+      {openDrawOffer && (
+        <DrawOffer
+          setOpenDrawOffer={(val) => setOpenDrawOffer(val as boolean)}
+        />
+      )}
 
       <div className="fixed flex space-x-2 top-4 right-4">
         <button

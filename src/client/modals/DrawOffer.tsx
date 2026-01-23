@@ -1,6 +1,6 @@
 import React, { useContext } from "react";
 import { SocketContext } from "../context/SocketContext";
-import { GameContext } from "../context/GameContext";
+import { useGameStore } from "../store/useGameStore";
 
 interface Props {
   setOpenDrawOffer: React.Dispatch<React.SetStateAction<boolean>>;
@@ -8,7 +8,7 @@ interface Props {
 
 const DrawOffer = ({ setOpenDrawOffer }: Props) => {
   const { socket } = useContext(SocketContext);
-  const { gameId, setDrawOffered } = useContext(GameContext);
+  const { gameId, setDrawOffered } = useGameStore();
 
   return (
     <div className="z-40 fixed shadow-[0_3px_10px_rgb(0,0,0,0.2)] top-4 left-4 flex flex-col items-center justify-center px-[3rem] md:px-0 md:w-[20rem] py-3 mx-2 space-y-4 bg-amber-100 rounded-md">

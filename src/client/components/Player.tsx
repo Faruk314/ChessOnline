@@ -1,5 +1,4 @@
-import React, { useContext } from "react";
-import { GameContext } from "../context/GameContext";
+import React from "react";
 import whiteKing from "../assets/images/king_w.png";
 import whiteQueen from "../assets/images/queen_w.png";
 import whitePawn from "../assets/images/pawn_w.png";
@@ -14,6 +13,7 @@ import blackKnight from "../assets/images/knight_b.png";
 import blackRook from "../assets/images/rook_b.png";
 import blackDefault from "../assets/images/blackDefault.png";
 import whiteDefault from "../assets/images/whiteDefault.png";
+import { useGameStore } from "../store/useGameStore";
 
 interface Props {
   index: number;
@@ -24,7 +24,7 @@ interface Props {
 const Player = ({ index, playerName, image }: Props) => {
   const defaultPic = [whiteDefault, blackDefault];
 
-  const { players } = useContext(GameContext);
+  const { players } = useGameStore();
 
   const pawns = players[index]?.enemyPieces.filter(
     (piece) => piece.type === "pawn"
