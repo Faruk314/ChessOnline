@@ -1,14 +1,21 @@
 import asyncHandler from "express-async-handler";
 import { Request, Response } from "express";
 import query from "../db";
+import { getIO } from "../socket/socket";
 
 export const sendFriendRequest = asyncHandler(
   async (req: Request, res: Response) => {
     const loggedUser = req.user?.userId;
     const personB: number = req.body.receiverId;
 
-    //Check if request exists
-    let q = `SELECT fr.id FROM friend_requests fr WHERE (fr.sender=? OR fr.receiver=?) AND (fr.sender=? OR fr.receiver= ?) AND (fr.status=? OR fr.status=?)`;
+    let q = `
+      SELECT fr.id
+      FROM friend_requests fr
+      WHERE (fr.sender=? OR fr.receiver=?)
+        AND (fr.sender=? OR fr.receiver=?)
+        AND fr.status IN (?, ?)
+    `;
+
     let result: any = await query(q, [
       loggedUser,
       loggedUser,
@@ -25,15 +32,27 @@ export const sendFriendRequest = asyncHandler(
 
     q =
       "INSERT INTO friend_requests (sender, receiver, status) VALUES (?, ?, ?)";
+    const insertResult: any = await query(q, [loggedUser, personB, "pending"]);
 
-    result = await query(q, [loggedUser, personB, "pending"]);
-
-    if (result.affectedRows === 1) {
-      res.status(200).json("Friend request sent");
-    } else {
+    if (insertResult.affectedRows !== 1) {
       res.status(400);
       throw new Error("Failed to send friend request");
     }
+
+    const [sender]: any = await query(
+      "SELECT userId, userName, image FROM users WHERE userId = ?",
+      [loggedUser]
+    );
+
+    res.status(200).json("Friend request sent");
+
+    getIO().to(`user:${personB}`).emit("friend:incoming", {
+      id: insertResult.insertId,
+      userId: sender.userId,
+      userName: sender.userName,
+      image: sender.image,
+      status: "pending",
+    });
   }
 );
 
@@ -41,16 +60,51 @@ export const acceptFriendRequest = asyncHandler(
   async (req: Request, res: Response) => {
     const requestId: number = req.body.id;
 
-    let q = "UPDATE friend_requests SET `status` = ? WHERE `id`= ?";
+    const [row]: any = await query(
+      `
+      SELECT
+        fr.sender,
+        fr.receiver,
+        s.userName AS senderName,
+        s.image AS senderImage,
+        r.userName AS receiverName,
+        r.image AS receiverImage
+      FROM friend_requests fr
+      JOIN users s ON s.userId = fr.sender
+      JOIN users r ON r.userId = fr.receiver
+      WHERE fr.id = ?
+      `,
+      [requestId]
+    );
 
-    let result: any = await query(q, ["accepted", requestId]);
+    if (!row) {
+      res.status(404);
+      throw new Error("Friend request not found");
+    }
 
-    if (result.affectedRows === 1) {
-      res.status(200).json({ status: 2, id: requestId });
-    } else {
+    const updateResult: any = await query(
+      "UPDATE friend_requests SET status = ? WHERE id = ?",
+      ["accepted", requestId]
+    );
+
+    if (updateResult.affectedRows !== 1) {
       res.status(400);
       throw new Error("Failed to accept friend request");
     }
+
+    res.status(200).json({ status: 2, id: requestId });
+
+    // getIO().to(`user:${row.sender}`).emit("friend:accepted", {
+    //   userId: row.receiver,
+    //   userName: row.receiverName,
+    //   image: row.receiverImage,
+    // });
+
+    getIO().to(`user:${row.receiver}`).emit("friendRequestAccepted", {
+      userId: row.sender,
+      userName: row.senderName,
+      image: row.senderImage,
+    });
   }
 );
 

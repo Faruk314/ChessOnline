@@ -1,12 +1,12 @@
 import { Request, Response } from "express";
 import asyncHandler from "express-async-handler";
 import query from "../db";
+import { getIO } from "../socket/socket";
 
 export const invite = asyncHandler(async (req: Request, res: Response) => {
   const userId = req.user?.userId;
   const personB: number = req.body.receiverId;
 
-  //check if the invite already exists
   const checkQuery =
     "SELECT i.id FROM invites i WHERE i.sender = ? AND i.receiver = ?";
 
@@ -18,10 +18,20 @@ export const invite = asyncHandler(async (req: Request, res: Response) => {
   }
 
   const q = "INSERT INTO invites (sender, receiver) VALUES (?, ?)";
-
   const result: any = await query(q, [userId, personB]);
 
   if (result.affectedRows === 1) {
+    const [sender]: any = await query(
+      "SELECT userId, userName, image FROM users WHERE userId = ?",
+      [userId]
+    );
+
+    getIO().to(`user:${personB}`).emit("receiveInvite", {
+      userId: sender.userId,
+      userName: sender.userName,
+      image: sender.image,
+    });
+
     res.status(200).json("Invite sent");
   } else {
     res.status(400);
@@ -49,7 +59,6 @@ export const acceptInvite = asyncHandler(
 
     try {
       let q = "SELECT i.sender FROM invites i WHERE i.receiver = ?";
-
       let data: any = await query(q, [userId]);
 
       if (data.length === 0) {
@@ -57,15 +66,22 @@ export const acceptInvite = asyncHandler(
         throw new Error("Invite expired");
       }
 
-      //This deletes all invites where i am sender so they are not valid when i am in game
-      q = `DELETE FROM invites WHERE sender = ?`;
+      const senderId = data[0].sender;
 
+      // delete my outgoing invites
+      q = `DELETE FROM invites WHERE sender = ?`;
       await query(q, [userId]);
 
-      //this will delete this invite
+      // delete accepted invite
       q = `DELETE FROM invites WHERE sender = ? AND receiver = ?`;
-
       await query(q, [data[0].sender, userId]);
+
+      // notify sender
+      getIO()
+        .to(`user:${data[0].sender}`)
+        .emit("inviteAccepted", {
+          players: [senderId, userId],
+        });
 
       res.status(200).json("Invites deleted");
     } catch (error) {

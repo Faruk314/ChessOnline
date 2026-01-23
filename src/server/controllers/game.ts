@@ -1,16 +1,27 @@
 import asyncHandler from "express-async-handler";
 import query from "../db";
-import { client } from "../main";
+import { client } from "../redis/config";
 import { Request, Response } from "express";
+import { GameData } from "../../types/types";
+import { GAMES_KEY } from "../constants/main";
+import { getGameStateForPlayer } from "../methods/game";
 
 export const retrieveGameStatus = asyncHandler(async (req, res) => {
+  const userId = req.user?.userId;
   const gameId = req.params.gameId;
 
-  const gameData = await client.get(gameId);
+  if (!userId) {
+    res.status(404);
+    throw new Error("User not found");
+  }
 
-  const gameState = JSON.parse(gameData!);
+  const gameDataJSON = await client.get(`${GAMES_KEY}:${gameId}`);
 
-  res.status(200).json(gameState);
+  const gameData: GameData = JSON.parse(gameDataJSON!);
+
+  const playerView = getGameStateForPlayer(gameData.gameState, userId);
+
+  res.status(200).json({ messages: gameData.messages, gameState: playerView });
 });
 
 export const changeAvatar = asyncHandler(async (req, res) => {

@@ -1,6 +1,3 @@
-import { Piece } from "../client/classes/Piece";
-import { Player } from "../client/classes/Player";
-
 declare global {
   namespace Express {
     interface Request {
@@ -59,9 +56,35 @@ export interface Game {
   elPassantCaptureMove: Position | null;
   movedPieces: Piece[];
   stalemate: boolean;
-  messages: [];
   drawOffererId: number | null;
   isCheck: boolean;
+}
+
+export type PieceColor = "black" | "white";
+
+export type MoveAction = "pieceMoved" | "piecePromoted";
+
+export interface Piece {
+  type: string;
+  color: PieceColor;
+  position: Position;
+  side: string | null;
+}
+
+export interface MoveData {
+  gameId: string;
+  position: { row: number; col: number };
+}
+
+export interface Player {
+  enemyPieces: Piece[];
+  color: string;
+  playerData: UserInfo | null;
+}
+
+export interface GameData {
+  gameState: Game;
+  messages: Msg[];
 }
 
 export interface FriendRequestStatus {

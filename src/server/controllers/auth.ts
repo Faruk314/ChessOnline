@@ -16,6 +16,11 @@ export const register = asyncHandler(async (req, res) => {
 
   let result: any = await query(q, [email]);
 
+  if (!result) {
+    res.status(500);
+    throw new Error("Database error");
+  }
+
   if (result.length > 0) {
     res.status(400);
     throw new Error("User with this email already exists");
@@ -34,10 +39,15 @@ export const register = asyncHandler(async (req, res) => {
 
     result = await query(q, [userName, email, hash]);
 
+    if (!result) throw new Error("Database error during user creation");
+
     q =
       "SELECT `userId`,`userName`,`email`,`image` FROM users WHERE `email`= ? AND `password`= ?";
 
     result = await query(q, [email, hash]);
+
+    if (!result || result.length === 0)
+      throw new Error("Database error retrieving created user");
 
     const token = jwt.sign(
       { userId: result[0].userId },
@@ -65,8 +75,12 @@ export const register = asyncHandler(async (req, res) => {
         },
       });
   } catch (error) {
-    res.status(500);
-    throw new Error("An error occurred during user registration");
+    console.log(error);
+    if (res.statusCode !== 400) {
+      res.status(500);
+      throw new Error("An error occurred during user registration");
+    }
+    throw error;
   }
 });
 
@@ -82,6 +96,11 @@ export const login = asyncHandler(async (req, res) => {
     "SELECT `userId`,`userName`,`email`,`password`,`image` FROM users WHERE `email`= ?";
 
   let data: any = await query(q, [email]);
+
+  if (!data) {
+    res.status(500);
+    throw new Error("Database error");
+  }
 
   if (data.length === 0) {
     res.status(404);
@@ -150,6 +169,11 @@ export const getLoginStatus = asyncHandler(async (req, res) => {
       "SELECT `userId`, `userName`,`email`,`image` FROM users WHERE `userId`= ?";
 
     let userInfo: any = await query(q, [verified.userId]);
+
+    if (!userInfo || userInfo.length === 0) {
+      res.json({ status: false });
+      return;
+    }
 
     res.json({ status: true, userInfo: userInfo[0] });
   }

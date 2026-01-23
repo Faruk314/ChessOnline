@@ -24,6 +24,7 @@ export default async function query(sql: string, params: any[]) {
 
     return results;
   } catch (err) {
-    return console.log("My sql connection error:" + err);
+    console.log("My sql connection error:" + err);
+    throw new Error("Database connection error");
   }
 }

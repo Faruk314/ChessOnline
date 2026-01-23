@@ -9,44 +9,29 @@ import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
 import cors from "cors";
 import http from "http";
-import setupSocket from "./socket";
-import { Redis } from "ioredis";
+import { setupSocket } from "./socket/socket";
 
 dotenv.config();
 
 const app = express();
-const server = http.createServer(app);
-
-setupSocket();
+const port = Number(process.env.SERVER_PORT) || 3000;
 
 app.use(
   cors({
-    origin: function (origin, callback) {
-      return callback(null, true);
-    },
-    optionsSuccessStatus: 200,
+    origin: ["http://localhost:3000", "https://chess.farukspahic.com"],
     credentials: true,
   })
 );
 
-const redisPort = parseInt(
-  process.env.REDIS_PORT ? process.env.REDIS_PORT : "6379"
-);
+const server = http.createServer(app);
 
-export const client = new Redis({
-  host: process.env.REDIS_HOST,
-  port: redisPort,
-  username: process.env.REDIS_USER,
-  password: process.env.REDIS_PASS,
+setupSocket(server);
+
+server.listen(port, () => {
+  console.log(`Server listening on port ${port}`);
 });
 
-const port = parseInt(
-  process.env.SERVER_PORT ? process.env.SERVER_PORT : "3000"
-);
-
-ViteExpress.listen(app, port, () =>
-  console.log("Server is listening on port 3000...")
-);
+ViteExpress.bind(app, server);
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
