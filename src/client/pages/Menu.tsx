@@ -15,7 +15,8 @@ import Friends from "../modals/Friends";
 import { BiEnvelopeOpen } from "react-icons/bi";
 import Invites from "../modals/Invites";
 import classNames from "classnames";
-import { MultiplayerContext } from "../context/MultiplayerContext";
+import { useGameInvitesStore } from "../store/useGameInvitesStore";
+import { useGameInvitesQuery } from "../api/queries/gameInvites";
 import { useAuthStore } from "../store/useAuthStore";
 import { useLogoutMutation } from "../api/queries/auth";
 import { useFriendStore } from "../store/useFriendStore";
@@ -32,8 +33,9 @@ const Menu = () => {
   
   useFriendsQuery();
   useFriendRequestsQuery();
+  useGameInvitesQuery();
 
-  const { gameInvites, getGameInvites } = useContext(MultiplayerContext);
+  const { gameInvites } = useGameInvitesStore();
   const [openFindMatch, setOpenFindMatch] = useState(false);
   const [openInvites, setOpenInvites] = useState(false);
   const [openFriends, setOpenFriends] = useState(false);
@@ -42,11 +44,7 @@ const Menu = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const getInvites = async () => {
-      await getGameInvites();
-    };
-
-    getInvites();
+    // Queries are auto-fetching now, no need for manual effect
   }, []);
 
   return (

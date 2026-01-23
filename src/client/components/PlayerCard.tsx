@@ -5,7 +5,6 @@ import { IoClose } from "react-icons/io5";
 import { IoCheckmarkSharp } from "react-icons/io5";
 import whiteDefault from "../assets/images/whiteDefault.png";
 import { FriendRequestStatus } from "../../types/types";
-import { MultiplayerContext } from "../context/MultiplayerContext";
 import { toast } from "react-toastify";
 import { MdDeleteForever } from "react-icons/md";
 import { FcInvite } from "react-icons/fc";
@@ -16,6 +15,7 @@ import {
   useDeleteFriendRequestMutation,
   useSendFriendRequestMutation,
 } from "../api/queries/friends";
+import { useSendGameInviteMutation } from "../api/queries/gameInvites";
 
 interface Props {
   friendRequestInfo: UserRequest;
@@ -23,7 +23,7 @@ interface Props {
 
 const PlayerCard = ({ friendRequestInfo }: Props) => {
   const { loggedUserInfo } = useAuthStore();
-  const { addInviteToDb } = useContext(MultiplayerContext);
+  const { mutateAsync: addInviteToDb } = useSendGameInviteMutation();
   const { socket } = useContext(SocketContext);
   const { mutateAsync: sendFriendRequest } = useSendFriendRequestMutation();
   const { mutateAsync: acceptFriendRequest } = useAcceptFriendRequestMutation();
@@ -55,7 +55,6 @@ const PlayerCard = ({ friendRequestInfo }: Props) => {
     const isInvited = await addInviteToDb(friendRequestInfo.userId);
 
     if (isInvited) {
-      notify("Invite sent!");
       socket?.emit("sendInvite", friendRequestInfo.userId);
     }
   };

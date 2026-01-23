@@ -6,7 +6,6 @@ import Stalemate from "../modals/Stalemate";
 import Player from "../components/Player";
 import Board from "../components/Board";
 import Promotion from "../modals/Promotion";
-import { MultiplayerContext } from "../context/MultiplayerContext";
 import Chat from "../components/Chat";
 import { AiFillFlag } from "react-icons/ai";
 import SoundButton from "../components/SoundButton";
@@ -15,6 +14,8 @@ import { BsFillChatLeftDotsFill } from "react-icons/bs";
 import DrawOffer from "../modals/DrawOffer";
 import { useParams } from "react-router-dom";
 import Loader from "../components/Loader";
+import { useGameInvitesStore } from "../store/useGameInvitesStore";
+import { useMultiplayerActions } from "../hooks/useMultiplayerActions";
 
 const Multiplayer = () => {
   const [openChat, setOpenChat] = useState(false);
@@ -34,7 +35,8 @@ const Multiplayer = () => {
     highlight,
     promotePawn,
   } = useContext(GameContext);
-  const { offerDraw, setMsgNotif, msgNotif } = useContext(MultiplayerContext);
+  const { offerDraw } = useMultiplayerActions();
+  const { setMsgNotif, msgNotif } = useGameInvitesStore();
   const user = players[0];
   const opponent = players[1];
   const { gameId } = useParams();

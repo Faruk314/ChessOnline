@@ -1,6 +1,5 @@
-import React, { useContext, useEffect, useRef } from "react";
-import PlayerCard from "../components/PlayerCard";
-import { MultiplayerContext } from "../context/MultiplayerContext";
+import React, { useEffect, useRef } from "react";
+import { useGameInvitesStore } from "../store/useGameInvitesStore";
 import InviteCard from "../components/InviteCard";
 
 interface Props {
@@ -9,7 +8,7 @@ interface Props {
 
 const Invites = ({ setOpenInvites }: Props) => {
   const modalRef: any = useRef();
-  const { gameInvites } = useContext(MultiplayerContext);
+  const { gameInvites } = useGameInvitesStore();
 
   console.log(gameInvites);
 
@@ -41,9 +40,9 @@ const Invites = ({ setOpenInvites }: Props) => {
       )}
 
       <div className="flex flex-col space-y-2 overflow-y-auto min-h-[5rem] max-h-[15rem] p-2">
-        {/* {gameInvites?.map((invite) => (
+        {gameInvites?.map((invite) => (
           <InviteCard key={invite.userId} inviter={invite} />
-        ))} */}
+        ))}
       </div>
     </div>
   );

@@ -2,7 +2,7 @@ import { useContext, useState } from "react";
 import { useSocketEvent } from "./useSocketEvent";
 import { SocketContext } from "../context/SocketContext";
 import { useNavigate } from "react-router-dom";
-import { MultiplayerContext } from "../context/MultiplayerContext";
+import { useGameInvitesStore } from "../store/useGameInvitesStore";
 import { Msg, UserInfo } from "../../types/types";
 import { GameContext } from "../context/GameContext";
 import { toast } from "react-toastify";
@@ -10,7 +10,7 @@ import { toast } from "react-toastify";
 export const useGameEvents = () => {
   const { socket } = useContext(SocketContext);
 
-  const { addGameInvite, setMsgNotif } = useContext(MultiplayerContext);
+  const { addGameInvite, setMsgNotif } = useGameInvitesStore();
   const { setDrawOffered, handleUpdateGame } = useContext(GameContext);
   const [openOpponentLeft, setOpenOpponentLeft] = useState(false);
   const [openDrawModal, setOpenDrawModal] = useState(false);

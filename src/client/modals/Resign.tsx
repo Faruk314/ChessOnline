@@ -1,8 +1,7 @@
 import React, { useContext } from "react";
 import { GameContext } from "../context/GameContext";
-import { SocketContext } from "../context/SocketContext";
-import { MultiplayerContext } from "../context/MultiplayerContext";
 import { useNavigate } from "react-router-dom";
+import { useMultiplayerActions } from "../hooks/useMultiplayerActions";
 
 interface Props {
   setOpenResignModal: React.Dispatch<React.SetStateAction<boolean>>;
@@ -10,7 +9,7 @@ interface Props {
 
 const Resign = ({ setOpenResignModal }: Props) => {
   const { gameId } = useContext(GameContext);
-  const { resign } = useContext(MultiplayerContext);
+  const { resign } = useMultiplayerActions();
   const navigate = useNavigate();
 
   return (

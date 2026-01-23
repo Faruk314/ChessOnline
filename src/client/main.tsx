@@ -3,7 +3,6 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import { SocketProvider } from "./context/SocketContext";
 import { GameContextProvider } from "./context/GameContext";
-import { MultiplayerContextProvider } from "./context/MultiplayerContext";
 import App from "./App";
 import { HashRouter as BrowserRouter } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
@@ -17,12 +16,10 @@ ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
     <QueryClientProvider client={queryClient}>
       <SocketProvider>
         <GameContextProvider>
-          <MultiplayerContextProvider>
-            <BrowserRouter>
-              <App />
-              <ToastContainer />
-            </BrowserRouter>
-          </MultiplayerContextProvider>
+          <BrowserRouter>
+            <App />
+            <ToastContainer />
+          </BrowserRouter>
         </GameContextProvider>
       </SocketProvider>
     </QueryClientProvider>

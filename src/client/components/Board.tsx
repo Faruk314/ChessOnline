@@ -3,8 +3,8 @@ import { GameContext } from "../context/GameContext";
 import classNames from "classnames";
 import Notations from "./Notations";
 import Pieces from "./Pieces";
-import { MultiplayerContext } from "../context/MultiplayerContext";
 import { MoveData } from "../../types/types";
+import { useBoardRotation } from "../hooks/useBoardRotation";
 
 interface Props {
   movePiece: (moveData: MoveData) => Promise<void> | void;
@@ -12,9 +12,9 @@ interface Props {
 }
 
 const Board = ({ movePiece, highlight }: Props) => {
+  const { shouldRotate } = useBoardRotation();
   const { board, availablePositions, gameId, activePiece, lastMovePositions } =
     useContext(GameContext);
-  const { rotateHandler } = useContext(MultiplayerContext);
 
   const handleDragOver = (e: any) => {
     e.preventDefault();
@@ -36,7 +36,7 @@ const Board = ({ movePiece, highlight }: Props) => {
       className={classNames(
         "my-2 shadow-[0_3px_10px_rgb(0,0,0,0.4)] noSelect",
         {
-          "rotate-180": rotateHandler(),
+          "rotate-180": shouldRotate(),
         }
       )}
     >

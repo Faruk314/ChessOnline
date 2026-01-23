@@ -13,10 +13,10 @@ import blackPawn from "../assets/images/pawn_b.png";
 import blackBishop from "../assets/images/bishop_b .png";
 import blackKnight from "../assets/images/knight_b.png";
 import blackRook from "../assets/images/rook_b.png";
-import { MultiplayerContext } from "../context/MultiplayerContext";
 import { GameContext } from "../context/GameContext";
 import { MoveData } from "../../types/types";
 import { useAuthStore } from "../store/useAuthStore";
+import { useBoardRotation } from "../hooks/useBoardRotation";
 
 interface Props {
   cell: Square;
@@ -24,7 +24,7 @@ interface Props {
 }
 
 const Pieces = ({ cell, highlight }: Props) => {
-  const { rotateHandler } = useContext(MultiplayerContext);
+  const { shouldRotate } = useBoardRotation();
   const { playerTurn, gameId } = useContext(GameContext);
   const { loggedUserInfo } = useAuthStore();
 
@@ -64,7 +64,7 @@ const Pieces = ({ cell, highlight }: Props) => {
       {cell?.color === "white" ? (
         <div
           className={classNames("cursor-grab", {
-            "rotate-180": rotateHandler(),
+            "rotate-180": shouldRotate(),
           })}
           draggable={isDraggable("white")}
           onDragStart={(e) => {
@@ -93,7 +93,7 @@ const Pieces = ({ cell, highlight }: Props) => {
       ) : (
         <div
           className={classNames("cursor-grab", {
-            "rotate-180": rotateHandler(),
+            "rotate-180": shouldRotate(),
           })}
           draggable={isDraggable("black")}
           onDragStart={(e) => {

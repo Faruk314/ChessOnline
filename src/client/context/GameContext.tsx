@@ -10,8 +10,12 @@ import {
 } from "../../types/types";
 import { useSoundStore } from "../store/useSoundStore";
 import axios from "axios";
-import { PromotionData } from "./MultiplayerContext";
 import { SocketContext } from "./SocketContext";
+
+export interface PromotionData {
+  gameId: string;
+  type: string;
+}
 
 interface GameContextProps {
   board: Square[][];
@@ -100,7 +104,9 @@ export const GameContextProvider = ({ children }: any) => {
   const getGameStatus = async (gameId: string) => {
     try {
       const response = await axios.get(
-        `${import.meta.env.VITE_BACKEND_URL}/game/retrieveGameStatus/${gameId}`
+        `${
+          import.meta.env.VITE_BACKEND_URL
+        }/api/game/retrieveGameStatus/${gameId}`
       );
 
       setGameState(response.data.gameState);
