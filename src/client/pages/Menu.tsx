@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import menuImage from "../assets/images/menu.png";
 import { ImUser, ImUsers } from "react-icons/im";
 import SoundButton from "../components/SoundButton";
@@ -19,7 +19,6 @@ import { BiEnvelopeOpen } from "react-icons/bi";
 import Invites from "../modals/Invites";
 import classNames from "classnames";
 import { MultiplayerContext } from "../context/MultiplayerContext";
-import { GameContext } from "../context/GameContext";
 
 const Menu = () => {
   const { socket } = useContext(SocketContext);
@@ -31,7 +30,6 @@ const Menu = () => {
   const [openFriends, setOpenFriends] = useState(false);
   const { openChangeAvatar, setIsLoggedIn } = useContext(AuthContext);
   const [openFriendReq, setOpenFriendReq] = useState(false);
-  const { initGame, resetGame } = useContext(GameContext);
   const navigate = useNavigate();
 
   const logoutHandler = async () => {
@@ -122,9 +120,7 @@ const Menu = () => {
         <button
           onMouseEnter={() => playSound(moveSound)}
           onClick={() => {
-            resetGame();
-            initGame();
-            navigate("/singlePlayer");
+            socket?.emit("startSinglePlayer");
           }}
           className="flex items-center justify-center px-10 py-4 space-x-2 text-xl border-2 rounded-md shadow-md border-amber-900 bg-amber-900 hover:bg-transparent hover:text-amber-900"
         >

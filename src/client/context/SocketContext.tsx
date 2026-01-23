@@ -1,59 +1,53 @@
-import React, {
-  createContext,
-  ReactNode,
-  useContext,
-  useEffect,
-  useState,
-} from "react";
-import { io, Socket } from "socket.io-client";
+import { useContext, useEffect, useState } from "react";
+import type { ReactNode } from "react";
+import { io as clientIO, type Socket } from "socket.io-client";
 import { AuthContext } from "./AuthContext";
+import { createContext } from "react";
 
-type SocketContextData = {
+export type SocketContextType = {
   socket: Socket | null;
+  isConnected: boolean;
 };
 
-const initialSocketContextData: SocketContextData = {
+export const SocketContext = createContext<SocketContextType>({
   socket: null,
-};
+  isConnected: false,
+});
 
-export const SocketContext = createContext<SocketContextData>(
-  initialSocketContextData
-);
-
-type SocketContextProviderProps = {
-  children: ReactNode;
-};
-
-export const SocketContextProvider = ({
-  children,
-}: SocketContextProviderProps) => {
+export function SocketProvider({ children }: { children: ReactNode }) {
   const [socket, setSocket] = useState<Socket | null>(null);
   const { isLoggedIn } = useContext(AuthContext);
+  const [isConnected, setIsConnected] = useState(false);
 
   useEffect(() => {
-    let newSocket: any;
+    const WS_URL = import.meta.env.VITE_WS_URL;
+    const SOCKET_PATH = "/ws";
 
-    if (isLoggedIn) {
-      newSocket = io(import.meta.env.VITE_WS_URL, {
-        transports: ["websocket"],
-        withCredentials: true,
-      });
-    }
+    const socketInstance = clientIO(WS_URL, {
+      path: SOCKET_PATH,
+      withCredentials: true,
+    });
 
-    setSocket(newSocket);
+    socketInstance.on("connect", () => setIsConnected(true));
+
+    socketInstance.on("disconnect", () => {
+      setIsConnected(false);
+    });
+
+    socketInstance.on("connect_error", (err) =>
+      console.error("Connection Error:", err.message)
+    );
+
+    setSocket(socketInstance);
 
     return () => {
-      socket?.disconnect();
+      socketInstance.disconnect();
     };
   }, [isLoggedIn]);
 
-  const contextValue: SocketContextData = {
-    socket,
-  };
-
   return (
-    <SocketContext.Provider value={contextValue}>
+    <SocketContext.Provider value={{ socket, isConnected }}>
       {children}
     </SocketContext.Provider>
   );
-};
+}

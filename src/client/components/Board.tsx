@@ -3,15 +3,12 @@ import { GameContext } from "../context/GameContext";
 import classNames from "classnames";
 import Notations from "./Notations";
 import Pieces from "./Pieces";
-import {
-  Data,
-  MoveData,
-  MultiplayerContext,
-} from "../context/MultiplayerContext";
+import { MultiplayerContext } from "../context/MultiplayerContext";
+import { MoveData } from "../../types/types";
 
 interface Props {
   movePiece: (moveData: MoveData) => Promise<void> | void;
-  highlight: (cell: Data) => void;
+  highlight: (cell: MoveData) => void;
 }
 
 const Board = ({ movePiece, highlight }: Props) => {
@@ -25,7 +22,8 @@ const Board = ({ movePiece, highlight }: Props) => {
 
   const handleDrop = (e: any, moveData: MoveData) => {
     const canMove = availablePositions.find(
-      (pos) => pos.col === moveData.col && pos.row === moveData.row
+      (pos) =>
+        pos.col === moveData.position.col && pos.row === moveData.position.row
     );
 
     if (canMove) {
@@ -65,11 +63,17 @@ const Board = ({ movePiece, highlight }: Props) => {
                   onDragOver={(e) => handleDragOver(e)}
                   onDrop={(e) =>
                     isAvailablePosition &&
-                    handleDrop(e, { row: rowIndex, col: cellIndex, gameId })
+                    handleDrop(e, {
+                      position: { row: rowIndex, col: cellIndex },
+                      gameId,
+                    })
                   }
                   onClick={() =>
                     isAvailablePosition &&
-                    movePiece({ row: rowIndex, col: cellIndex, gameId })
+                    movePiece({
+                      position: { row: rowIndex, col: cellIndex },
+                      gameId,
+                    })
                   }
                   key={cellIndex}
                   className={classNames(

@@ -2,7 +2,7 @@ import "./index.css";
 import React from "react";
 import ReactDOM from "react-dom/client";
 import { AuthContextProvider } from "./context/AuthContext";
-import { SocketContextProvider } from "./context/SocketContext";
+import { SocketProvider } from "./context/SocketContext";
 import { GameContextProvider } from "./context/GameContext";
 import { SoundContextProvider } from "./context/SoundContext";
 import { MultiplayerContextProvider } from "./context/MultiplayerContext";
@@ -15,7 +15,7 @@ import "react-toastify/dist/ReactToastify.css";
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   <React.StrictMode>
     <AuthContextProvider>
-      <SocketContextProvider>
+      <SocketProvider>
         <FriendContextProvider>
           <SoundContextProvider>
             <GameContextProvider>
@@ -28,7 +28,7 @@ ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
             </GameContextProvider>
           </SoundContextProvider>
         </FriendContextProvider>
-      </SocketContextProvider>
+      </SocketProvider>
     </AuthContextProvider>
   </React.StrictMode>
 );

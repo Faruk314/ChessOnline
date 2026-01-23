@@ -4,7 +4,6 @@ import axios from "axios";
 import { Link } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
 import menuImage from "../assets/images/menu.png";
-import { AiOutlineGoogle } from "react-icons/ai";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -15,6 +14,7 @@ const Login = () => {
 
   const loginHandler = async (e: React.FormEvent) => {
     e.preventDefault();
+    setMessage("");
 
     if (!email || !password) {
       setMessage("All fields must be filled");
@@ -40,6 +40,8 @@ const Login = () => {
         console.log(error);
         console.log(error.response.data.message);
         setMessage(error.response.data.message);
+      } else {
+        setMessage("An unexpected error occurred. Please try again.");
       }
     }
   };

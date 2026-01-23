@@ -1,24 +1,10 @@
-import { createContext, useEffect, useState } from "react";
-import { SoundContext } from "./SoundContext";
+import { createContext, useState } from "react";
 import { useContext } from "react";
-import { Piece } from "../classes/Piece";
 import { SocketContext } from "./SocketContext";
-import moveSound from "../assets/sounds/move.mp3";
 import { GameContext } from "./GameContext";
 import { AuthContext } from "./AuthContext";
 import axios from "axios";
 import { UserInfo } from "../../types/types";
-
-export interface Data {
-  gameId: string;
-  piece: Piece;
-}
-
-export interface MoveData {
-  gameId: string;
-  row: number;
-  col: number;
-}
 
 export interface PromotionData {
   gameId: string;
@@ -26,9 +12,6 @@ export interface PromotionData {
 }
 
 type MultiplayerContextType = {
-  higlightPiece: (data: Data) => void;
-  movePiece: (moveData: MoveData) => void;
-  promotePawn: (data: PromotionData) => void;
   resign: (gameId: string) => void;
   offerDraw: (receiverId: number, gameId: string) => void;
   rotateHandler: () => boolean;
@@ -44,9 +27,6 @@ type MultiplayerContextType = {
 };
 
 export const MultiplayerContext = createContext<MultiplayerContextType>({
-  higlightPiece: (data) => {},
-  movePiece: (moveData) => {},
-  promotePawn: (data) => {},
   resign: (gameId) => {},
   offerDraw: (receiverId, gameId) => {},
   rotateHandler: () => false,
@@ -69,7 +49,6 @@ export const MultiplayerContextProvider = ({
   children,
 }: MultiplayerProviderProps) => {
   const { socket } = useContext(SocketContext);
-  const { playSound } = useContext(SoundContext);
   const { players, gameId } = useContext(GameContext);
   const { loggedUserInfo } = useContext(AuthContext);
   const [gameInvites, setGameInvites] = useState<UserInfo[]>([]);
@@ -151,6 +130,8 @@ export const MultiplayerContextProvider = ({
 
       if (response.data) {
         setGameInvites(response.data);
+      } else {
+        setGameInvites([]);
       }
     } catch (error) {
       console.log(error);
@@ -185,25 +166,9 @@ export const MultiplayerContextProvider = ({
     socket?.emit("drawOffer", { receiverId, gameId });
   };
 
-  const higlightPiece = (data: Data) => {
-    socket?.emit("highlightPiece", data);
-  };
-
-  const movePiece = (moveData: MoveData) => {
-    playSound(moveSound);
-    socket?.emit("movePiece", moveData);
-  };
-
-  const promotePawn = (data: PromotionData) => {
-    socket?.emit("promotePawn", data);
-  };
-
   return (
     <MultiplayerContext.Provider
       value={{
-        higlightPiece,
-        movePiece,
-        promotePawn,
         resign,
         offerDraw,
         rotateHandler,

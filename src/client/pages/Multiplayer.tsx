@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useContext } from "react";
 import { GameContext } from "../context/GameContext";
 import Checkmate from "../modals/Checkmate";
@@ -7,8 +7,6 @@ import Player from "../components/Player";
 import Board from "../components/Board";
 import Promotion from "../modals/Promotion";
 import { MultiplayerContext } from "../context/MultiplayerContext";
-import { SocketContext } from "../context/SocketContext";
-import { Game } from "../../types/types";
 import Chat from "../components/Chat";
 import { AiFillFlag } from "react-icons/ai";
 import SoundButton from "../components/SoundButton";
@@ -20,7 +18,6 @@ import { useNavigate, useParams } from "react-router-dom";
 import Loader from "../components/Loader";
 
 const Multiplayer = () => {
-  const { socket } = useContext(SocketContext);
   const [openChat, setOpenChat] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [openResignModal, setOpenResignModal] = useState(false);
@@ -30,23 +27,16 @@ const Multiplayer = () => {
     stalemate,
     players,
     getGameStatus,
-    updateGameState,
     setDrawOffered,
     drawOffered,
     setOpenDrawOffer,
     openDrawOffer,
-    resetGame,
-  } = useContext(GameContext);
-  const {
     movePiece,
-    higlightPiece,
+    highlight,
     promotePawn,
-    offerDraw,
-    setMsgNotif,
-    msgNotif,
-  } = useContext(MultiplayerContext);
+  } = useContext(GameContext);
+  const { offerDraw, setMsgNotif, msgNotif } = useContext(MultiplayerContext);
   const { loggedUserInfo } = useContext(AuthContext);
-  const navigate = useNavigate();
   const opponent = players.find(
     (player) => player.playerData?.userId !== loggedUserInfo?.userId
   );
@@ -60,71 +50,16 @@ const Multiplayer = () => {
   };
 
   useEffect(() => {
-    const retrieveGame = async () => {
-      if (gameId) {
-        console.log(gameId, "gameId");
-      }
+    const getGame = async () => {
+      if (!gameId) return console.error("game id misisng");
 
-      const gameState = await getGameStatus(gameId!);
-
-      if (!gameState) {
-        resetGame();
-        return navigate("/menu");
-      }
+      await getGameStatus(gameId);
 
       setIsLoading(false);
     };
 
-    retrieveGame();
+    getGame();
   }, []);
-
-  useEffect(() => {
-    if (gameId) socket?.emit("reconnectToRoom", gameId);
-
-    return () => {
-      if (gameId) socket?.emit("leaveRoom");
-    };
-  }, [gameId]);
-
-  useEffect(() => {
-    socket?.on("drawRejected", () => {
-      setDrawOffered(false);
-    });
-
-    return () => {
-      socket?.off("drawRejected");
-    };
-  }, [socket]);
-
-  useEffect(() => {
-    socket?.on("drawOffered", () => {
-      setOpenDrawOffer(true);
-    });
-
-    return () => {
-      socket?.off("drawOffered");
-    };
-  }, [socket]);
-
-  useEffect(() => {
-    socket?.on("positionsHiglited", (gameState: Game) => {
-      updateGameState(gameState);
-    });
-
-    return () => {
-      socket?.off("positionsHiglited");
-    };
-  }, [socket]);
-
-  useEffect(() => {
-    socket?.on("pieceMoved", (gameState: Game) => {
-      updateGameState(gameState);
-    });
-
-    return () => {
-      socket?.off("pieceMoved");
-    };
-  }, [socket]);
 
   if (isLoading) {
     return <Loader />;
@@ -183,7 +118,7 @@ const Multiplayer = () => {
           image={opponent?.playerData?.image}
         />
 
-        <Board movePiece={movePiece} highlight={higlightPiece} />
+        <Board movePiece={movePiece} highlight={highlight} />
 
         <Player
           index={0}

@@ -15,12 +15,12 @@ import blackKnight from "../assets/images/knight_b.png";
 import blackRook from "../assets/images/rook_b.png";
 import { MultiplayerContext } from "../context/MultiplayerContext";
 import { GameContext } from "../context/GameContext";
-import { Data } from "../context/MultiplayerContext";
+import { MoveData } from "../../types/types";
 import { AuthContext } from "../context/AuthContext";
 
 interface Props {
   cell: Square;
-  highlight: (cell: Data) => void;
+  highlight: (cell: MoveData) => void;
 }
 
 const Pieces = ({ cell, highlight }: Props) => {
@@ -40,7 +40,7 @@ const Pieces = ({ cell, highlight }: Props) => {
     return isDraggable;
   };
 
-  const handleDragStart = (e: any, data: Data) => {
+  const handleDragStart = (e: any, data: MoveData) => {
     e.dataTransfer.effectAllowed = "move";
     let draggedPiece = e.target.children[0];
     draggedPiece.style.backgroundColor = "transparent";
@@ -69,11 +69,18 @@ const Pieces = ({ cell, highlight }: Props) => {
           draggable={isDraggable("white")}
           onDragStart={(e) => {
             if (isDraggable("white"))
-              handleDragStart(e, { piece: cell, gameId });
+              handleDragStart(e, {
+                position: { row: cell.position.row, col: cell.position.col },
+                gameId,
+              });
           }}
           onDragEnd={handleDragEnd}
           onClick={() =>
-            playerTurn?.color === "white" && highlight({ piece: cell, gameId })
+            playerTurn?.color === "white" &&
+            highlight({
+              position: { row: cell.position.row, col: cell.position.col },
+              gameId,
+            })
           }
         >
           {cell.type === "pawn" && <img src={whitePawn} />}
@@ -91,11 +98,18 @@ const Pieces = ({ cell, highlight }: Props) => {
           draggable={isDraggable("black")}
           onDragStart={(e) => {
             if (isDraggable("black"))
-              handleDragStart(e, { piece: cell!, gameId });
+              handleDragStart(e, {
+                position: { row: cell!.position.row, col: cell!.position.col },
+                gameId,
+              });
           }}
           onDragEnd={handleDragEnd}
           onClick={() =>
-            playerTurn?.color === "black" && highlight({ piece: cell!, gameId })
+            playerTurn?.color === "black" &&
+            highlight({
+              position: { row: cell!.position.row, col: cell!.position.col },
+              gameId,
+            })
           }
         >
           {cell?.type === "pawn" && <img src={blackPawn} />}

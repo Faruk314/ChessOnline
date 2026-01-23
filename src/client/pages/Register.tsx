@@ -14,6 +14,7 @@ const Register = () => {
 
   const registerHandler = async (e: React.FormEvent) => {
     e.preventDefault();
+    setMessage("");
 
     if (!userName || !email || !password) {
       setMessage("All fields must be filled");
@@ -42,6 +43,8 @@ const Register = () => {
         console.log(error);
         console.log(error.response.data.message);
         setMessage(error.response.data.message);
+      } else {
+        setMessage("An unexpected error occurred. Please try again.");
       }
     }
   };

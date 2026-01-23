@@ -1,7 +1,6 @@
-import { createContext, useCallback, useEffect, useState } from "react";
+import { createContext, useCallback, useState } from "react";
 import { FriendRequestStatus, UserInfo, UserRequest } from "../../types/types";
 import axios from "axios";
-import FriendRequests from "../modals/FriendRequests";
 
 type FriendContextType = {
   sendFriendRequest: (receiverId: number) => Promise<void>;
@@ -45,7 +44,9 @@ export const FriendContextProvider = ({ children }: FriendProviderProps) => {
     async (friendRequestInfo: UserRequest) => {
       try {
         const response = await axios.post(
-          `${import.meta.env.VITE_BACKEND_URL}/friends/checkFriendRequestStatus`,
+          `${
+            import.meta.env.VITE_BACKEND_URL
+          }/friends/checkFriendRequestStatus`,
           { personB: friendRequestInfo.userId }
         );
 
@@ -79,6 +80,7 @@ export const FriendContextProvider = ({ children }: FriendProviderProps) => {
         return true;
       }
 
+      setFriends([]);
       return false;
     } catch (error) {
       console.log(error);
@@ -105,7 +107,7 @@ export const FriendContextProvider = ({ children }: FriendProviderProps) => {
         `${import.meta.env.VITE_BACKEND_URL}/friends/getFriendRequests`
       );
 
-      setFriendRequests(response.data);
+      setFriendRequests(response.data || []);
     } catch (error) {
       console.log(error);
     }
