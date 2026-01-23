@@ -1,13 +1,13 @@
-import React, { useContext } from "react";
+import React from "react";
 import { ImVolumeMute, ImVolumeMute2 } from "react-icons/im";
-import { SoundContext } from "../context/SoundContext";
+import { useSoundStore } from "../store/useSoundStore";
 
 const SoundButton = () => {
-  const { isSoundEnabled, setIsSoundEnabled } = useContext(SoundContext);
+  const { isSoundEnabled, toggleSound } = useSoundStore();
 
   return (
     <button
-      onClick={() => setIsSoundEnabled((prev) => !prev)}
+      onClick={() => toggleSound()}
       className="flex items-center justify-center p-2 border rounded-md outline-none bg-amber-900"
     >
       {isSoundEnabled && (

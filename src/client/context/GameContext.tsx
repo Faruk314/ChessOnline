@@ -8,8 +8,7 @@ import {
   Game,
   MoveData,
 } from "../../types/types";
-import { SoundContext } from "./SoundContext";
-import moveSound from "../assets/sounds/move.mp3";
+import { useSoundStore } from "../store/useSoundStore";
 import axios from "axios";
 import { PromotionData } from "./MultiplayerContext";
 import { SocketContext } from "./SocketContext";
@@ -78,7 +77,7 @@ const initialGameState: Game = {
 };
 
 export const GameContextProvider = ({ children }: any) => {
-  const { playSound } = useContext(SoundContext);
+  const { playMoveSound } = useSoundStore();
   const { socket } = useContext(SocketContext);
 
   const [gameState, setGameState] = useState<Game>(initialGameState);
@@ -122,7 +121,7 @@ export const GameContextProvider = ({ children }: any) => {
       action: MoveAction;
     }) => {
       if (action === "pieceMoved") {
-        playSound(moveSound);
+        playMoveSound();
       }
 
       setGameState(newGameState);

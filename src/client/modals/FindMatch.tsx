@@ -1,6 +1,5 @@
 import React, { useContext } from "react";
-import { SoundContext } from "../context/SoundContext";
-import moveSound from "../assets/sounds/move.mp3";
+import { useSoundStore } from "../store/useSoundStore";
 import { SocketContext } from "../context/SocketContext";
 
 interface Props {
@@ -9,7 +8,7 @@ interface Props {
 
 const FindMatch = ({ setOpenFindMatch }: Props) => {
   const { socket } = useContext(SocketContext);
-  const { playSound } = useContext(SoundContext);
+  const { playMoveSound } = useSoundStore();
 
   return (
     <div className="fixed top-0 bottom-0 left-0 right-0 z-30 flex flex-col items-center text-black justify-center text-center bg-[rgb(0,0,0,0.5)]">
@@ -23,7 +22,7 @@ const FindMatch = ({ setOpenFindMatch }: Props) => {
               socket?.emit("cancelFindMatch");
               setOpenFindMatch(false);
             }}
-            onMouseEnter={() => playSound(moveSound)}
+            onMouseEnter={() => playMoveSound()}
             className="px-4 py-1 space-x-2 text-xl text-center text-white border-2 rounded-md shadow-lg bg-amber-900 hover:bg-transparent border-amber-900 hover:text-amber-900"
           >
             Cancel

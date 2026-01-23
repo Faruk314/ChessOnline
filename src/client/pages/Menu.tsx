@@ -2,8 +2,7 @@ import { useContext, useEffect, useState } from "react";
 import menuImage from "../assets/images/menu.png";
 import { ImUser, ImUsers } from "react-icons/im";
 import SoundButton from "../components/SoundButton";
-import { SoundContext } from "../context/SoundContext";
-import moveSound from "../assets/sounds/move.mp3";
+import { useSoundStore } from "../store/useSoundStore";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import FindMatch from "../modals/FindMatch";
@@ -28,7 +27,7 @@ import {
 const Menu = () => {
   const { mutate: logoutUser } = useLogoutMutation();
   const { socket } = useContext(SocketContext);
-  const { playSound } = useContext(SoundContext);
+  const { playMoveSound } = useSoundStore();
   const { friendRequests } = useFriendStore();
   
   useFriendsQuery();
@@ -108,7 +107,7 @@ const Menu = () => {
           <img src={menuImage} className="h-[6rem] w-[15rem]" />
         </div>
         <button
-          onMouseEnter={() => playSound(moveSound)}
+          onMouseEnter={() => playMoveSound()}
           onClick={() => {
             socket?.emit("startSinglePlayer");
           }}
@@ -123,7 +122,7 @@ const Menu = () => {
             socket?.emit("findMatch");
             setOpenFindMatch(true);
           }}
-          onMouseEnter={() => playSound(moveSound)}
+          onMouseEnter={() => playMoveSound()}
           className="flex items-center justify-center px-10 py-4 space-x-2 text-xl border-2 rounded-md shadow-lg border-amber-900 bg-amber-900 hover:bg-transparent hover:text-amber-900"
         >
           <BiSearch size={30} className="" />
@@ -132,7 +131,7 @@ const Menu = () => {
 
         <button
           onClick={() => setOpenFriends(true)}
-          onMouseEnter={() => playSound(moveSound)}
+          onMouseEnter={() => playMoveSound()}
           className="flex items-center justify-center px-10 py-4 space-x-2 text-xl border-2 rounded-md shadow-lg border-amber-900 bg-amber-900 hover:bg-transparent hover:text-amber-900"
         >
           <ImUsers size={30} className="" />
@@ -141,7 +140,7 @@ const Menu = () => {
 
         <button
           onClick={() => logoutUser()}
-          onMouseEnter={() => playSound(moveSound)}
+          onMouseEnter={() => playMoveSound()}
           className="px-10 py-4 space-x-2 text-xl text-center border-2 rounded-md shadow-lg bg-amber-900 hover:bg-transparent border-amber-900 hover:text-amber-900"
         >
           EXIT GAME
