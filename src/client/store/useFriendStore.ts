@@ -7,10 +7,10 @@ interface FriendState {
 
   setFriends: (friends: UserRequest[]) => void;
   setFriendRequests: (requests: UserRequest[]) => void;
-  
+
   // Helper to add a single friend (used for real-time updates)
   addFriend: (userInfo: UserRequest) => void;
-  
+
   // Helper to remove request (used when accepted/deleted)
   removeFriendRequest: (requestId: number) => void;
 
@@ -27,10 +27,10 @@ export const useFriendStore = create<FriendState>((set, get) => ({
 
   addFriend: (userInfo) => {
     const { friends } = get();
-    const isFriend = friends.some((friend) => friend.userId === userInfo.userId);
+    const isFriend = friends.some(
+      (friend) => friend.userId === userInfo.userId
+    );
     if (!isFriend) {
-      // We cast UserInfo to UserRequest assuming it's compatible or we accept partial data
-      // In the context it was [...prev, userInfo] where friends is UserRequest[]
       set({ friends: [...friends, userInfo as UserRequest] });
     }
   },
