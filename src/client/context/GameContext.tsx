@@ -125,8 +125,6 @@ export const GameContextProvider = ({ children }: any) => {
         playSound(moveSound);
       }
 
-      console.log(newGameState);
-
       setGameState(newGameState);
     },
     []

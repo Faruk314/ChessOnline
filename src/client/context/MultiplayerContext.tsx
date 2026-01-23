@@ -2,9 +2,9 @@ import { createContext, useState } from "react";
 import { useContext } from "react";
 import { SocketContext } from "./SocketContext";
 import { GameContext } from "./GameContext";
-import { AuthContext } from "./AuthContext";
 import axios from "axios";
 import { UserInfo } from "../../types/types";
+import { useAuthStore } from "../store/useAuthStore";
 
 export interface PromotionData {
   gameId: string;
@@ -50,7 +50,7 @@ export const MultiplayerContextProvider = ({
 }: MultiplayerProviderProps) => {
   const { socket } = useContext(SocketContext);
   const { players, gameId } = useContext(GameContext);
-  const { loggedUserInfo } = useContext(AuthContext);
+  const { loggedUserInfo } = useAuthStore();
   const [gameInvites, setGameInvites] = useState<UserInfo[]>([]);
   const [msgNotif, setMsgNotif] = useState(false);
 

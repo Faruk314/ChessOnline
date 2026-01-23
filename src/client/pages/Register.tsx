@@ -1,95 +1,110 @@
-import React, { useContext, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import menuImage from "../assets/images/menu.png";
-import { AuthContext } from "../context/AuthContext";
-import axios from "axios";
+import { useForm } from "react-hook-form";
+import { RegisterInput } from "../../types/auth";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { RegisterSchema } from "../schemas/auth";
+import { useRegisterMutation } from "../api/queries/auth";
 
 const Register = () => {
-  const [userName, setUsername] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [message, setMessage] = useState("");
-  const navigate = useNavigate();
-  const { setIsLoggedIn, setLoggedUserInfo } = useContext(AuthContext);
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<RegisterInput>({
+    resolver: zodResolver(RegisterSchema),
+    defaultValues: {
+      userName: "",
+      email: "",
+      password: "",
+    },
+  });
 
-  const registerHandler = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setMessage("");
+  const {
+    mutate: registerUser,
+    isPending,
+    error: mutationError,
+  } = useRegisterMutation();
 
-    if (!userName || !email || !password) {
-      setMessage("All fields must be filled");
-      return;
-    }
-
-    try {
-      const response = await axios.post(
-        `${import.meta.env.VITE_BACKEND_URL}/auth/register`,
-        {
-          userName,
-          email,
-          password,
-        }
-      );
-
-      setIsLoggedIn(true);
-      setLoggedUserInfo(response.data.userInfo);
-      navigate("/menu");
-    } catch (error: any) {
-      if (
-        error.response &&
-        error.response.data &&
-        error.response.data.message
-      ) {
-        console.log(error);
-        console.log(error.response.data.message);
-        setMessage(error.response.data.message);
-      } else {
-        setMessage("An unexpected error occurred. Please try again.");
-      }
-    }
+  const onSubmit = (data: RegisterInput) => {
+    registerUser(data);
   };
 
   return (
     <section className="flex flex-col space-y-10 items-center justify-center bg-amber-100 h-[100vh]">
       <form
-        onSubmit={registerHandler}
-        className="z-20 flex flex-col p-4 pt-20 text-black rounded-md"
+        onSubmit={handleSubmit(onSubmit)}
+        className="z-20 flex flex-col p-4 pt-20 text-black rounded-md w-full max-w-sm"
       >
-        <div className="">
-          <img src={menuImage} className="h-[6rem] w-[15rem]" />
+        <div className="flex justify-center">
+          <img src={menuImage} alt="Logo" className="h-[6rem] w-[15rem]" />
         </div>
-        <label className="mt-5 text-black">Username</label>
-        <input
-          value={userName}
-          onChange={(e) => setUsername(e.target.value)}
-          type="text"
-          className="px-2 py-3 bg-transparent border rounded-md shadow-sm border-amber-900 focus:outline-none"
-        />
-        <label className="mt-5 text-black">Email</label>
-        <input
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          type="email"
-          className="px-2 py-3 bg-transparent border rounded-md shadow-sm border-amber-900 focus:outline-none"
-        />
-        <label className="mt-5 text-black">Password</label>
-        <input
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          type="password"
-          className="px-2 py-3 bg-transparent border rounded-md shadow-sm border-amber-900 focus:outline-none "
-        />
 
-        <button className="px-2 py-3 mt-5 text-xl font-bold text-white rounded-md bg-amber-900 ">
-          REGISTER
+        <label className="mt-5 text-black font-semibold">Username</label>
+        <input
+          {...register("userName")}
+          type="text"
+          placeholder="PokerPro123"
+          className={`px-2 py-3 bg-transparent border rounded-md shadow-sm focus:outline-none ${
+            errors.userName ? "border-red-500" : "border-amber-900"
+          }`}
+        />
+        {errors.userName && (
+          <span className="text-red-500 text-xs mt-1">
+            {errors.userName.message}
+          </span>
+        )}
+
+        <label className="mt-5 text-black font-semibold">Email</label>
+        <input
+          {...register("email")}
+          type="email"
+          placeholder="poker@example.com"
+          className={`px-2 py-3 bg-transparent border rounded-md shadow-sm focus:outline-none ${
+            errors.email ? "border-red-500" : "border-amber-900"
+          }`}
+        />
+        {errors.email && (
+          <span className="text-red-500 text-xs mt-1">
+            {errors.email.message}
+          </span>
+        )}
+
+        <label className="mt-5 text-black font-semibold">Password</label>
+        <input
+          {...register("password")}
+          type="password"
+          placeholder="••••••••"
+          className={`px-2 py-3 bg-transparent border rounded-md shadow-sm focus:outline-none ${
+            errors.password ? "border-red-500" : "border-amber-900"
+          }`}
+        />
+        {errors.password && (
+          <span className="text-red-500 text-xs mt-1">
+            {errors.password.message}
+          </span>
+        )}
+
+        <button
+          disabled={isPending}
+          className="px-2 py-3 mt-5 text-xl font-bold text-white rounded-md bg-amber-900 hover:bg-amber-950 transition-colors disabled:opacity-50"
+        >
+          {isPending ? "CREATING ACCOUNT..." : "REGISTER"}
         </button>
 
-        <Link to="/" className="mt-5 text-center text-gray-400">
+        <Link
+          to="/"
+          className="mt-5 text-center text-gray-500 hover:text-amber-900 transition-colors"
+        >
           Already have an account?
         </Link>
       </form>
 
-      {message && <p className="text-red-500">{message}</p>}
+      {mutationError && (
+        <p className="text-red-500 font-bold p-2 bg-red-50 rounded border border-red-200">
+          {mutationError.message || "Registration failed. Try again."}
+        </p>
+      )}
     </section>
   );
 };

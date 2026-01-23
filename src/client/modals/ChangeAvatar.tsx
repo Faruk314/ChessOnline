@@ -6,14 +6,14 @@ import persian from "../assets/images/avatar.png";
 import valkyrie from "../assets/images/valkyrie.png";
 import goblin from "../assets/images/goblin.png";
 import wizard from "../assets/images/wizard.png";
-import { AuthContext } from "../context/AuthContext";
 import classNames from "classnames";
 import axios from "axios";
+import { useAuthStore } from "../store/useAuthStore";
 
 const ChangeAvatar = () => {
   const avatars = [persian, giant, barbarian, valkyrie, goblin, wizard];
   const { setOpenChangeAvatar, setLoggedUserInfo, loggedUserInfo } =
-    useContext(AuthContext);
+    useAuthStore();
   const [avatar, setAvatar] = useState("");
 
   useEffect(() => {
@@ -31,10 +31,9 @@ const ChangeAvatar = () => {
         }
       );
 
-      setLoggedUserInfo((prev: any) => ({
-        ...prev,
-        image: avatar,
-      }));
+      // const updateUser = {...loggedUserInfo, image: avatar}
+
+      // setLoggedUserInfo(updateUser);
 
       setOpenChangeAvatar(false);
     } catch (error) {

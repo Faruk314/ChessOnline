@@ -1,9 +1,8 @@
-import React, { ReactElement, useContext } from "react";
-import { Navigate, Outlet, useLocation } from "react-router-dom";
-import { AuthContext } from "../context/AuthContext";
+import { Navigate, Outlet } from "react-router-dom";
+import { useAuthStore } from "../store/useAuthStore";
 
 const ProtectedAuthPages = () => {
-  const { isLoggedIn } = useContext(AuthContext);
+  const { isLoggedIn } = useAuthStore();
 
   return !isLoggedIn ? <Outlet /> : <Navigate to="/menu" />;
 };

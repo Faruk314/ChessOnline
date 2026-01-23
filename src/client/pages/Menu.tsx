@@ -10,7 +10,6 @@ import FindMatch from "../modals/FindMatch";
 import { SocketContext } from "../context/SocketContext";
 import UserInfo from "../components/UserInfo";
 import ChangeAvatar from "../modals/ChangeAvatar";
-import { AuthContext } from "../context/AuthContext";
 import { BiEnvelope, BiSearch } from "react-icons/bi";
 import FriendRequests from "../modals/FriendRequests";
 import Friends from "../modals/Friends";
@@ -19,8 +18,11 @@ import { BiEnvelopeOpen } from "react-icons/bi";
 import Invites from "../modals/Invites";
 import classNames from "classnames";
 import { MultiplayerContext } from "../context/MultiplayerContext";
+import { useAuthStore } from "../store/useAuthStore";
+import { useLogoutMutation } from "../api/queries/auth";
 
 const Menu = () => {
+  const { mutate: logoutUser } = useLogoutMutation();
   const { socket } = useContext(SocketContext);
   const { playSound } = useContext(SoundContext);
   const { friendRequests, getFriends, setFriends } = useContext(FriendContext);
@@ -28,21 +30,9 @@ const Menu = () => {
   const [openFindMatch, setOpenFindMatch] = useState(false);
   const [openInvites, setOpenInvites] = useState(false);
   const [openFriends, setOpenFriends] = useState(false);
-  const { openChangeAvatar, setIsLoggedIn } = useContext(AuthContext);
+  const { openChangeAvatar, setIsLoggedIn } = useAuthStore();
   const [openFriendReq, setOpenFriendReq] = useState(false);
   const navigate = useNavigate();
-
-  const logoutHandler = async () => {
-    try {
-      await axios.get(import.meta.env.VITE_BACKEND_URL + "/auth/logout");
-      setIsLoggedIn(false);
-      socket?.emit("logout");
-      setFriends([]);
-      navigate("/");
-    } catch (error) {
-      console.log(error);
-    }
-  };
 
   useEffect(() => {
     const fetchFriends = async () => {
@@ -150,7 +140,7 @@ const Menu = () => {
         </button>
 
         <button
-          onClick={logoutHandler}
+          onClick={() => logoutUser()}
           onMouseEnter={() => playSound(moveSound)}
           className="px-10 py-4 space-x-2 text-xl text-center border-2 rounded-md shadow-lg bg-amber-900 hover:bg-transparent border-amber-900 hover:text-amber-900"
         >

@@ -1,8 +1,7 @@
-import React, { useContext } from "react";
+import { useContext } from "react";
 import classNames from "classnames";
-import { MultiplayerContext } from "../context/MultiplayerContext";
-import { AuthContext } from "../context/AuthContext";
 import { GameContext } from "../context/GameContext";
+import { useAuthStore } from "../store/useAuthStore";
 
 interface Props {
   rowIndex: number;
@@ -11,7 +10,7 @@ interface Props {
 
 const Notations = ({ rowIndex, cellIndex }: Props) => {
   const { players, gameId } = useContext(GameContext);
-  const { loggedUserInfo } = useContext(AuthContext);
+  const { loggedUserInfo } = useAuthStore();
   const letters = ["a", "b", "c", "d", "e", "f", "g", "h"];
   const numbers = [1, 2, 3, 4, 5, 6, 7, 8].reverse();
 

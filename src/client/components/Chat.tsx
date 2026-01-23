@@ -1,9 +1,9 @@
 import React, { useContext, useState } from "react";
 import { SocketContext } from "../context/SocketContext";
-import { AuthContext } from "../context/AuthContext";
 import { GameContext } from "../context/GameContext";
 import { IoClose } from "react-icons/io5";
 import { v4 as uuidv4 } from "uuid";
+import { useAuthStore } from "../store/useAuthStore";
 
 interface Props {
   setOpenChat: React.Dispatch<React.SetStateAction<boolean>>;
@@ -13,7 +13,7 @@ const Chat = ({ setOpenChat }: Props) => {
   const { messages, gameId, setMessages } = useContext(GameContext);
   const { players } = useContext(GameContext);
   const { socket } = useContext(SocketContext);
-  const { loggedUserInfo } = useContext(AuthContext);
+  const { loggedUserInfo } = useAuthStore();
   const [message, setMessage] = useState("");
 
   const messageHandler = () => {

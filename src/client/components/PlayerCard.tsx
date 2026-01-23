@@ -1,5 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
-import { AuthContext } from "../context/AuthContext";
+import { useContext, useEffect, useState } from "react";
 import { SocketContext } from "../context/SocketContext";
 import { UserRequest } from "../../types/types";
 import { FriendContext } from "../context/FriendContext";
@@ -11,13 +10,14 @@ import { MultiplayerContext } from "../context/MultiplayerContext";
 import { toast } from "react-toastify";
 import { MdDeleteForever } from "react-icons/md";
 import { FcInvite } from "react-icons/fc";
+import { useAuthStore } from "../store/useAuthStore";
 
 interface Props {
   friendRequestInfo: UserRequest;
 }
 
 const PlayerCard = ({ friendRequestInfo }: Props) => {
-  const { loggedUserInfo } = useContext(AuthContext);
+  const { loggedUserInfo } = useAuthStore();
   const { addInviteToDb } = useContext(MultiplayerContext);
   const { socket } = useContext(SocketContext);
   const {

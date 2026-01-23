@@ -11,6 +11,8 @@ const Invites = ({ setOpenInvites }: Props) => {
   const modalRef: any = useRef();
   const { gameInvites } = useContext(MultiplayerContext);
 
+  console.log(gameInvites);
+
   useEffect(() => {
     const handleOutsideClick = (event: any) => {
       if (modalRef.current && !modalRef.current.contains(event.target)) {
@@ -39,9 +41,9 @@ const Invites = ({ setOpenInvites }: Props) => {
       )}
 
       <div className="flex flex-col space-y-2 overflow-y-auto min-h-[5rem] max-h-[15rem] p-2">
-        {gameInvites.map((invite) => (
+        {/* {gameInvites?.map((invite) => (
           <InviteCard key={invite.userId} inviter={invite} />
-        ))}
+        ))} */}
       </div>
     </div>
   );

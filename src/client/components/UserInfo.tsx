@@ -1,12 +1,12 @@
-import React, { useContext, useState } from "react";
+import { useState } from "react";
 import { FaRegImage } from "react-icons/fa";
 import defaultAvatar from "../assets/images/avatar.png";
-import { AuthContext } from "../context/AuthContext";
-import ChangeAvatar from "../modals/ChangeAvatar";
+
+import { useAuthStore } from "../store/useAuthStore";
 
 const UserInfo = () => {
   const [isHovering, setIsHovering] = useState(false);
-  const { loggedUserInfo, setOpenChangeAvatar } = useContext(AuthContext);
+  const { loggedUserInfo, setOpenChangeAvatar } = useAuthStore();
 
   return (
     <div

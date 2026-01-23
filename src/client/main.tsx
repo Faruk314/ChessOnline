@@ -1,7 +1,6 @@
 import "./index.css";
 import React from "react";
 import ReactDOM from "react-dom/client";
-import { AuthContextProvider } from "./context/AuthContext";
 import { SocketProvider } from "./context/SocketContext";
 import { GameContextProvider } from "./context/GameContext";
 import { SoundContextProvider } from "./context/SoundContext";
@@ -11,10 +10,13 @@ import App from "./App";
 import { HashRouter as BrowserRouter } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+
+const queryClient = new QueryClient();
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   <React.StrictMode>
-    <AuthContextProvider>
+    <QueryClientProvider client={queryClient}>
       <SocketProvider>
         <FriendContextProvider>
           <SoundContextProvider>
@@ -29,6 +31,6 @@ ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
           </SoundContextProvider>
         </FriendContextProvider>
       </SocketProvider>
-    </AuthContextProvider>
+    </QueryClientProvider>
   </React.StrictMode>
 );

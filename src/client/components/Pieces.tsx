@@ -16,7 +16,7 @@ import blackRook from "../assets/images/rook_b.png";
 import { MultiplayerContext } from "../context/MultiplayerContext";
 import { GameContext } from "../context/GameContext";
 import { MoveData } from "../../types/types";
-import { AuthContext } from "../context/AuthContext";
+import { useAuthStore } from "../store/useAuthStore";
 
 interface Props {
   cell: Square;
@@ -26,7 +26,7 @@ interface Props {
 const Pieces = ({ cell, highlight }: Props) => {
   const { rotateHandler } = useContext(MultiplayerContext);
   const { playerTurn, gameId } = useContext(GameContext);
-  const { loggedUserInfo } = useContext(AuthContext);
+  const { loggedUserInfo } = useAuthStore();
 
   const isDraggable = (color: string) => {
     if (!gameId) {

@@ -1,8 +1,9 @@
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import type { ReactNode } from "react";
 import { io as clientIO, type Socket } from "socket.io-client";
-import { AuthContext } from "./AuthContext";
+
 import { createContext } from "react";
+import { useAuthStore } from "../store/useAuthStore";
 
 export type SocketContextType = {
   socket: Socket | null;
@@ -16,7 +17,7 @@ export const SocketContext = createContext<SocketContextType>({
 
 export function SocketProvider({ children }: { children: ReactNode }) {
   const [socket, setSocket] = useState<Socket | null>(null);
-  const { isLoggedIn } = useContext(AuthContext);
+  const { isLoggedIn } = useAuthStore();
   const [isConnected, setIsConnected] = useState(false);
 
   useEffect(() => {

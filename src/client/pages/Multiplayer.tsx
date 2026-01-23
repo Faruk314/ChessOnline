@@ -13,8 +13,7 @@ import SoundButton from "../components/SoundButton";
 import Resign from "../modals/Resign";
 import { BsFillChatLeftDotsFill } from "react-icons/bs";
 import DrawOffer from "../modals/DrawOffer";
-import { AuthContext } from "../context/AuthContext";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import Loader from "../components/Loader";
 
 const Multiplayer = () => {
@@ -36,10 +35,8 @@ const Multiplayer = () => {
     promotePawn,
   } = useContext(GameContext);
   const { offerDraw, setMsgNotif, msgNotif } = useContext(MultiplayerContext);
-  const { loggedUserInfo } = useContext(AuthContext);
-  const opponent = players.find(
-    (player) => player.playerData?.userId !== loggedUserInfo?.userId
-  );
+  const user = players[0];
+  const opponent = players[1];
   const { gameId } = useParams();
 
   const handleDrawOffer = () => {
@@ -122,8 +119,8 @@ const Multiplayer = () => {
 
         <Player
           index={0}
-          playerName={loggedUserInfo?.userName}
-          image={loggedUserInfo?.image}
+          playerName={user.playerData?.userName}
+          image={user.playerData?.image}
         />
       </div>
 
