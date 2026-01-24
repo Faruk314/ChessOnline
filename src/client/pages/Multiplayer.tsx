@@ -31,7 +31,7 @@ const Multiplayer = () => {
     setOpenDrawOffer,
     openDrawOffer,
   } = useGameStore();
-  const { movePiece, highlight, promotePawn } = useGameActions();
+  const { promotePawn } = useGameActions();
   const { offerDraw } = useMultiplayerActions();
   const { setMsgNotif, msgNotif } = useGameInvitesStore();
   const user = players[0];
@@ -108,7 +108,7 @@ const Multiplayer = () => {
           image={opponent?.playerData?.image}
         />
 
-        <Board movePiece={movePiece} highlight={highlight} />
+        <Board />
 
         <Player
           index={0}

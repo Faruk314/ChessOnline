@@ -13,7 +13,7 @@ import { useGameActions } from "../hooks/useGameActions";
 
 const SinglePlayer = () => {
   const { isPromotion, checkmate, stalemate, gameId } = useGameStore();
-  const { movePiece, highlight, promotePawn } = useGameActions();
+  const { promotePawn } = useGameActions();
   const { socket } = useContext(SocketContext);
   const navigate = useNavigate();
 
@@ -38,7 +38,7 @@ const SinglePlayer = () => {
       <div>
         <Player index={1} playerName={"Player Two"} />
 
-        <Board movePiece={movePiece} highlight={highlight} />
+        <Board />
 
         <Player index={0} playerName={"Player One"} />
       </div>

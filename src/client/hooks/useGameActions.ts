@@ -1,6 +1,6 @@
 import { useContext } from "react";
-import { SocketContext } from "../context/SocketContext";
 import { MoveData, PromotionData } from "../../types/types";
+import { SocketContext } from "../context/SocketContext";
 
 export const useGameActions = () => {
   const { socket } = useContext(SocketContext);

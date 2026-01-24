@@ -24,9 +24,9 @@ const Notations = ({ rowIndex, cellIndex }: Props) => {
   }
 
   return (
-    <div>
+    <>
       {opponent?.color === "black" && (
-        <div>
+        <>
           {rowIndex === 7 && (
             <span
               className={classNames(
@@ -46,11 +46,11 @@ const Notations = ({ rowIndex, cellIndex }: Props) => {
               {numbers[rowIndex]}
             </span>
           )}
-        </div>
+        </>
       )}
 
       {opponent?.color === "white" && (
-        <div>
+        <>
           {rowIndex === 0 && (
             <span
               className={classNames(
@@ -72,9 +72,9 @@ const Notations = ({ rowIndex, cellIndex }: Props) => {
               {numbers[rowIndex]}
             </span>
           )}
-        </div>
+        </>
       )}
-    </div>
+    </>
   );
 };
 

@@ -1,40 +1,31 @@
 import React from "react";
+import { createPortal } from "react-dom";
 import classNames from "classnames";
 import Notations from "./Notations";
 import Pieces from "./Pieces";
-import { MoveData } from "../../types/types";
 import { useBoardRotation } from "../hooks/useBoardRotation";
 import { useGameStore } from "../store/useGameStore";
+import { useDraggablePiece } from "../hooks/useDraggablePiece";
+import { useGameActions } from "../hooks/useGameActions";
 
-interface Props {
-  movePiece: (moveData: MoveData) => Promise<void> | void;
-  highlight: (cell: MoveData) => void;
-}
-
-const Board = ({ movePiece, highlight }: Props) => {
+const Board = () => {
   const { shouldRotate } = useBoardRotation();
-  const { board, availablePositions, gameId, activePiece, lastMovePositions } =
-    useGameStore();
+  const { movePiece } = useGameActions();
+  const {
+    board,
+    availablePositions,
+    activePiece,
+    lastMovePositions,
+    gameId,
+  } = useGameStore();
 
-  const handleDragOver = (e: any) => {
-    e.preventDefault();
-  };
-
-  const handleDrop = (e: any, moveData: MoveData) => {
-    const canMove = availablePositions.find(
-      (pos) =>
-        pos.col === moveData.position.col && pos.row === moveData.position.row
-    );
-
-    if (canMove) {
-      return movePiece(moveData);
-    }
-  };
+  const { dragState, handlePointerDown, boardRef } = useDraggablePiece();
 
   return (
     <div
+      ref={boardRef}
       className={classNames(
-        "my-2 shadow-[0_3px_10px_rgb(0,0,0,0.4)] noSelect",
+        "my-2 shadow-[0_3px_10px_rgb(0,0,0,0.4)] noSelect touch-none",
         {
           "rotate-180": shouldRotate(),
         }
@@ -58,16 +49,13 @@ const Board = ({ movePiece, highlight }: Props) => {
                 (lastMovePositions[1]?.row === rowIndex &&
                   lastMovePositions[1]?.col === cellIndex);
 
+              const isBeingDragged =
+                dragState?.isDragging &&
+                dragState.startRow === rowIndex &&
+                dragState.startCol === cellIndex;
+
               return (
                 <div
-                  onDragOver={(e) => handleDragOver(e)}
-                  onDrop={(e) =>
-                    isAvailablePosition &&
-                    handleDrop(e, {
-                      position: { row: rowIndex, col: cellIndex },
-                      gameId,
-                    })
-                  }
                   onClick={() =>
                     isAvailablePosition &&
                     movePiece({
@@ -90,22 +78,56 @@ const Board = ({ movePiece, highlight }: Props) => {
                   )}
                 >
                   {isAvailablePosition && cell === null && (
-                    <div className="bg-black opacity-[0.6] rounded-full h-[1rem] w-[1rem] md:w-5 md:h-5"></div>
+                    <div
+                      className={classNames(
+                        "bg-black opacity-[0.6] rounded-full h-[1rem] w-[1rem] md:w-5 md:h-5 absolute"
+                      )}
+                    ></div>
                   )}
 
                   <Notations rowIndex={rowIndex} cellIndex={cellIndex} />
 
                   {isAvailablePosition && cell && (
-                    <div className="absolute h-[2.6rem] w-[2.6rem] md:w-[5rem] md:h-[5rem] border-2 border-black rounded-full"></div>
+                    <div
+                      className={classNames(
+                        "absolute h-[2.6rem] w-[2.6rem] md:w-[6rem] md:h-[6rem] border-2 border-black rounded-full"
+                      )}
+                    ></div>
                   )}
-                  {/* {`${rowIndex}${cellIndex}`} */}
-                  <Pieces highlight={highlight} cell={cell} />
+
+                  <div
+                    className={classNames("w-full h-full", {
+                      "opacity-0": isBeingDragged,
+                    })}
+                  >
+                    <Pieces
+                      cell={cell}
+                      onPointerDown={(e) =>
+                        handlePointerDown(e, rowIndex, cellIndex, cell)
+                      }
+                    />
+                  </div>
                 </div>
               );
             })}
           </div>
         );
       })}
+
+      {dragState &&
+        dragState.isDragging &&
+        createPortal(
+          <div
+            className="fixed pointer-events-none z-50 w-[2.7rem] h-[2.7rem] md:w-[6rem] md:h-[6rem]"
+            style={{
+              left: dragState.currentX - dragState.offsetX,
+              top: dragState.currentY - dragState.offsetY,
+            }}
+          >
+            <Pieces cell={dragState.piece} disableRotation />
+          </div>,
+          document.body
+        )}
     </div>
   );
 };
