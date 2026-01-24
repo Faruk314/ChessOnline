@@ -2,7 +2,6 @@ import { Server, Socket } from "socket.io";
 import {
   retrieveGameState,
   updateGame,
-  saveGameState,
   deleteGameState,
 } from "../../redis/game";
 
@@ -64,6 +63,7 @@ class GameListeners {
     await updateGame({
       newGameState: game,
       gameId: data.gameId,
+      action: "highlight",
     });
   }
 
@@ -97,6 +97,7 @@ class GameListeners {
     await updateGame({
       newGameState: game,
       gameId: data.gameId,
+      action,
     });
   }
 
@@ -124,7 +125,11 @@ class GameListeners {
 
     game.promotePawn(data.type);
 
-    await updateGame({ newGameState: game, gameId: data.gameId });
+    await updateGame({
+      newGameState: game,
+      gameId: data.gameId,
+      action: "promotion",
+    });
   }
 
   async onDrawOffer(data: { gameId: string }) {
@@ -139,7 +144,11 @@ class GameListeners {
 
     if (senderId) game.drawOffererId = senderId;
 
-    await updateGame({ newGameState: game, gameId: data.gameId });
+    await updateGame({
+      newGameState: game,
+      gameId: data.gameId,
+      action: "drawOffer",
+    });
   }
 
   async onDrawOfferResponse(data: { gameId: string; accept: boolean }) {
@@ -156,7 +165,7 @@ class GameListeners {
     }
 
     game.drawOffererId = null;
-    await updateGame({ gameId, newGameState: game });
+    await updateGame({ gameId, newGameState: game, action: "drawResponse" });
   }
 
   async onResign(gameId: string) {

@@ -121,9 +121,11 @@ const deleteGameState = async (gameId: string) => {
 const updateGame = async ({
   newGameState,
   gameId,
+  action,
 }: {
   newGameState: IGame;
   gameId: string;
+  action: MoveAction;
 }) => {
   const io = getIO();
   const sockets = await io.in(gameId).fetchSockets();
@@ -134,6 +136,7 @@ const updateGame = async ({
 
     io.to(socket.id).emit("updateGame", {
       gameState: playerView,
+      action,
     });
   });
 

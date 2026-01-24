@@ -62,8 +62,6 @@ export interface Game {
 
 export type PieceColor = "black" | "white";
 
-export type MoveAction = "pieceMoved" | "piecePromoted";
-
 export interface Piece {
   type: string;
   color: PieceColor;
@@ -97,3 +95,15 @@ export interface PromotionData {
   gameId: string;
   type: string;
 }
+
+export type MoveAction =
+  | "highlight"
+  | "move"
+  | "capture"
+  | "promotion"
+  | "check"
+  | "checkmate"
+  | "stalemate"
+  | "castling"
+  | "drawOffer"
+  | "drawResponse";

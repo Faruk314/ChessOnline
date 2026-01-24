@@ -1,8 +1,7 @@
-import { Game as IGame, Square, Position, UserInfo } from "../../types/types";
+import { Game as IGame, Square, Position, MoveAction } from "../../types/types";
 import { Piece } from "./Piece";
 import { Player } from "./Player";
 import { createPawn } from "../methods/game";
-import query from "../db";
 import _ from "lodash";
 
 export class Game implements IGame {
@@ -565,6 +564,8 @@ export class Game implements IGame {
   }
 
   movePiece(row: number, col: number) {
+    let action: MoveAction = "move";
+
     this.isCheck = false;
     let updatedActivePiece = _.cloneDeep(this.activePiece);
     let updatedBoard = _.cloneDeep(this.board);
@@ -578,7 +579,7 @@ export class Game implements IGame {
     );
     const updatedPlayers = [...this.players];
 
-    if (!activePiece) return;
+    if (!activePiece) return action;
 
     let initialPosition = {
       row: activePiece.position.row,
@@ -609,6 +610,7 @@ export class Game implements IGame {
         rook!.position.row = row;
         rook!.position.col = col + 1;
         updatedBoard[row][col + 1] = rook;
+        action = "castling";
       }
 
       if ((row === 0 && col === 6) || (row === 7 && col === 6)) {
@@ -617,6 +619,7 @@ export class Game implements IGame {
         rook!.position.row = row;
         rook!.position.col = col - 1;
         updatedBoard[row][col - 1] = rook;
+        action = "castling";
       }
     }
 
@@ -625,6 +628,7 @@ export class Game implements IGame {
     if (enemyPiece) {
       updatedPlayers[currentPlayerIndex].enemyPieces.push(enemyPiece);
       this.players = updatedPlayers;
+      action = "capture";
     }
 
     updatedBoard[row][col] = updatedActivePiece;
@@ -641,11 +645,13 @@ export class Game implements IGame {
 
       updatedPlayers[currentPlayerIndex].enemyPieces.push(piece!);
       this.players = updatedPlayers;
+      action = "capture";
     }
 
     if (activePiece.type === "pawn" && (row === 7 || row === 0)) {
       this.isPromotion = true;
       promotion = true;
+      action = "promotion";
     }
 
     this.movedPieces.push(updatedActivePiece!);
@@ -656,6 +662,9 @@ export class Game implements IGame {
 
     if (promotion === false) {
       isCheckmate = this.determineCheckmate(updatedBoard);
+      if (this.isCheck) action = "check";
+      if (this.stalemate) action = "stalemate";
+      if (isCheckmate) action = "checkmate";
     }
 
     if (promotion === false && isCheckmate === false) {
@@ -667,6 +676,8 @@ export class Game implements IGame {
 
     this.availablePositions = [];
     this.elPassantMove = null;
+
+    return action;
   }
 
   castling(safeMoves: Position[], piece: Piece, board: Square[][]) {
