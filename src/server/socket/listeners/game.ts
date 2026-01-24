@@ -92,6 +92,12 @@ class GameListeners {
 
     const { row, col } = data.position;
 
+    const isValidMove = game.availablePositions.some(
+      (pos) => pos.row === row && pos.col === col
+    );
+
+    if (!isValidMove) return console.error("Invalid move");
+
     const action = game.movePiece(row, col);
 
     await updateGame({
