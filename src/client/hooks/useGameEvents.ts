@@ -11,7 +11,7 @@ import { useSoundStore } from "../store/useSoundStore";
 export const useGameEvents = () => {
   const { socket } = useContext(SocketContext);
   const { addGameInvite, setMsgNotif } = useGameInvitesStore();
-  const { setDrawOffered, updateGame, setOpenDrawOffer, addMessage } = useGameStore();
+  const { updateGame, addMessage } = useGameStore();
   const { playMoveSound } = useSoundStore();
   const [openOpponentLeft, setOpenOpponentLeft] = useState(false);
   const [openDrawModal, setOpenDrawModal] = useState(false);
@@ -56,25 +56,10 @@ export const useGameEvents = () => {
     navigate("/menu");
   });
 
-  useSocketEvent(socket, "draw", () => {
-    setOpenDrawModal(true);
-    setDrawOffered(false);
-
-    navigate("/menu");
-  });
-
   useSocketEvent(socket, "updateGame", (data) => {
     if (data.action === "pieceMoved") {
       playMoveSound();
     }
     updateGame(data);
-  });
-
-  useSocketEvent(socket, "drawRejected", () => {
-    setDrawOffered(false);
-  });
-
-  useSocketEvent(socket, "drawOffered", () => {
-    setOpenDrawOffer(true);
   });
 };

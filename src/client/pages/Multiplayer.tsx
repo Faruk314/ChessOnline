@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Checkmate from "../modals/Checkmate";
 import Stalemate from "../modals/Stalemate";
 import Player from "../components/Player";
@@ -17,25 +17,20 @@ import { useMultiplayerActions } from "../hooks/useMultiplayerActions";
 import { useGameStore } from "../store/useGameStore";
 import { useGameStatusQuery } from "../api/queries/game";
 import { useGameActions } from "../hooks/useGameActions";
+import { useAuthStore } from "../store/useAuthStore";
 
 const Multiplayer = () => {
   const [openChat, setOpenChat] = useState(false);
   const [openResignModal, setOpenResignModal] = useState(false);
-  const {
-    isPromotion,
-    checkmate,
-    stalemate,
-    players,
-    setDrawOffered,
-    drawOffered,
-    setOpenDrawOffer,
-    openDrawOffer,
-  } = useGameStore();
+  const { isPromotion, checkmate, stalemate, players, drawOffererId } =
+    useGameStore();
   const { promotePawn } = useGameActions();
   const { offerDraw } = useMultiplayerActions();
   const { setMsgNotif, msgNotif } = useGameInvitesStore();
-  const user = players[0];
-  const opponent = players[1];
+  const { loggedUserInfo } = useAuthStore();
+  const opponent = players.find(
+    (p) => p.playerData?.userId !== loggedUserInfo?.userId
+  );
   const { gameId } = useParams();
 
   const { isLoading } = useGameStatusQuery(gameId);
@@ -43,7 +38,6 @@ const Multiplayer = () => {
   const handleDrawOffer = () => {
     if (opponent && gameId) {
       offerDraw(opponent.playerData?.userId!, gameId);
-      setDrawOffered(true);
     }
   };
 
@@ -56,19 +50,15 @@ const Multiplayer = () => {
       {checkmate && <Checkmate />}
       {stalemate && <Stalemate />}
       {openResignModal && <Resign setOpenResignModal={setOpenResignModal} />}
-      {openDrawOffer && (
-        <DrawOffer
-          setOpenDrawOffer={(val) => setOpenDrawOffer(val as boolean)}
-        />
-      )}
+      {drawOffererId === opponent?.playerData?.userId && <DrawOffer />}
 
       <div className="fixed flex space-x-2 top-4 right-4">
         <button
-          disabled={drawOffered || openDrawOffer}
+          disabled={drawOffererId ? true : false}
           onClick={handleDrawOffer}
           className="p-2 font-bold text-white rounded-md bg-amber-900 disabled:text-gray-300 disabled:bg-gray-400"
         >
-          {drawOffered ? "draw offered" : "Offer draw"}
+          {drawOffererId ? "draw offered" : "Offer draw"}
         </button>
         <SoundButton />
         <button
@@ -112,8 +102,8 @@ const Multiplayer = () => {
 
         <Player
           index={0}
-          playerName={user.playerData?.userName}
-          image={user.playerData?.image}
+          playerName={loggedUserInfo?.userName}
+          image={loggedUserInfo?.image}
         />
       </div>
 

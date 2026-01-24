@@ -1,15 +1,11 @@
 import { create } from "zustand";
-import { Game, MoveAction, Msg } from "../../types/types";
+import { Game, Msg } from "../../types/types";
 
 interface GameState extends Game {
-  drawOffered: boolean;
-  openDrawOffer: boolean;
   messages: Msg[];
 
   setGameState: (gameState: Game) => void;
-  setDrawOffered: (drawOffered: boolean) => void;
-  setOpenDrawOffer: (openDrawOffer: boolean) => void;
-  updateGame: (data: { gameState: Game; action: MoveAction }) => void;
+  updateGame: (data: { gameState: Game }) => void;
   setMessages: (messages: Msg[]) => void;
   addMessage: (message: Msg) => void;
 }
@@ -35,13 +31,9 @@ const initialGameState: Game = {
 
 export const useGameStore = create<GameState>((set) => ({
   ...initialGameState,
-  drawOffered: false,
-  openDrawOffer: false,
   messages: [],
 
   setGameState: (gameState) => set({ ...gameState }),
-  setDrawOffered: (drawOffered) => set({ drawOffered }),
-  setOpenDrawOffer: (openDrawOffer) => set({ openDrawOffer }),
   updateGame: ({ gameState }) => set({ ...gameState }),
   setMessages: (messages) => set({ messages }),
   addMessage: (message) =>

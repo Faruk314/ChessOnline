@@ -1,5 +1,10 @@
 import { Server, Socket } from "socket.io";
-import { retrieveGameState, updateGame } from "../../redis/game";
+import {
+  retrieveGameState,
+  updateGame,
+  saveGameState,
+  deleteGameState,
+} from "../../redis/game";
 
 class GameListeners {
   io: Server;
@@ -17,7 +22,6 @@ class GameListeners {
     this.socket.on("drawOffer", this.onDrawOffer.bind(this));
     this.socket.on("drawOfferResponse", this.onDrawOfferResponse.bind(this));
     this.socket.on("resign", this.onResign.bind(this));
-    this.socket.on("leaveRoom", this.onLeaveRoom.bind(this));
   }
 
   async onHighlightPiece(data: {
@@ -57,7 +61,10 @@ class GameListeners {
 
     game.highlight(clickedPiece);
 
-    await updateGame({ newGameState: game, gameId: data.gameId });
+    await updateGame({
+      newGameState: game,
+      gameId: data.gameId,
+    });
   }
 
   async onMovePiece(data: {
@@ -85,9 +92,12 @@ class GameListeners {
 
     const { row, col } = data.position;
 
-    game.movePiece(row, col);
+    const action = game.movePiece(row, col);
 
-    await updateGame({ newGameState: game, gameId: data.gameId });
+    await updateGame({
+      newGameState: game,
+      gameId: data.gameId,
+    });
   }
 
   async onPromotePawn(data: { gameId: string; type: string }) {
@@ -117,40 +127,43 @@ class GameListeners {
     await updateGame({ newGameState: game, gameId: data.gameId });
   }
 
-  async onDrawOffer(data: { receiverId: number; gameId: string }) {
-    // const receiverId = data.receiverId;
-    // const receiverSocketId = getUser(receiverId);
-    // const senderId = this.socket.userId;
-    // const gameId = data.gameId;
-    // let gameState = await getGameState(gameId);
-    // if (!gameState) return;
-    // if (senderId) gameState.drawOffererId = senderId;
-    // await client.set(gameId, JSON.stringify(gameState));
-    // if (receiverSocketId) this.io.to(receiverSocketId).emit("drawOffered");
+  async onDrawOffer(data: { gameId: string }) {
+    const senderId = this.socket.userId;
+    const gameId = data.gameId;
+
+    let response = await retrieveGameState(gameId);
+    if (response.status !== "success" || !response.gameState) return;
+    const game = response.gameState;
+
+    if (game.drawOffererId) return console.error("Draw offer already exists");
+
+    if (senderId) game.drawOffererId = senderId;
+
+    await updateGame({ newGameState: game, gameId: data.gameId });
   }
 
-  async onDrawOfferResponse(response: { gameId: string; accept: boolean }) {
-    // const gameId = response.gameId;
-    // if (response.accept) {
-    //   let gameDeleted = await deleteGameState(gameId);
-    //   if (gameDeleted) this.io.to(gameId).emit("draw");
-    //   return;
-    // }
-    // let gameState = await getGameState(gameId);
-    // if (!gameState) return;
-    // gameState.drawOffererId = null;
-    // await client.set(gameId, JSON.stringify(gameState));
-    // this.io.to(gameId).emit("drawRejected");
+  async onDrawOfferResponse(data: { gameId: string; accept: boolean }) {
+    const gameId = data.gameId;
+
+    let res = await retrieveGameState(gameId);
+    if (res.status !== "success" || !res.gameState) return;
+    const game = res.gameState;
+
+    if (data.accept) {
+      let result = await deleteGameState(gameId);
+      if (result.status === "success") this.io.to(gameId).emit("draw");
+      return;
+    }
+
+    game.drawOffererId = null;
+    await updateGame({ gameId, newGameState: game });
   }
 
   async onResign(gameId: string) {
-    // let gameDeleted = await deleteGameState(gameId);
-    // this.socket.leave(gameId);
-    // if (gameDeleted) this.io.to(gameId).emit("opponentResigned");
-  }
-
-  onLeaveRoom() {
-    // Placeholder for leave logic if needed
+    let result = await deleteGameState(gameId);
+    this.socket.leave(gameId);
+    if (result.status === "success")
+      this.io.to(gameId).emit("opponentResigned");
   }
 }
 

@@ -1,9 +1,6 @@
-import React from "react";
 import { useNavigate } from "react-router-dom";
-import { useGameStore } from "../store/useGameStore";
 
 const Stalemate = () => {
-  const { gameId } = useGameStore();
   const navigate = useNavigate();
 
   return (

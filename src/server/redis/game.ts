@@ -1,6 +1,6 @@
 import { client } from "./config";
 import { GAMES_KEY } from "../constants/main";
-import { GameData, Game as IGame } from "../../types/types";
+import { GameData, Game as IGame, MoveAction } from "../../types/types";
 import { Game } from "../classes/Game";
 import { v4 as uuidv4 } from "uuid";
 import {
