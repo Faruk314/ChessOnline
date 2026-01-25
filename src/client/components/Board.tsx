@@ -67,13 +67,14 @@ const Board = () => {
                   className={classNames(
                     "relative flex items-center justify-center w-[2.7rem] h-[2.7rem] md:w-[6rem] md:h-[6rem]",
                     {
-                      "bg-amber-900": isBrown,
+                      "bg-emerald-700": isBrown,
+                      "bg-gray-300": !isBrown,
                       "cursor-pointer": isAvailablePosition,
-                      "bg-green-400":
+                      "bg-yellow-400":
                         activePiece?.position.row === rowIndex &&
                         activePiece.position.col === cellIndex,
                       "bg-yellow-200": moveHiglight && !isBrown,
-                      "bg-yellow-300": moveHiglight && isBrown,
+                      "bg-yellow-500": moveHiglight && isBrown,
                     }
                   )}
                 >

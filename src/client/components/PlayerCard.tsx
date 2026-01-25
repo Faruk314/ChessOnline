@@ -6,8 +6,9 @@ import { IoCheckmarkSharp } from "react-icons/io5";
 import whiteDefault from "../assets/images/whiteDefault.png";
 import { FriendRequestStatus } from "../../types/types";
 import { toast } from "react-toastify";
-import { MdDeleteForever } from "react-icons/md";
+import { MdDeleteForever, MdPersonAdd } from "react-icons/md";
 import { FcInvite } from "react-icons/fc";
+import { FaGamepad } from "react-icons/fa";
 import { useAuthStore } from "../store/useAuthStore";
 import {
   useAcceptFriendRequestMutation,
@@ -16,6 +17,7 @@ import {
   useSendFriendRequestMutation,
 } from "../api/queries/friends";
 import { useSendGameInviteMutation } from "../api/queries/gameInvites";
+import classNames from "classnames";
 
 interface Props {
   friendRequestInfo: UserRequest;
@@ -90,130 +92,153 @@ const PlayerCard = ({ friendRequestInfo }: Props) => {
   };
 
   return (
-    <div className="flex items-center bg-amber-100 max-w-[25rem] justify-between p-2 mx-1 shadow-[0_3px_10px_rgb(0,0,0,0.2)] rounded-md">
-      <div className="flex space-x-2">
-        <img
-          src={friendRequestInfo.image || whiteDefault}
-          alt=""
-          className="w-[3rem] h-[3rem] border rounded-lg relative"
-        />
+    <div className="flex items-center bg-gray-700/50 border border-gray-600 w-full justify-between p-3 rounded-xl transition-all hover:border-gray-500 hover:bg-gray-700">
+      <div className="flex items-center space-x-3">
+        <div className="relative">
+          <img
+            src={friendRequestInfo.image || whiteDefault}
+            alt=""
+            className="w-12 h-12 rounded-full border-2 border-emerald-500/30 object-cover"
+          />
+          {/* Online status dot could go here if available */}
+        </div>
 
-        <div className="flex flex-col items-start text-black rounded-md">
-          {friendRequestInfo.userName.length > 10 ? (
-            <div
-              onMouseEnter={() => setIsHovering(true)}
-              onMouseLeave={() => setIsHovering(false)}
-              className="relative cursor-pointer"
-            >
-              <span>{friendRequestInfo.userName.slice(0, 10)}...</span>
+        <div className="flex flex-col items-start">
+          <div className="font-bold text-white text-sm md:text-base">
+            {friendRequestInfo.userName.length > 10 ? (
+              <div
+                onMouseEnter={() => setIsHovering(true)}
+                onMouseLeave={() => setIsHovering(false)}
+                className="relative cursor-pointer"
+              >
+                <span>{friendRequestInfo.userName.slice(0, 10)}...</span>
 
-              {isHovering && (
-                <div className="bg-[rgba(0,0,0,0.6)] p-2 rounded-md absolute top-5 left-0">
-                  <span className="text-white">
+                {isHovering && (
+                  <div className="absolute z-50 left-0 -top-8 bg-gray-900 text-white text-xs px-2 py-1 rounded border border-gray-600 whitespace-nowrap shadow-xl">
                     {friendRequestInfo?.userName}
-                  </span>
-                </div>
-              )}
-            </div>
-          ) : (
-            <span>{friendRequestInfo.userName}</span>
-          )}
-          <span className="">id: {friendRequestInfo.userId}</span>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <span>{friendRequestInfo.userName}</span>
+            )}
+          </div>
+          <span className="text-xs text-gray-400 font-mono">
+            #{friendRequestInfo.userId}
+          </span>
         </div>
       </div>
 
-      <div className="flex flex-col font-bold">
+      <div className="flex items-center gap-2">
+        {/* Not friends yet */}
         {friendRequestStatus?.status === 0 && (
-          <div className="flex items-center justify-center">
+          <>
             <button
               onClick={friendRequestHandler}
-              className="p-2 rounded-md hover:bg-amber-900 hover:text-white"
+              className="p-2 rounded-lg bg-emerald-600/20 text-emerald-400 hover:bg-emerald-600 hover:text-white transition-all"
+              title="Add Friend"
             >
-              ADD
+              <MdPersonAdd size={20} />
             </button>
 
             <button
               onClick={() => inviteHandler()}
-              className="p-2 rounded-md hover:bg-gray-200 hover:text-white"
+              className="p-2 rounded-lg bg-blue-600/20 text-blue-400 hover:bg-blue-600 hover:text-white transition-all"
+              title="Invite to Game"
             >
-              <FcInvite size={25} />
+              <FaGamepad size={20} />
             </button>
-          </div>
+          </>
         )}
 
+        {/* Received Request */}
         {friendRequestStatus?.status === 1 &&
           friendRequestInfo.id &&
           loggedUserInfo?.userId === friendRequestStatus.receiver && (
-            <div className="flex items-center space-x-1">
+            <>
               <button
                 onClick={acceptFriendRequestHandler}
-                className="p-2 rounded-md hover:bg-amber-900 hover:text-white"
+                className="p-2 rounded-lg bg-emerald-600/20 text-emerald-400 hover:bg-emerald-600 hover:text-white transition-all"
+                title="Accept"
               >
-                <IoCheckmarkSharp size={20} className="text-green-500" />
+                <IoCheckmarkSharp size={20} />
               </button>
               <button
                 onClick={deleteFriendRequestHandler}
-                className="p-2 rounded-md hover:bg-amber-900 hover:text-white"
+                className="p-2 rounded-lg bg-red-600/20 text-red-400 hover:bg-red-600 hover:text-white transition-all"
+                title="Decline"
               >
-                <IoClose size={20} className="text-red-600" />
+                <IoClose size={20} />
               </button>
-            </div>
+            </>
           )}
 
+        {/* Pending Request (Received but no ID context?) - Fallback */}
         {friendRequestStatus?.status === 1 &&
           !friendRequestInfo.id &&
           loggedUserInfo?.userId === friendRequestStatus.receiver && (
-            <div className="flex items-center space-x-2">
-              <span className="p-2 rounded-md">PENDING</span>
+            <div className="flex items-center gap-2">
+              <span className="px-2 py-1 text-[10px] uppercase font-bold tracking-wider text-amber-400 bg-amber-400/10 rounded">
+                Pending
+              </span>
               <button
                 onClick={() => inviteHandler()}
-                className="p-2 rounded-md hover:bg-gray-200 hover:text-white"
+                className="p-2 rounded-lg bg-blue-600/20 text-blue-400 hover:bg-blue-600 hover:text-white transition-all"
               >
-                <FcInvite size={25} />
+                <FaGamepad size={18} />
               </button>
             </div>
           )}
 
+        {/* Sent Request */}
         {friendRequestStatus?.status === 1 &&
           loggedUserInfo?.userId === friendRequestStatus.sender && (
-            <div className="flex items-center space-x-2">
-              <span className="p-2 rounded-md">SENT</span>
+            <div className="flex items-center gap-2">
+              <span className="px-2 py-1 text-[10px] uppercase font-bold tracking-wider text-gray-400 bg-gray-700 rounded border border-gray-600">
+                Sent
+              </span>
               <button
                 onClick={() => inviteHandler()}
-                className="p-2 rounded-md hover:bg-gray-200 hover:text-white"
+                className="p-2 rounded-lg bg-blue-600/20 text-blue-400 hover:bg-blue-600 hover:text-white transition-all"
               >
-                <FcInvite size={25} />
+                <FaGamepad size={18} />
               </button>
             </div>
           )}
 
+        {/* Friends */}
         {friendRequestStatus?.status === 2 && friendRequestInfo.id && (
-          <div className="flex items-center justify-center">
+          <>
+            <button
+              onClick={() => inviteHandler()}
+              className="p-2 rounded-lg bg-blue-600/20 text-blue-400 hover:bg-blue-600 hover:text-white transition-all"
+              title="Invite to Game"
+            >
+              <FaGamepad size={20} />
+            </button>
             <button
               onClick={unfriendHandler}
-              className="p-2 rounded-md hover:bg-gray-200 hover:text-white"
+              className="p-2 rounded-lg bg-red-600/10 text-red-400 hover:bg-red-600 hover:text-white transition-all"
+              title="Remove Friend"
             >
-              <MdDeleteForever size={25} className="text-red-600" />
+              <MdDeleteForever size={20} />
             </button>
-            <button
-              onClick={() => inviteHandler()}
-              className="p-2 rounded-md hover:bg-gray-200 hover:text-white"
-            >
-              <FcInvite size={25} />
-            </button>
-          </div>
+          </>
         )}
 
+        {/* Friends (Fallback) */}
         {friendRequestStatus?.status === 2 && !friendRequestInfo.id && (
-          <div className="flex items-center space-x-2 text-black">
-            <span>FRIENDS</span>
+          <>
+            <span className="px-2 py-1 text-[10px] uppercase font-bold tracking-wider text-emerald-400 bg-emerald-400/10 rounded border border-emerald-500/20">
+              Friends
+            </span>
             <button
               onClick={() => inviteHandler()}
-              className="p-2 rounded-md hover:bg-gray-200 hover:text-white"
+              className="p-2 rounded-lg bg-blue-600/20 text-blue-400 hover:bg-blue-600 hover:text-white transition-all"
             >
-              <FcInvite size={25} />
+              <FaGamepad size={18} />
             </button>
-          </div>
+          </>
         )}
       </div>
     </div>

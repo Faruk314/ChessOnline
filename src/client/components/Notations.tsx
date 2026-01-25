@@ -23,6 +23,14 @@ const Notations = ({ rowIndex, cellIndex }: Props) => {
     opponent = players.find((player) => player.color === "black");
   }
 
+  const isDarkSquare =
+    ((rowIndex + 1) % 2 !== 0 && (cellIndex + 1) % 2 === 0) ||
+    ((rowIndex + 1) % 2 === 0 && (cellIndex + 1) % 2 !== 0);
+
+  // If dark square (Emerald-700), use light text (Emerald-100/Gray-300)
+  // If light square (Gray-300), use dark text (Emerald-900)
+  const textColor = isDarkSquare ? "text-emerald-100" : "text-emerald-900";
+
   return (
     <>
       {opponent?.color === "black" && (
@@ -30,7 +38,8 @@ const Notations = ({ rowIndex, cellIndex }: Props) => {
           {rowIndex === 7 && (
             <span
               className={classNames(
-                "absolute hidden font-bold md:block bottom-1 right-2"
+                "absolute hidden font-bold md:block bottom-0.5 right-1 text-xs select-none",
+                textColor
               )}
             >
               {letters[cellIndex]}
@@ -40,7 +49,8 @@ const Notations = ({ rowIndex, cellIndex }: Props) => {
           {cellIndex === 0 && (
             <span
               className={classNames(
-                "absolute hidden font-bold md:block top-2 left-2"
+                "absolute hidden font-bold md:block top-0.5 left-1 text-xs select-none",
+                textColor
               )}
             >
               {numbers[rowIndex]}
@@ -54,8 +64,8 @@ const Notations = ({ rowIndex, cellIndex }: Props) => {
           {rowIndex === 0 && (
             <span
               className={classNames(
-                "absolute hidden font-bold md:block top-1 left-2 rotate-180",
-                {}
+                "absolute hidden font-bold md:block top-0.5 left-1 rotate-180 text-xs select-none",
+                textColor
               )}
             >
               {letters[cellIndex]}
@@ -65,8 +75,8 @@ const Notations = ({ rowIndex, cellIndex }: Props) => {
           {cellIndex === 7 && (
             <span
               className={classNames(
-                "absolute hidden font-bold md:block bottom-1 right-2 rotate-180",
-                {}
+                "absolute hidden font-bold md:block bottom-0.5 right-1 rotate-180 text-xs select-none",
+                textColor
               )}
             >
               {numbers[rowIndex]}

@@ -2,6 +2,7 @@ import React from "react";
 import { useGameStore } from "../store/useGameStore";
 import { useNavigate } from "react-router-dom";
 import { useMultiplayerActions } from "../hooks/useMultiplayerActions";
+import { FaFlag } from "react-icons/fa";
 
 interface Props {
   setOpenResignModal: React.Dispatch<React.SetStateAction<boolean>>;
@@ -13,27 +14,31 @@ const Resign = ({ setOpenResignModal }: Props) => {
   const navigate = useNavigate();
 
   return (
-    <div className="fixed top-0 bottom-0 left-0 right-0 z-30 flex flex-col items-center text-black justify-center text-center bg-[rgb(0,0,0,0.5)]">
-      <div className="z-40 flex flex-col items-center justify-center px-[3rem] md:px-0 md:w-[20rem] py-3 mx-2 space-y-4 bg-amber-100 rounded-md shadow-xl">
-        <h2 className="text-2xl">Are you sure you want to resign?</h2>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+      <div className="flex flex-col items-center p-8 bg-gray-800 border border-gray-700 rounded-2xl shadow-2xl max-w-sm w-full animate-in zoom-in-95 duration-300">
+        <div className="p-4 bg-red-500/10 rounded-full mb-4">
+          <FaFlag className="text-3xl text-red-500" />
+        </div>
 
-        <div className="flex space-x-2">
+        <h2 className="text-xl font-bold text-white text-center mb-6">
+          Are you sure you want to resign?
+        </h2>
+
+        <div className="flex gap-3 w-full">
+          <button
+            onClick={() => setOpenResignModal(false)}
+            className="flex-1 py-2.5 rounded-xl font-bold text-gray-300 hover:text-white hover:bg-gray-700 transition-all border border-gray-600"
+          >
+            Cancel
+          </button>
           <button
             onClick={() => {
               resign(gameId);
               navigate("/menu");
             }}
-            className="px-5 py-1 text-xl font-normal text-white border-2 rounded-md border-amber-900 bg-amber-900 hover:bg-transparent hover:text-amber-900"
+            className="flex-1 py-2.5 rounded-xl font-bold text-white bg-red-600 hover:bg-red-500 shadow-lg shadow-red-900/20 transition-all"
           >
-            Yes
-          </button>
-          <button
-            onClick={() => {
-              setOpenResignModal(false);
-            }}
-            className="px-5 py-1 text-xl font-normal text-white border-2 rounded-md border-amber-900 bg-amber-900 hover:bg-transparent hover:text-amber-900"
-          >
-            No
+            Resign
           </button>
         </div>
       </div>

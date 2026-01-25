@@ -7,9 +7,9 @@ import whiteRook from "../assets/images/rook_w.png";
 import whiteKnight from "../assets/images/knight_w.png";
 import whiteBishop from "../assets/images/bishop_w.png";
 import whiteQueen from "../assets/images/queen_w.png";
-import classNames from "classnames";
 import { PromotionData } from "../../types/types";
 import { useGameStore } from "../store/useGameStore";
+import classNames from "classnames";
 
 interface Props {
   promotePawn: (data: PromotionData) => void;
@@ -36,24 +36,27 @@ const Promotion = ({ promotePawn }: Props) => {
   return (
     <div
       className={classNames(
-        "fixed p-2 shadow-lg rounded-md border-black bg-white",
+        "fixed z-50 left-1/2 transform -translate-x-1/2 p-2 bg-gray-800/90 backdrop-blur-md border border-gray-600 rounded-xl shadow-2xl flex gap-2 animate-in zoom-in-95 duration-200",
         {
-          "bottom-10": playerTurn?.color === "black",
-          "top-10": playerTurn?.color === "white",
+          "bottom-20": playerTurn?.color === "black",
+          "top-20": playerTurn?.color === "white",
         }
       )}
     >
-      <div className="flex">
-        {promotionPieces.map((piece, index) => (
-          <button
-            className="hover:bg-gray-100"
-            onClick={() => promotePawn({ gameId, type: piece.type })}
-            key={index}
-          >
-            <img src={piece.image} alt="" />
-          </button>
-        ))}
-      </div>
+      {promotionPieces.map((piece, index) => (
+        <button
+          className="group relative p-2 rounded-lg bg-gray-700/50 hover:bg-gray-600 border border-transparent hover:border-emerald-500 transition-all duration-150"
+          onClick={() => promotePawn({ gameId, type: piece.type })}
+          key={index}
+          title={`Promote to ${piece.type}`}
+        >
+          <img
+            src={piece.image}
+            alt={piece.type}
+            className="w-12 h-12 object-contain transform group-hover:scale-110 transition-transform"
+          />
+        </button>
+      ))}
     </div>
   );
 };

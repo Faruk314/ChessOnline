@@ -1,10 +1,8 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext, useState } from "react";
 import menuImage from "../assets/images/menu.png";
 import { ImUser, ImUsers } from "react-icons/im";
 import SoundButton from "../components/SoundButton";
 import { useSoundStore } from "../store/useSoundStore";
-import { useNavigate } from "react-router-dom";
-import axios from "axios";
 import FindMatch from "../modals/FindMatch";
 import { SocketContext } from "../context/SocketContext";
 import UserInfo from "../components/UserInfo";
@@ -24,6 +22,7 @@ import {
   useFriendRequestsQuery,
   useFriendsQuery,
 } from "../api/queries/friends";
+import { FaChessPawn, FaSignOutAlt } from "react-icons/fa";
 
 const Menu = () => {
   const { mutate: logoutUser } = useLogoutMutation();
@@ -43,103 +42,158 @@ const Menu = () => {
   const [openFriendReq, setOpenFriendReq] = useState(false);
 
   return (
-    <section className="h-[100vh] overflow-hidden	bg-amber-100 text-white font-bold flex flex-col justify-center items-center">
-      <div className="fixed top-0 flex items-center w-full p-4 space-x-2">
+    <section className="min-h-screen bg-gray-900 text-white font-bold flex flex-col justify-center items-center overflow-hidden relative">
+      {/* Background Pattern */}
+      <div className="absolute inset-0 opacity-5 pointer-events-none">
+        <div
+          className="w-full h-full"
+          style={{
+            backgroundImage:
+              "radial-gradient(#10b981 1px, transparent 1px), radial-gradient(#10b981 1px, transparent 1px)",
+            backgroundSize: "40px 40px",
+            backgroundPosition: "0 0, 20px 20px",
+          }}
+        ></div>
+      </div>
+
+      <div className="fixed top-0 flex items-center w-full p-6 space-x-4 z-30">
         <SoundButton />
 
-        <div className="relative">
+        {/* Friend Requests Button */}
+        <div className="relative group">
           <button
             onClick={(e) => {
               e.stopPropagation();
               setOpenInvites(false);
               setOpenFriendReq((prev) => !prev);
             }}
-            className={classNames("p-2 border rounded-md bg-amber-900", {
-              "bg-transparent border-amber-900 text-amber-900": openFriendReq,
-            })}
+            className={classNames(
+              "p-3 rounded-xl transition-all duration-200 border-2",
+              {
+                "bg-emerald-500/20 border-emerald-500 text-emerald-400":
+                  openFriendReq,
+                "bg-gray-800 border-gray-700 text-gray-400 hover:border-emerald-500 hover:text-emerald-400":
+                  !openFriendReq,
+              }
+            )}
           >
             <ImUsers size={20} />
           </button>
-
           {friendRequests.length > 0 && (
-            <span className="absolute px-2 bg-red-600 z-20 text-white rounded-full top-[-0.5rem] right-[-1rem]">
+            <span className="absolute -top-2 -right-2 px-2 py-0.5 bg-red-500 text-white text-xs font-bold rounded-full shadow-lg border-2 border-gray-900 animate-pulse">
               {friendRequests.length}
             </span>
           )}
         </div>
 
-        <div className="relative">
+        {/* Game Invites Button */}
+        <div className="relative group">
           <button
             onClick={(e) => {
               e.stopPropagation();
               setOpenFriendReq(false);
               setOpenInvites((prev) => !prev);
             }}
-            className={classNames("p-2 border rounded-md bg-amber-900", {
-              "bg-transparent border-amber-900 text-amber-900": openInvites,
-            })}
+            className={classNames(
+              "p-3 rounded-xl transition-all duration-200 border-2",
+              {
+                "bg-emerald-500/20 border-emerald-500 text-emerald-400":
+                  openInvites,
+                "bg-gray-800 border-gray-700 text-gray-400 hover:border-emerald-500 hover:text-emerald-400":
+                  !openInvites,
+              }
+            )}
           >
-            {openInvites && <BiEnvelopeOpen size={20} />}
-            {!openInvites && <BiEnvelope size={20} />}
-
-            {gameInvites.length > 0 && (
-              <span className="absolute px-2 bg-red-600 text-white rounded-full top-[-0.5rem] right-[-1rem]">
-                {gameInvites.length}
-              </span>
+            {openInvites ? (
+              <BiEnvelopeOpen size={20} />
+            ) : (
+              <BiEnvelope size={20} />
             )}
           </button>
+          {gameInvites.length > 0 && (
+            <span className="absolute -top-2 -right-2 px-2 py-0.5 bg-red-500 text-white text-xs font-bold rounded-full shadow-lg border-2 border-gray-900 animate-pulse">
+              {gameInvites.length}
+            </span>
+          )}
         </div>
       </div>
 
-      <div className="fixed top-4 right-4">
+      <div className="fixed top-6 right-6 z-30">
         <UserInfo />
       </div>
 
-      <div className="grid gap-4 mt-[10rem] z-20">
-        <div className="mb-5">
-          <img src={menuImage} className="h-[6rem] w-[15rem]" />
+      <div className="z-20 w-full max-w-md px-4 flex flex-col gap-6">
+        <div className="mb-8 flex justify-center">
+          <img
+            src={menuImage}
+            className="h-32 w-auto object-contain drop-shadow-2xl invert transition-transform hover:scale-105 duration-500"
+            alt="Game Logo"
+          />
         </div>
+
         <button
           onMouseEnter={() => playMoveSound()}
           onClick={() => {
             socket?.emit("startSinglePlayer");
           }}
-          className="flex items-center justify-center px-10 py-4 space-x-2 text-xl border-2 rounded-md shadow-md border-amber-900 bg-amber-900 hover:bg-transparent hover:text-amber-900"
+          className="group relative flex items-center justify-between px-8 py-5 text-xl font-bold text-white bg-gray-800 border-2 border-gray-700 rounded-2xl transition-all duration-300 hover:border-emerald-500 hover:shadow-[0_0_30px_-5px_rgba(16,185,129,0.3)] hover:-translate-y-1"
         >
-          <ImUser size={30} className="" />
-          <span>PLAY LOCAL</span>
+          <div className="flex items-center space-x-4">
+            <div className="p-2 rounded-lg bg-gray-700 text-emerald-400 group-hover:bg-emerald-500 group-hover:text-white transition-colors">
+              <ImUser size={24} />
+            </div>
+            <span className="tracking-wide">PLAY LOCAL</span>
+          </div>
+          <div className="opacity-0 group-hover:opacity-100 transition-opacity text-emerald-500">
+            <FaChessPawn className="transform rotate-90" />
+          </div>
         </button>
 
         <button
           onClick={() => {
-            socket?.emit("findMatch");
             setOpenFindMatch(true);
           }}
           onMouseEnter={() => playMoveSound()}
-          className="flex items-center justify-center px-10 py-4 space-x-2 text-xl border-2 rounded-md shadow-lg border-amber-900 bg-amber-900 hover:bg-transparent hover:text-amber-900"
+          className="group relative flex items-center justify-between px-8 py-5 text-xl font-bold text-white bg-emerald-600 border-2 border-emerald-500 rounded-2xl transition-all duration-300 hover:bg-emerald-500 hover:border-emerald-400 hover:shadow-[0_0_40px_-5px_rgba(16,185,129,0.5)] hover:-translate-y-1"
         >
-          <BiSearch size={30} className="" />
-          <span>FIND MATCH</span>
+          <div className="flex items-center space-x-4">
+            <div className="p-2 rounded-lg bg-emerald-700/50 text-white group-hover:bg-emerald-600 transition-colors">
+              <BiSearch size={24} />
+            </div>
+            <span className="tracking-wide">FIND MATCH</span>
+          </div>
+          <div className="opacity-0 group-hover:opacity-100 transition-opacity">
+            <FaChessPawn className="transform rotate-90" />
+          </div>
         </button>
 
         <button
           onClick={() => setOpenFriends(true)}
           onMouseEnter={() => playMoveSound()}
-          className="flex items-center justify-center px-10 py-4 space-x-2 text-xl border-2 rounded-md shadow-lg border-amber-900 bg-amber-900 hover:bg-transparent hover:text-amber-900"
+          className="group relative flex items-center justify-between px-8 py-5 text-xl font-bold text-white bg-gray-800 border-2 border-gray-700 rounded-2xl transition-all duration-300 hover:border-emerald-500 hover:shadow-[0_0_30px_-5px_rgba(16,185,129,0.3)] hover:-translate-y-1"
         >
-          <ImUsers size={30} className="" />
-          <span>FRIENDS</span>
+          <div className="flex items-center space-x-4">
+            <div className="p-2 rounded-lg bg-gray-700 text-emerald-400 group-hover:bg-emerald-500 group-hover:text-white transition-colors">
+              <ImUsers size={24} />
+            </div>
+            <span className="tracking-wide">FRIENDS</span>
+          </div>
+          <div className="opacity-0 group-hover:opacity-100 transition-opacity text-emerald-500">
+            <FaChessPawn className="transform rotate-90" />
+          </div>
         </button>
 
         <button
           onClick={() => logoutUser()}
           onMouseEnter={() => playMoveSound()}
-          className="px-10 py-4 space-x-2 text-xl text-center border-2 rounded-md shadow-lg bg-amber-900 hover:bg-transparent border-amber-900 hover:text-amber-900"
+          className="mt-4 flex items-center justify-center px-8 py-4 space-x-2 text-lg text-gray-400 hover:text-red-400 transition-colors"
         >
-          EXIT GAME
+          <FaSignOutAlt />
+          <span>Exit Game</span>
         </button>
       </div>
 
+      {/* Modals */}
       {openFindMatch && <FindMatch setOpenFindMatch={setOpenFindMatch} />}
       {openChangeAvatar && <ChangeAvatar />}
       {openFriends && <Friends setOpenFriends={setOpenFriends} />}

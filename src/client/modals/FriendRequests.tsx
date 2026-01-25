@@ -2,6 +2,7 @@ import React, { useEffect, useRef } from "react";
 import { useFriendStore } from "../store/useFriendStore";
 import { useFriendRequestsQuery } from "../api/queries/friends";
 import PlayerCard from "../components/PlayerCard";
+import { FaUserPlus } from "react-icons/fa";
 
 interface Props {
   setOpenFriendReq: React.Dispatch<React.SetStateAction<boolean>>;
@@ -29,20 +30,33 @@ const FriendRequests = ({ setOpenFriendReq }: Props) => {
   return (
     <div
       ref={modalRef}
-      className="absolute text-black shadow-[0_3px_10px_rgb(0,0,0,0.2)] top-[4rem] left-4 h-[20rem] w-[19rem] px-2 rounded-md z-30 bg-amber-100 border-md"
+      className="absolute top-[4.5rem] left-4 z-40 w-[20rem] bg-gray-800 rounded-xl shadow-2xl border border-gray-700 overflow-hidden flex flex-col"
     >
-      <h2 className="my-2 text-xl text-center">Friend requests</h2>
+      <div className="p-4 border-b border-gray-700 bg-gray-800/50 backdrop-blur-sm">
+        <div className="flex items-center gap-2 text-white">
+          <FaUserPlus className="text-emerald-500" />
+          <h2 className="font-bold tracking-wide">Friend Requests</h2>
+          {friendRequests.length > 0 && (
+            <span className="ml-auto bg-emerald-600 text-white text-xs font-bold px-2 py-0.5 rounded-full">
+              {friendRequests.length}
+            </span>
+          )}
+        </div>
+      </div>
 
-      {friendRequests.length === 0 && (
-        <p className="font-bold text-center text-gray-500">
-          You dont have any requests
-        </p>
-      )}
-
-      <div className="flex flex-col space-y-2 overflow-y-auto min-h-[5rem] max-h-[15rem] p-2">
-        {friendRequests.map((friendReq) => (
-          <PlayerCard key={friendReq.id} friendRequestInfo={friendReq} />
-        ))}
+      <div className="p-4 max-h-[20rem] overflow-y-auto custom-scrollbar bg-gray-800">
+        {friendRequests.length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-8 text-gray-500 space-y-2">
+            <FaUserPlus size={32} className="opacity-20" />
+            <p className="text-sm font-medium">No pending requests</p>
+          </div>
+        ) : (
+          <div className="flex flex-col space-y-3">
+            {friendRequests.map((friendReq) => (
+              <PlayerCard key={friendReq.id} friendRequestInfo={friendReq} />
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );

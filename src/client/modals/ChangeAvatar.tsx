@@ -9,6 +9,7 @@ import wizard from "../assets/images/wizard.png";
 import classNames from "classnames";
 import axios from "axios";
 import { useAuthStore } from "../store/useAuthStore";
+import { FaUserCircle } from "react-icons/fa";
 
 const ChangeAvatar = () => {
   const avatars = [persian, giant, barbarian, valkyrie, goblin, wizard];
@@ -31,9 +32,12 @@ const ChangeAvatar = () => {
         }
       );
 
-      // const updateUser = {...loggedUserInfo, image: avatar}
-
-      // setLoggedUserInfo(updateUser);
+      // Optimistically update the store if needed, or rely on refetch
+      // But for now, just close the modal as per original logic
+      
+      // If the store needs manual updating (commented out in original):
+      const updatedUser = { ...loggedUserInfo!, image: avatar };
+      setLoggedUserInfo(updatedUser);
 
       setOpenChangeAvatar(false);
     } catch (error) {
@@ -42,38 +46,75 @@ const ChangeAvatar = () => {
   };
 
   return (
-    <div className="fixed inset-0 z-30 bg-[rgba(0,0,0,0.6)] flex items-center justify-center">
-      <div className="relative px-2 py-2 rounded-md bg-amber-100">
-        <h2 className="text-2xl text-black">Change your avatar</h2>
-
-        <button
-          onClick={() => {
-            setOpenChangeAvatar(false);
-          }}
-          className="absolute border-2 rounded-md right-1 top-1 border-amber-900 hover:bg-transparent hover:text-amber-900 bg-amber-900"
-        >
-          <IoClose size={27} />
-        </button>
-
-        <div className="grid grid-cols-3 gap-2 py-2">
-          {avatars.map((imageUrl, index) => (
-            <button onClick={() => setAvatar(imageUrl)} key={imageUrl}>
-              <img
-                src={imageUrl}
-                className={classNames("w-[6.5rem] h-[6.5rem] rounded-md", {
-                  "border-2 border-amber-900": avatar === imageUrl,
-                })}
-              />
-            </button>
-          ))}
+    <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+      <div className="w-full max-w-lg bg-gray-800 rounded-2xl shadow-2xl border border-gray-700 transform transition-all scale-100">
+        {/* Header */}
+        <div className="flex items-center justify-between p-6 border-b border-gray-700">
+          <div className="flex items-center gap-3">
+            <FaUserCircle className="text-emerald-500 text-2xl" />
+            <h2 className="text-xl font-bold text-white tracking-wide">
+              Choose Avatar
+            </h2>
+          </div>
+          <button
+            onClick={() => setOpenChangeAvatar(false)}
+            className="p-2 rounded-lg text-gray-400 hover:text-white hover:bg-gray-700 transition-colors"
+          >
+            <IoClose size={24} />
+          </button>
         </div>
 
-        <button
-          onClick={updateAvatar}
-          className="px-2 py-1 text-xl font-medium border-2 rounded-md border-amber-900 hover:bg-transparent hover:text-amber-900 bg-amber-900"
-        >
-          Submit
-        </button>
+        {/* Content */}
+        <div className="p-6">
+          <div className="grid grid-cols-3 gap-4">
+            {avatars.map((imageUrl, index) => (
+              <button
+                key={index}
+                onClick={() => setAvatar(imageUrl)}
+                className="group relative outline-none"
+              >
+                <div
+                  className={classNames(
+                    "relative aspect-square rounded-xl overflow-hidden border-4 transition-all duration-200",
+                    {
+                      "border-emerald-500 shadow-[0_0_15px_rgba(16,185,129,0.4)] scale-105":
+                        avatar === imageUrl,
+                      "border-gray-700 hover:border-gray-500":
+                        avatar !== imageUrl,
+                    }
+                  )}
+                >
+                  <img
+                    src={imageUrl}
+                    alt={`Avatar ${index + 1}`}
+                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+                  />
+                  
+                  {/* Selected Overlay */}
+                  {avatar === imageUrl && (
+                    <div className="absolute inset-0 bg-emerald-500/10 z-10" />
+                  )}
+                </div>
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Footer */}
+        <div className="p-6 border-t border-gray-700 bg-gray-800/50 rounded-b-2xl flex justify-end gap-3">
+          <button
+            onClick={() => setOpenChangeAvatar(false)}
+            className="px-5 py-2.5 rounded-xl font-medium text-gray-300 hover:text-white hover:bg-gray-700 transition-colors"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={updateAvatar}
+            className="px-6 py-2.5 bg-gradient-to-r from-emerald-600 to-emerald-800 hover:from-emerald-500 hover:to-emerald-700 text-white font-bold rounded-xl shadow-lg shadow-emerald-900/20 transform transition-all duration-200 active:scale-[0.98]"
+          >
+            Save Changes
+          </button>
+        </div>
       </div>
     </div>
   );

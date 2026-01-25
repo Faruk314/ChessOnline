@@ -18,6 +18,7 @@ import { useGameStore } from "../store/useGameStore";
 import { useGameStatusQuery } from "../api/queries/game";
 import { useGameActions } from "../hooks/useGameActions";
 import { useAuthStore } from "../store/useAuthStore";
+import { FaHandshake } from "react-icons/fa";
 
 const Multiplayer = () => {
   const [openChat, setOpenChat] = useState(false);
@@ -46,65 +47,93 @@ const Multiplayer = () => {
   }
 
   return (
-    <section className="flex flex-col items-center justify-center h-[100vh] bg-amber-100 overflow-hidden">
+    <section className="flex flex-col items-center justify-center min-h-screen bg-gray-900 overflow-hidden relative">
+      {/* Background Pattern */}
+      <div className="absolute inset-0 opacity-5 pointer-events-none">
+        <div
+          className="w-full h-full"
+          style={{
+            backgroundImage:
+              "radial-gradient(#10b981 1px, transparent 1px), radial-gradient(#10b981 1px, transparent 1px)",
+            backgroundSize: "40px 40px",
+            backgroundPosition: "0 0, 20px 20px",
+          }}
+        ></div>
+      </div>
+
       {checkmate && <Checkmate />}
       {stalemate && <Stalemate />}
       {openResignModal && <Resign setOpenResignModal={setOpenResignModal} />}
       {drawOffererId === opponent?.playerData?.userId && <DrawOffer />}
 
-      <div className="fixed flex space-x-2 top-4 right-4">
+      {/* Top Controls */}
+      <div className="fixed flex space-x-3 top-6 right-6 z-20">
         <button
-          disabled={drawOffererId ? true : false}
+          disabled={!!drawOffererId}
           onClick={handleDrawOffer}
-          className="p-2 font-bold text-white rounded-md bg-amber-900 disabled:text-gray-300 disabled:bg-gray-400"
+          className="p-3 rounded-xl bg-gray-800 text-gray-400 border-2 border-gray-700 hover:text-emerald-400 hover:border-emerald-500 transition-all disabled:opacity-50 disabled:cursor-not-allowed group relative"
+          title="Offer Draw"
         >
-          {drawOffererId ? "draw offered" : "Offer draw"}
+          <FaHandshake size={20} />
+          {drawOffererId && (
+            <span className="absolute -bottom-8 right-0 text-xs bg-black text-white px-2 py-1 rounded whitespace-nowrap">
+              Draw offered
+            </span>
+          )}
         </button>
+        
         <SoundButton />
+        
         <button
           onClick={() => setOpenResignModal(true)}
-          className="p-2 text-white rounded-md bg-amber-900"
+          className="p-3 rounded-xl bg-gray-800 text-gray-400 border-2 border-gray-700 hover:text-red-400 hover:border-red-500 transition-all"
+          title="Resign"
         >
           <AiFillFlag size={20} />
         </button>
       </div>
 
+      {/* Chat Toggle Button */}
       {!openChat && (
-        <div className="fixed flex items-center justify-center bottom-4 right-4">
+        <div className="fixed z-20 bottom-6 right-6">
           <button
             onClick={() => {
               setMsgNotif(false);
               setOpenChat(true);
             }}
-            className="p-2 text-white rounded-md bg-amber-900"
+            className="p-4 rounded-full bg-emerald-600 text-white shadow-lg shadow-emerald-900/40 hover:bg-emerald-500 hover:scale-110 transition-all duration-200 relative"
           >
-            <BsFillChatLeftDotsFill size={20} />
+            <BsFillChatLeftDotsFill size={24} />
+            {msgNotif && (
+              <span className="absolute top-0 right-0 h-4 w-4 bg-red-500 rounded-full border-2 border-gray-900 animate-pulse"></span>
+            )}
           </button>
-
-          {msgNotif && (
-            <span className="absolute px-2 bg-red-600 text-white rounded-full top-[-0.5rem] left-[-1rem]">
-              !
-            </span>
-          )}
         </div>
       )}
 
       {openChat && <Chat setOpenChat={setOpenChat} />}
 
-      <div className="">
-        <Player
-          index={1}
-          playerName={opponent?.playerData?.userName}
-          image={opponent?.playerData?.image}
-        />
+      {/* Game Area */}
+      <div className="flex flex-col gap-6 z-10 w-full max-w-4xl px-4 items-center justify-center">
+        <div className="w-full flex justify-center">
+          <Player
+            index={1}
+            playerName={opponent?.playerData?.userName}
+            image={opponent?.playerData?.image}
+          />
+        </div>
 
-        <Board />
+        <div className="relative shadow-2xl shadow-black/50 rounded-lg overflow-hidden border-8 border-gray-800">
+          <Board />
+        </div>
 
-        <Player
-          index={0}
-          playerName={loggedUserInfo?.userName}
-          image={loggedUserInfo?.image}
-        />
+        <div className="w-full flex justify-center">
+          <Player
+            index={0}
+            playerName={loggedUserInfo?.userName}
+            image={loggedUserInfo?.image}
+          />
+        </div>
       </div>
 
       {isPromotion && <Promotion promotePawn={promotePawn} />}
