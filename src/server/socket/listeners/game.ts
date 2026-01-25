@@ -166,7 +166,7 @@ class GameListeners {
 
     if (data.accept) {
       let result = await deleteGameState(gameId);
-      if (result.status === "success") this.io.to(gameId).emit("draw");
+      if (result.status === "success") this.io.to(gameId).emit("drawAccept");
       return;
     }
 

@@ -4,10 +4,12 @@ import defaultAvatar from "../assets/images/avatar.png";
 
 import { useAuthStore } from "../store/useAuthStore";
 import classNames from "classnames";
+import { useModalStore } from "../store/useModalStore";
 
 const UserInfo = () => {
   const [isHovering, setIsHovering] = useState(false);
-  const { loggedUserInfo, setOpenChangeAvatar } = useAuthStore();
+  const { loggedUserInfo } = useAuthStore();
+  const { setOpenChangeAvatar } = useModalStore();
 
   return (
     <div

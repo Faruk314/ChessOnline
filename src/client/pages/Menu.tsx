@@ -23,6 +23,7 @@ import {
   useFriendsQuery,
 } from "../api/queries/friends";
 import { FaChessPawn, FaSignOutAlt } from "react-icons/fa";
+import { useModalStore } from "../store/useModalStore";
 
 const Menu = () => {
   const { mutate: logoutUser } = useLogoutMutation();
@@ -38,7 +39,7 @@ const Menu = () => {
   const [openFindMatch, setOpenFindMatch] = useState(false);
   const [openInvites, setOpenInvites] = useState(false);
   const [openFriends, setOpenFriends] = useState(false);
-  const { openChangeAvatar } = useAuthStore();
+  const { openChangeAvatar } = useModalStore();
   const [openFriendReq, setOpenFriendReq] = useState(false);
 
   return (

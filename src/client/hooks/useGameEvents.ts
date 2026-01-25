@@ -7,13 +7,14 @@ import { Game, MoveAction, Msg, UserInfo } from "../../types/types";
 import { useGameStore } from "../store/useGameStore";
 import { toast } from "react-toastify";
 import { useSoundStore } from "../store/useSoundStore";
+import { useModalStore } from "../store/useModalStore";
 
 export const useGameEvents = () => {
   const { socket } = useContext(SocketContext);
   const { addGameInvite, setMsgNotif } = useGameInvitesStore();
   const { updateGame, addMessage } = useGameStore();
-  const [openOpponentLeft, setOpenOpponentLeft] = useState(false);
-  const [openDrawModal, setOpenDrawModal] = useState(false);
+  const { setOpenResignModal, setOpenDrawAcceptModal } = useModalStore();
+
   const navigate = useNavigate();
   const {
     playMoveSound,
@@ -53,13 +54,19 @@ export const useGameEvents = () => {
   });
 
   useSocketEvent(socket, "newMessage", (message: Msg) => {
-    console.log(message);
     addMessage(message);
     setMsgNotif(true);
   });
 
   useSocketEvent(socket, "opponentResigned", () => {
-    setOpenOpponentLeft(true);
+    setOpenResignModal(true);
+
+    navigate("/menu");
+  });
+
+  useSocketEvent(socket, "drawAccept", () => {
+    console.log("hej");
+    setOpenDrawAcceptModal(true);
 
     navigate("/menu");
   });

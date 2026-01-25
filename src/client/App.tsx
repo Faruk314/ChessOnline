@@ -6,17 +6,17 @@ import Register from "./pages/Register";
 import Multiplayer from "./pages/Multiplayer";
 import SinglePlayer from "./pages/SinglePlayer";
 import OpponentLeft from "./modals/OpponentLeft";
-import Draw from "./modals/Draw";
+import DrawAccept from "./modals/DrawAccept";
 import ProtectedAuthPages from "./protection/ProtectedAuthPages";
 import ProtectedRoutes from "./protection/ProtectedRoutes";
 import Loader from "./components/Loader";
 import { useFriendEvents } from "./hooks/useFriendEvents";
 import { useGameEvents } from "./hooks/useGameEvents";
 import { useLoginStatusQuery } from "./api/queries/auth";
+import { useModalStore } from "./store/useModalStore";
 
 function App() {
-  const [openOpponentLeft, setOpenOpponentLeft] = useState(false);
-  const [openDrawModal, setOpenDrawModal] = useState(false);
+  const { openResignModal, openDrawAcceptModal } = useModalStore();
   const { isLoading } = useLoginStatusQuery();
 
   useFriendEvents();
@@ -43,10 +43,8 @@ function App() {
         </Route>
       </Routes>
 
-      {openOpponentLeft && (
-        <OpponentLeft setOpenOpponentLeft={setOpenOpponentLeft} />
-      )}
-      {openDrawModal && <Draw setOpenDrawModal={setOpenDrawModal} />}
+      {openResignModal && <OpponentLeft />}
+      {openDrawAcceptModal && <DrawAccept />}
     </div>
   );
 }

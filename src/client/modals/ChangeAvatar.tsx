@@ -10,11 +10,12 @@ import classNames from "classnames";
 import axios from "axios";
 import { useAuthStore } from "../store/useAuthStore";
 import { FaUserCircle } from "react-icons/fa";
+import { useModalStore } from "../store/useModalStore";
 
 const ChangeAvatar = () => {
   const avatars = [persian, giant, barbarian, valkyrie, goblin, wizard];
-  const { setOpenChangeAvatar, setLoggedUserInfo, loggedUserInfo } =
-    useAuthStore();
+  const { setLoggedUserInfo, loggedUserInfo } = useAuthStore();
+  const { setOpenChangeAvatar } = useModalStore();
   const [avatar, setAvatar] = useState("");
 
   useEffect(() => {
@@ -34,7 +35,7 @@ const ChangeAvatar = () => {
 
       // Optimistically update the store if needed, or rely on refetch
       // But for now, just close the modal as per original logic
-      
+
       // If the store needs manual updating (commented out in original):
       const updatedUser = { ...loggedUserInfo!, image: avatar };
       setLoggedUserInfo(updatedUser);
@@ -89,7 +90,7 @@ const ChangeAvatar = () => {
                     alt={`Avatar ${index + 1}`}
                     className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
                   />
-                  
+
                   {/* Selected Overlay */}
                   {avatar === imageUrl && (
                     <div className="absolute inset-0 bg-emerald-500/10 z-10" />
