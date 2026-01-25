@@ -4,7 +4,7 @@ import { useGameStore } from "../../store/useGameStore";
 import { getErrorMessage } from "../../lib/utils";
 
 export function useGameStatusQuery(gameId: string | undefined) {
-  const { setGameState } = useGameStore();
+  const { setGameState, setMessages } = useGameStore();
 
   return useQuery({
     queryKey: ["game", gameId],
@@ -13,6 +13,7 @@ export function useGameStatusQuery(gameId: string | undefined) {
       try {
         const data = await retrieveGameStatus(gameId);
         setGameState(data.gameState);
+        setMessages(data.messages);
         return data;
       } catch (error) {
         console.error(getErrorMessage(error));

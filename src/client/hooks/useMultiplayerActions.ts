@@ -16,5 +16,13 @@ export const useMultiplayerActions = () => {
     socket?.emit("drawOfferResponse", data);
   };
 
-  return { resign, offerDraw, emitDrawOfferResponse };
+  const sendMessage = (data: {
+    gameId: string;
+    message: string;
+    senderName: string;
+  }) => {
+    socket?.emit("sendMessage", data);
+  };
+
+  return { resign, offerDraw, emitDrawOfferResponse, sendMessage };
 };

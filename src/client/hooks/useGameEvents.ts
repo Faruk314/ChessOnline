@@ -52,7 +52,8 @@ export const useGameEvents = () => {
     });
   });
 
-  useSocketEvent(socket, "receiveMessage", (message: Msg) => {
+  useSocketEvent(socket, "newMessage", (message: Msg) => {
+    console.log(message);
     addMessage(message);
     setMsgNotif(true);
   });

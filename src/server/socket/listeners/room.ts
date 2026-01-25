@@ -1,5 +1,10 @@
 import { Server, Socket } from "socket.io";
-import { createGame as createGameRedis } from "../../redis/game";
+import { v4 as uuidv4 } from "uuid";
+import {
+  createGame as createGameRedis,
+  retrieveGameState,
+  saveGameState,
+} from "../../redis/game";
 
 class RoomListeners {
   io: Server;
@@ -36,19 +41,29 @@ class RoomListeners {
     gameId: string;
     message: string;
     senderName: string;
-    receiverId: number;
   }) {
-    // const msg = {
-    //   id: uuidv4(),
-    //   message: data.message,
-    //   senderName: data.senderName,
-    // };
-    // const receiverSocketId = getUser(data.receiverId);
-    // let gameState = await getGameState(data.gameId);
-    // if (!gameState) return;
-    // gameState.messages.push(msg);
-    // await client.set(data.gameId, JSON.stringify(gameState));
-    // this.io.to(receiverSocketId).emit("receiveMessage", msg);
+    const gameId = data.gameId;
+
+    const response = await retrieveGameState(gameId);
+
+    if (response.status !== "success" || !response.messages) return;
+
+    const messages = response.messages;
+
+    const newMessage = {
+      id: uuidv4(),
+      senderName: data.senderName,
+      message: data.message,
+    };
+
+    messages.push(newMessage);
+
+    await saveGameState({
+      gameId,
+      messages,
+    });
+
+    this.io.to(gameId).emit("newMessage", newMessage);
   }
 }
 

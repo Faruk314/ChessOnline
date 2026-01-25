@@ -1,6 +1,11 @@
 import { client } from "./config";
 import { GAMES_KEY } from "../constants/main";
-import { GameData, Game as IGame, MoveAction } from "../../types/types";
+import {
+  GameData,
+  Game as IGame,
+  MoveAction,
+  Msg,
+} from "../../types/types";
 import { Game } from "../classes/Game";
 import { v4 as uuidv4 } from "uuid";
 import {
@@ -63,7 +68,7 @@ const retrieveGameState = async (gameId: string) => {
 
   if (!gameDataJSON) {
     console.error(`Game ${gameId} does not exist in Redis.`);
-    return { status: "error", gameState: null };
+    return { status: "error", gameState: null, messages: null };
   }
 
   const gameData: GameData = JSON.parse(gameDataJSON);
@@ -72,15 +77,21 @@ const retrieveGameState = async (gameId: string) => {
 
   const gameInstace = new Game(gameState);
 
-  return { status: "success", gameState: gameInstace };
+  return {
+    status: "success",
+    gameState: gameInstace,
+    messages: gameData.messages,
+  };
 };
 
 const saveGameState = async ({
   gameId,
   newGameState,
+  messages,
 }: {
   gameId: string;
-  newGameState: IGame;
+  newGameState?: IGame;
+  messages?: Msg[];
 }) => {
   const gameJSON = await client.get(`${GAMES_KEY}:${gameId}`);
 
@@ -91,7 +102,8 @@ const saveGameState = async ({
 
   const game: GameData = JSON.parse(gameJSON);
 
-  game.gameState = newGameState;
+  if (newGameState) game.gameState = newGameState;
+  if (messages) game.messages = messages;
 
   try {
     await client.set(`${GAMES_KEY}:${gameId}`, JSON.stringify(game));
