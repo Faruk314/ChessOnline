@@ -10,7 +10,7 @@ const SoundButton = () => {
     <button
       onClick={() => toggleSound()}
       className={classNames(
-        "p-3 rounded-xl transition-all duration-200 border-2",
+        "p-2 md:p-3 rounded-xl transition-all duration-200 border-2",
         {
           "bg-emerald-500/20 border-emerald-500 text-emerald-400":
             isSoundEnabled,

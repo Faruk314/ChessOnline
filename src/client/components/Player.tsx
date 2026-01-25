@@ -61,96 +61,110 @@ const Player = ({ index, playerName, image, time }: Props) => {
   );
 
   return (
-    <div className="flex items-center gap-3 md:gap-4 bg-gray-800/60 backdrop-blur-sm p-3 rounded-xl border border-gray-700 w-full max-w-[500px] shadow-xl">
-      {/* Avatar */}
-      <div className="relative shrink-0">
+    <div className="flex items-stretch gap-3 bg-gray-800/90 p-2 md:p-3 rounded-2xl border border-gray-700 w-full max-w-[600px] shadow-xl relative overflow-hidden">
+      {/* Accent Bar */}
+      <div className="absolute left-0 top-0 bottom-0 w-1.5 bg-gradient-to-b from-emerald-500 to-emerald-700"></div>
+
+      {/* Avatar Section */}
+      <div className="relative shrink-0 ml-2 self-center">
         <img
           src={image || defaultPic[index]}
-          className="w-12 h-12 md:w-16 md:h-16 rounded-xl border-2 border-emerald-500/30 object-cover shadow-lg"
+          className="w-12 h-12 md:w-16 md:h-16 rounded-xl object-cover shadow-md border-2 border-gray-700"
           alt={playerName || "Player"}
         />
       </div>
 
-      {/* Info Section */}
-      <div className="flex flex-col flex-1 min-w-0 gap-1.5">
-        <div className="flex items-center justify-between">
-          <h2 className="text-white font-bold truncate text-sm md:text-base pr-2">
-            {playerName || "Opponent"}
-          </h2>
-        </div>
+      {/* Middle Section: Name & Captured */}
+      <div className="flex flex-col justify-center flex-1 min-w-0 gap-1 md:gap-2 pl-1">
+        <h2 className="text-gray-100 font-bold truncate text-sm md:text-lg leading-tight tracking-wide">
+          {playerName || "Opponent"}
+        </h2>
 
-        {/* Captured Pieces */}
-        <div className="flex flex-wrap gap-0.5 md:gap-1 min-h-[1.5rem] items-center bg-gray-900/50 rounded-lg px-2 py-1 border border-gray-700/50">
-          <div className="flex -space-x-1.5 md:-space-x-1">
-            {pawns?.map((pawn, i) => (
-              <img
-                key={`pawn-${i}`}
-                className="w-3 h-3 md:w-4 md:h-4 object-contain opacity-80"
-                src={pawn.color === "black" ? blackPawn : whitePawn}
-                alt="pawn"
-              />
-            ))}
-          </div>
+        {/* Captured Pieces Container - Clean & Minimal */}
+        <div className="flex flex-wrap gap-1 items-center min-h-[1.25rem]">
+          {pawns?.length > 0 && (
+            <div className="flex -space-x-2 md:-space-x-2.5">
+              {pawns.map((pawn, i) => (
+                <img
+                  key={`pawn-${i}`}
+                  className="w-4 h-4 md:w-5 md:h-5 object-contain drop-shadow-sm"
+                  src={pawn.color === "black" ? blackPawn : whitePawn}
+                  alt="pawn"
+                />
+              ))}
+            </div>
+          )}
 
-          <div className="flex -space-x-1.5 md:-space-x-1">
-            {rooks?.map((rook, i) => (
-              <img
-                key={`rook-${i}`}
-                className="w-3 h-3 md:w-4 md:h-4 object-contain opacity-80"
-                src={rook.color === "black" ? blackRook : whiteRook}
-                alt="rook"
-              />
-            ))}
-          </div>
+          {rooks?.length > 0 && (
+            <div className="flex -space-x-2 md:-space-x-2.5 ml-1">
+              {rooks.map((rook, i) => (
+                <img
+                  key={`rook-${i}`}
+                  className="w-4 h-4 md:w-5 md:h-5 object-contain drop-shadow-sm"
+                  src={rook.color === "black" ? blackRook : whiteRook}
+                  alt="rook"
+                />
+              ))}
+            </div>
+          )}
 
-          <div className="flex -space-x-1.5 md:-space-x-1">
-            {knights?.map((knight, i) => (
-              <img
-                key={`knight-${i}`}
-                className="w-3 h-3 md:w-4 md:h-4 object-contain opacity-80"
-                src={knight.color === "black" ? blackKnight : whiteKnight}
-                alt="knight"
-              />
-            ))}
-          </div>
+          {knights?.length > 0 && (
+            <div className="flex -space-x-2 md:-space-x-2.5 ml-1">
+              {knights.map((knight, i) => (
+                <img
+                  key={`knight-${i}`}
+                  className="w-4 h-4 md:w-5 md:h-5 object-contain drop-shadow-sm"
+                  src={knight.color === "black" ? blackKnight : whiteKnight}
+                  alt="knight"
+                />
+              ))}
+            </div>
+          )}
 
-          <div className="flex -space-x-1.5 md:-space-x-1">
-            {bishops?.map((bishop, i) => (
-              <img
-                key={`bishop-${i}`}
-                className="w-3 h-3 md:w-4 md:h-4 object-contain opacity-80"
-                src={bishop.color === "black" ? blackBishop : whiteBishop}
-                alt="bishop"
-              />
-            ))}
-          </div>
+          {bishops?.length > 0 && (
+            <div className="flex -space-x-2 md:-space-x-2.5 ml-1">
+              {bishops.map((bishop, i) => (
+                <img
+                  key={`bishop-${i}`}
+                  className="w-4 h-4 md:w-5 md:h-5 object-contain drop-shadow-sm"
+                  src={bishop.color === "black" ? blackBishop : whiteBishop}
+                  alt="bishop"
+                />
+              ))}
+            </div>
+          )}
 
           {queen && (
-            <img
-              className="w-3 h-3 md:w-4 md:h-4 object-contain opacity-80"
-              src={queen.color === "black" ? blackQueen : whiteQueen}
-              alt="queen"
-            />
+            <div className="ml-1">
+              <img
+                className="w-4 h-4 md:w-5 md:h-5 object-contain drop-shadow-sm"
+                src={queen.color === "black" ? blackQueen : whiteQueen}
+                alt="queen"
+              />
+            </div>
           )}
 
           {king && (
-            <img
-              className="w-3 h-3 md:w-4 md:h-4 object-contain opacity-80"
-              src={king.color === "black" ? blackKing : whiteKing}
-              alt="king"
-            />
+            <div className="ml-1">
+              <img
+                className="w-4 h-4 md:w-5 md:h-5 object-contain drop-shadow-sm"
+                src={king.color === "black" ? blackKing : whiteKing}
+                alt="king"
+              />
+            </div>
           )}
         </div>
       </div>
 
-      {/* Timer Section */}
-      <div className="flex items-center justify-center bg-gray-900 rounded-lg px-3 py-2 md:px-4 md:py-2 border border-gray-700 shadow-inner">
-        <div className="flex items-center gap-2">
-          <FaClock className="text-gray-500 text-xs md:text-sm" />
-          <span className="font-mono text-xl md:text-3xl font-bold text-emerald-400 tracking-wider">
-            {formatTime(displayTime)}
-          </span>
-        </div>
+      {/* Timer Section - Right aligned, distinct */}
+      <div className="flex items-center justify-center bg-black/40 rounded-xl px-3 md:px-5 border border-gray-700/50 min-w-[90px] md:min-w-[120px]">
+        <span
+          className={`font-mono text-xl md:text-3xl font-bold tracking-widest ${
+            displayTime < 30 ? "text-red-500 animate-pulse" : "text-emerald-400"
+          }`}
+        >
+          {formatTime(displayTime)}
+        </span>
       </div>
     </div>
   );

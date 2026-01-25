@@ -80,10 +80,10 @@ const FindMatch = ({ setOpenFindMatch }: Props) => {
     <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
       <div className="relative w-full max-w-2xl bg-gray-800 rounded-2xl shadow-2xl border border-gray-700 overflow-hidden">
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-gray-700">
+        <div className="flex items-center justify-between p-4 md:p-6 border-b border-gray-700">
           <div className="flex items-center gap-3">
-            <FaSearch className="text-emerald-500 text-xl" />
-            <h2 className="text-xl font-bold text-white tracking-wide">
+            <FaSearch className="text-emerald-500 text-lg md:text-xl" />
+            <h2 className="text-lg md:text-xl font-bold text-white tracking-wide">
               {isSearching ? "Finding Opponent" : "Find a Match"}
             </h2>
           </div>
@@ -96,29 +96,29 @@ const FindMatch = ({ setOpenFindMatch }: Props) => {
             }}
             className="p-2 rounded-lg text-gray-400 hover:text-white hover:bg-gray-700 transition-colors"
           >
-            <IoClose size={24} />
+            <IoClose className="text-xl md:text-2xl" />
           </button>
         </div>
 
-        <div className="p-8">
+        <div className="p-4 md:p-8">
           {!isSearching ? (
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 gap-3 md:gap-4">
               {gameModes.map((mode) => (
                 <button
                   key={mode.id}
                   onClick={() => handleModeSelect(mode.label, mode.minutes)}
-                  className={`group relative p-6 rounded-xl border-2 border-gray-700 bg-gray-700/30 transition-all duration-200 hover:-translate-y-1 hover:shadow-lg ${mode.border} flex flex-col items-center justify-center gap-3`}
+                  className={`group relative p-4 md:p-6 rounded-xl border-2 border-gray-700 bg-gray-700/30 transition-all duration-200 hover:-translate-y-1 hover:shadow-lg ${mode.border} flex flex-col items-center justify-center gap-2 md:gap-3`}
                 >
                   <div
-                    className={`p-4 rounded-full ${mode.bg} ${mode.color} transition-transform group-hover:scale-110`}
+                    className={`p-3 md:p-4 rounded-full ${mode.bg} ${mode.color} transition-transform group-hover:scale-110`}
                   >
-                    <mode.icon size={32} />
+                    <mode.icon className="text-xl md:text-3xl" />
                   </div>
                   <div className="text-center">
-                    <h3 className="text-lg font-bold text-white">
+                    <h3 className="text-base md:text-lg font-bold text-white">
                       {mode.label}
                     </h3>
-                    <p className="text-gray-400 font-mono text-sm">
+                    <p className="text-gray-400 font-mono text-xs md:text-sm">
                       {mode.time}
                     </p>
                   </div>
@@ -126,11 +126,11 @@ const FindMatch = ({ setOpenFindMatch }: Props) => {
               ))}
             </div>
           ) : (
-            <div className="flex flex-col items-center justify-center py-8 space-y-8">
+            <div className="flex flex-col items-center justify-center py-4 md:py-8 space-y-6 md:space-y-8">
               <div className="relative">
                 <div className="absolute inset-0 bg-emerald-500/20 blur-xl rounded-full animate-pulse"></div>
                 <svg
-                  className="animate-spin h-16 w-16 text-emerald-500 relative z-10"
+                  className="animate-spin h-12 w-12 md:h-16 md:w-16 text-emerald-500 relative z-10"
                   xmlns="http://www.w3.org/2000/svg"
                   fill="none"
                   viewBox="0 0 24 24"
@@ -152,12 +152,12 @@ const FindMatch = ({ setOpenFindMatch }: Props) => {
               </div>
 
               <div className="text-center space-y-2">
-                <h3 className="text-2xl font-bold text-white">
+                <h3 className="text-xl md:text-2xl font-bold text-white">
                   Looking for a{" "}
                   <span className="text-emerald-400">{selectedMode}</span>{" "}
                   match...
                 </h3>
-                <p className="text-gray-400 animate-pulse">
+                <p className="text-sm md:text-base text-gray-400 animate-pulse">
                   Please wait while we find you a worthy opponent.
                 </p>
               </div>
@@ -165,7 +165,7 @@ const FindMatch = ({ setOpenFindMatch }: Props) => {
               <button
                 onClick={handleCancel}
                 onMouseEnter={() => playMoveSound()}
-                className="px-8 py-3 rounded-xl border-2 border-red-500/50 text-red-400 hover:bg-red-500 hover:text-white hover:border-red-500 transition-all font-bold"
+                className="px-6 py-2 md:px-8 md:py-3 text-sm md:text-base rounded-xl border-2 border-red-500/50 text-red-400 hover:bg-red-500 hover:text-white hover:border-red-500 transition-all font-bold"
               >
                 Cancel Search
               </button>

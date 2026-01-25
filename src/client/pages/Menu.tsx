@@ -56,7 +56,7 @@ const Menu = () => {
         ></div>
       </div>
 
-      <div className="fixed top-0 flex items-center w-full p-6 space-x-4 z-30">
+      <div className="fixed top-0 flex items-center w-full p-4 md:p-6 space-x-2 md:space-x-4 z-30">
         <SoundButton />
 
         {/* Friend Requests Button */}
@@ -68,7 +68,7 @@ const Menu = () => {
               setOpenFriendReq((prev) => !prev);
             }}
             className={classNames(
-              "p-3 rounded-xl transition-all duration-200 border-2",
+              "p-2 md:p-3 rounded-xl transition-all duration-200 border-2",
               {
                 "bg-emerald-500/20 border-emerald-500 text-emerald-400":
                   openFriendReq,
@@ -95,7 +95,7 @@ const Menu = () => {
               setOpenInvites((prev) => !prev);
             }}
             className={classNames(
-              "p-3 rounded-xl transition-all duration-200 border-2",
+              "p-2 md:p-3 rounded-xl transition-all duration-200 border-2",
               {
                 "bg-emerald-500/20 border-emerald-500 text-emerald-400":
                   openInvites,
@@ -118,15 +118,15 @@ const Menu = () => {
         </div>
       </div>
 
-      <div className="fixed top-6 right-6 z-30">
+      <div className="fixed top-4 right-4 md:top-6 md:right-6 z-30">
         <UserInfo />
       </div>
 
-      <div className="z-20 w-full max-w-md px-4 flex flex-col gap-6">
+      <div className="z-20 w-full max-w-sm md:max-w-md px-4 flex flex-col gap-4 md:gap-6 mt-20 md:mt-0">
         <div className="mb-8 flex justify-center">
           <img
             src={menuImage}
-            className="h-32 w-auto object-contain drop-shadow-2xl invert transition-transform hover:scale-105 duration-500"
+            className="h-24 md:h-32 w-auto object-contain drop-shadow-2xl invert transition-transform hover:scale-105 duration-500"
             alt="Game Logo"
           />
         </div>
@@ -136,7 +136,7 @@ const Menu = () => {
           onClick={() => {
             socket?.emit("startSinglePlayer");
           }}
-          className="group relative flex items-center justify-between px-8 py-5 text-xl font-bold text-white bg-gray-800 border-2 border-gray-700 rounded-2xl transition-all duration-300 hover:border-emerald-500 hover:shadow-[0_0_30px_-5px_rgba(16,185,129,0.3)] hover:-translate-y-1"
+          className="group relative flex items-center justify-between px-6 py-4 md:px-8 md:py-5 text-lg md:text-xl font-bold text-white bg-gray-800 border-2 border-gray-700 rounded-2xl transition-all duration-300 hover:border-emerald-500 hover:shadow-[0_0_30px_-5px_rgba(16,185,129,0.3)] hover:-translate-y-1"
         >
           <div className="flex items-center space-x-4">
             <div className="p-2 rounded-lg bg-gray-700 text-emerald-400 group-hover:bg-emerald-500 group-hover:text-white transition-colors">
@@ -154,7 +154,7 @@ const Menu = () => {
             setOpenFindMatch(true);
           }}
           onMouseEnter={() => playMoveSound()}
-          className="group relative flex items-center justify-between px-8 py-5 text-xl font-bold text-white bg-emerald-600 border-2 border-emerald-500 rounded-2xl transition-all duration-300 hover:bg-emerald-500 hover:border-emerald-400 hover:shadow-[0_0_40px_-5px_rgba(16,185,129,0.5)] hover:-translate-y-1"
+          className="group relative flex items-center justify-between px-6 py-4 md:px-8 md:py-5 text-lg md:text-xl font-bold text-white bg-emerald-600 border-2 border-emerald-500 rounded-2xl transition-all duration-300 hover:bg-emerald-500 hover:border-emerald-400 hover:shadow-[0_0_40px_-5px_rgba(16,185,129,0.5)] hover:-translate-y-1"
         >
           <div className="flex items-center space-x-4">
             <div className="p-2 rounded-lg bg-emerald-700/50 text-white group-hover:bg-emerald-600 transition-colors">
@@ -170,7 +170,7 @@ const Menu = () => {
         <button
           onClick={() => setOpenFriends(true)}
           onMouseEnter={() => playMoveSound()}
-          className="group relative flex items-center justify-between px-8 py-5 text-xl font-bold text-white bg-gray-800 border-2 border-gray-700 rounded-2xl transition-all duration-300 hover:border-emerald-500 hover:shadow-[0_0_30px_-5px_rgba(16,185,129,0.3)] hover:-translate-y-1"
+          className="group relative flex items-center justify-between px-6 py-4 md:px-8 md:py-5 text-lg md:text-xl font-bold text-white bg-gray-800 border-2 border-gray-700 rounded-2xl transition-all duration-300 hover:border-emerald-500 hover:shadow-[0_0_30px_-5px_rgba(16,185,129,0.3)] hover:-translate-y-1"
         >
           <div className="flex items-center space-x-4">
             <div className="p-2 rounded-lg bg-gray-700 text-emerald-400 group-hover:bg-emerald-500 group-hover:text-white transition-colors">
@@ -186,7 +186,7 @@ const Menu = () => {
         <button
           onClick={() => logoutUser()}
           onMouseEnter={() => playMoveSound()}
-          className="mt-4 flex items-center justify-center px-8 py-4 space-x-2 text-lg text-gray-400 hover:text-red-400 transition-colors"
+          className="mt-4 flex items-center justify-center px-6 py-3 md:px-8 md:py-4 space-x-2 text-base md:text-lg text-gray-400 hover:text-red-400 transition-colors"
         >
           <FaSignOutAlt />
           <span>Exit Game</span>

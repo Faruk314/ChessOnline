@@ -67,16 +67,16 @@ const Multiplayer = () => {
       {drawOffererId === opponent?.playerData?.userId && <DrawOffer />}
 
       {/* Top Controls */}
-      <div className="fixed flex space-x-3 top-6 right-6 z-20">
+      <div className="fixed flex space-x-2 md:space-x-3 top-4 right-4 md:top-6 md:right-6 z-20">
         <button
           disabled={!!drawOffererId}
           onClick={handleDrawOffer}
-          className="p-3 rounded-xl bg-gray-800 text-gray-400 border-2 border-gray-700 hover:text-emerald-400 hover:border-emerald-500 transition-all disabled:opacity-50 disabled:cursor-not-allowed group relative"
+          className="p-2 md:p-3 rounded-xl bg-gray-800 text-gray-400 border-2 border-gray-700 hover:text-emerald-400 hover:border-emerald-500 transition-all disabled:opacity-50 disabled:cursor-not-allowed group relative"
           title="Offer Draw"
         >
           <FaHandshake size={20} />
           {drawOffererId && (
-            <span className="absolute -bottom-8 right-0 text-xs bg-black text-white px-2 py-1 rounded whitespace-nowrap">
+            <span className="absolute -bottom-8 right-0 text-xs bg-black text-white px-2 py-1 rounded whitespace-nowrap hidden md:block">
               Draw offered
             </span>
           )}
@@ -86,7 +86,7 @@ const Multiplayer = () => {
         
         <button
           onClick={() => setOpenResignModal(true)}
-          className="p-3 rounded-xl bg-gray-800 text-gray-400 border-2 border-gray-700 hover:text-red-400 hover:border-red-500 transition-all"
+          className="p-2 md:p-3 rounded-xl bg-gray-800 text-gray-400 border-2 border-gray-700 hover:text-red-400 hover:border-red-500 transition-all"
           title="Resign"
         >
           <AiFillFlag size={20} />
