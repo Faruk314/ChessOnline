@@ -5,7 +5,7 @@ import {
   deleteGameState,
 } from "../../redis/game";
 
-class GameListeners {
+class GameLogicListeners {
   io: Server;
   socket: Socket;
 
@@ -182,4 +182,4 @@ class GameListeners {
   }
 }
 
-export default GameListeners;
+export default GameLogicListeners;

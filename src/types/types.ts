@@ -107,3 +107,5 @@ export type MoveAction =
   | "castling"
   | "drawOffer"
   | "drawResponse";
+
+export type GameModes = "rapid" | "blitz" | "long" | "bullet";

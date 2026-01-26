@@ -1,80 +1,34 @@
-import React, { useContext, useState } from "react";
+import React, { useState } from "react";
 import { useSoundStore } from "../store/useSoundStore";
-import { SocketContext } from "../context/SocketContext";
-import {
-  FaBolt,
-  FaFire,
-  FaStopwatch,
-  FaHourglassHalf,
-  FaSearch,
-} from "react-icons/fa";
+import { FaSearch } from "react-icons/fa";
 import { IoClose } from "react-icons/io5";
+import { useMultiplayerActions } from "../hooks/useMultiplayerActions";
+import type { GameModes as GameModesType } from "../../types/types";
+import GameModes from "./GameModes";
 
 interface Props {
   setOpenFindMatch: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const FindMatch = ({ setOpenFindMatch }: Props) => {
-  const { socket } = useContext(SocketContext);
   const { playMoveSound } = useSoundStore();
+  const { emitFindGameRoom, emitCancelFindGameRoom } = useMultiplayerActions();
   const [isSearching, setIsSearching] = useState(false);
   const [selectedMode, setSelectedMode] = useState<string | null>(null);
 
-  const handleModeSelect = (mode: string, time: number) => {
+  const handleModeSelect = (mode: GameModesType) => {
     setSelectedMode(mode);
     setIsSearching(true);
     playMoveSound();
-    socket?.emit("findMatch", { timeControl: time });
+
+    emitFindGameRoom(mode);
   };
 
   const handleCancel = () => {
-    socket?.emit("cancelFindMatch");
+    emitCancelFindGameRoom();
     setIsSearching(false);
     setSelectedMode(null);
   };
-
-  const gameModes = [
-    {
-      id: "bullet",
-      label: "Bullet",
-      time: "1 min",
-      minutes: 1,
-      icon: FaBolt,
-      color: "text-yellow-400",
-      bg: "bg-yellow-400/10",
-      border: "hover:border-yellow-400",
-    },
-    {
-      id: "blitz",
-      label: "Blitz",
-      time: "3 min",
-      minutes: 3,
-      icon: FaFire,
-      color: "text-orange-500",
-      bg: "bg-orange-500/10",
-      border: "hover:border-orange-500",
-    },
-    {
-      id: "rapid",
-      label: "Rapid",
-      time: "10 min",
-      minutes: 10,
-      icon: FaStopwatch,
-      color: "text-emerald-400",
-      bg: "bg-emerald-400/10",
-      border: "hover:border-emerald-400",
-    },
-    {
-      id: "long",
-      label: "Long",
-      time: "60 min",
-      minutes: 60,
-      icon: FaHourglassHalf,
-      color: "text-blue-400",
-      bg: "bg-blue-400/10",
-      border: "hover:border-blue-400",
-    },
-  ];
 
   return (
     <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
@@ -102,29 +56,7 @@ const FindMatch = ({ setOpenFindMatch }: Props) => {
 
         <div className="p-4 md:p-8">
           {!isSearching ? (
-            <div className="grid grid-cols-2 gap-3 md:gap-4">
-              {gameModes.map((mode) => (
-                <button
-                  key={mode.id}
-                  onClick={() => handleModeSelect(mode.label, mode.minutes)}
-                  className={`group relative p-4 md:p-6 rounded-xl border-2 border-gray-700 bg-gray-700/30 transition-all duration-200 hover:-translate-y-1 hover:shadow-lg ${mode.border} flex flex-col items-center justify-center gap-2 md:gap-3`}
-                >
-                  <div
-                    className={`p-3 md:p-4 rounded-full ${mode.bg} ${mode.color} transition-transform group-hover:scale-110`}
-                  >
-                    <mode.icon className="text-xl md:text-3xl" />
-                  </div>
-                  <div className="text-center">
-                    <h3 className="text-base md:text-lg font-bold text-white">
-                      {mode.label}
-                    </h3>
-                    <p className="text-gray-400 font-mono text-xs md:text-sm">
-                      {mode.time}
-                    </p>
-                  </div>
-                </button>
-              ))}
-            </div>
+            <GameModes onSelect={handleModeSelect} />
           ) : (
             <div className="flex flex-col items-center justify-center py-4 md:py-8 space-y-6 md:space-y-8">
               <div className="relative">

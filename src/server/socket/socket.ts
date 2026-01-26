@@ -3,8 +3,9 @@ import jwt from "jsonwebtoken";
 import { parse } from "cookie";
 import { VerifiedToken } from "../types/types";
 import dotenv from "dotenv";
-import GameListeners from "./listeners/game";
-import RoomListeners from "./listeners/room";
+import GameLogicListeners from "./listeners/gameLogic";
+import GameRoomListeners from "./listeners/gameRoom";
+import { cancelFindMatch } from "../redis/gameRoom";
 dotenv.config();
 
 let io: ServerIO;
@@ -50,13 +51,21 @@ function setupSocket(httpServer: import("http").Server) {
 
     console.log(socket.userId, "user connected");
 
-    const gameListeners = new GameListeners(io, socket);
+    const gameListeners = new GameLogicListeners(io, socket);
 
     gameListeners.registerListeners();
 
-    const roomListeners = new RoomListeners(io, socket);
+    const roomListeners = new GameRoomListeners(io, socket);
 
     roomListeners.registerListeners();
+
+    socket.on("disconnect", async () => {
+      const userId = socket.userId;
+
+      if (!userId) return console.error("user id missing");
+
+      await cancelFindMatch({ userId, silent: true });
+    });
   });
 }
 

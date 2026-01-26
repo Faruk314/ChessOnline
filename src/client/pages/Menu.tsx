@@ -15,7 +15,6 @@ import Invites from "../modals/Invites";
 import classNames from "classnames";
 import { useGameInvitesStore } from "../store/useGameInvitesStore";
 import { useGameInvitesQuery } from "../api/queries/gameInvites";
-import { useAuthStore } from "../store/useAuthStore";
 import { useLogoutMutation } from "../api/queries/auth";
 import { useFriendStore } from "../store/useFriendStore";
 import {
@@ -31,16 +30,16 @@ const Menu = () => {
   const { playMoveSound } = useSoundStore();
   const { friendRequests } = useFriendStore();
 
-  useFriendsQuery();
-  useFriendRequestsQuery();
-  useGameInvitesQuery();
-
   const { gameInvites } = useGameInvitesStore();
   const [openFindMatch, setOpenFindMatch] = useState(false);
   const [openInvites, setOpenInvites] = useState(false);
   const [openFriends, setOpenFriends] = useState(false);
   const { openChangeAvatar } = useModalStore();
   const [openFriendReq, setOpenFriendReq] = useState(false);
+
+  useFriendsQuery();
+  useFriendRequestsQuery();
+  useGameInvitesQuery();
 
   return (
     <section className="min-h-screen bg-gray-900 text-white font-bold flex flex-col justify-center items-center overflow-hidden relative">
