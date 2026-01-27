@@ -11,13 +11,8 @@ import { useGameActions } from "../hooks/useGameActions";
 const Board = () => {
   const { shouldRotate } = useBoardRotation();
   const { movePiece } = useGameActions();
-  const {
-    board,
-    availablePositions,
-    activePiece,
-    lastMovePositions,
-    gameId,
-  } = useGameStore();
+  const { board, availablePositions, activePiece, lastMovePositions, gameId } =
+    useGameStore();
 
   const { dragState, handlePointerDown, boardRef } = useDraggablePiece();
 

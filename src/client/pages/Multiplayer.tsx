@@ -29,12 +29,16 @@ const Multiplayer = () => {
   const { offerDraw } = useMultiplayerActions();
   const { setMsgNotif, msgNotif } = useGameInvitesStore();
   const { loggedUserInfo } = useAuthStore();
+  const { gameId } = useParams();
+  const { isLoading } = useGameStatusQuery(gameId);
+
+  const user = players.find(
+    (p) => p.playerData?.userId === loggedUserInfo?.userId
+  );
+
   const opponent = players.find(
     (p) => p.playerData?.userId !== loggedUserInfo?.userId
   );
-  const { gameId } = useParams();
-
-  const { isLoading } = useGameStatusQuery(gameId);
 
   const handleDrawOffer = () => {
     if (opponent && gameId) {
@@ -48,7 +52,6 @@ const Multiplayer = () => {
 
   return (
     <section className="flex flex-col items-center justify-center min-h-screen bg-gray-900 overflow-hidden relative">
-      {/* Background Pattern */}
       <div className="absolute inset-0 opacity-5 pointer-events-none">
         <div
           className="w-full h-full"
@@ -66,7 +69,6 @@ const Multiplayer = () => {
       {openResignModal && <Resign setOpenResignModal={setOpenResignModal} />}
       {drawOffererId === opponent?.playerData?.userId && <DrawOffer />}
 
-      {/* Top Controls */}
       <div className="fixed flex space-x-2 md:space-x-3 top-4 right-4 md:top-6 md:right-6 z-20">
         <button
           disabled={!!drawOffererId}
@@ -81,9 +83,9 @@ const Multiplayer = () => {
             </span>
           )}
         </button>
-        
+
         <SoundButton />
-        
+
         <button
           onClick={() => setOpenResignModal(true)}
           className="p-2 md:p-3 rounded-xl bg-gray-800 text-gray-400 border-2 border-gray-700 hover:text-red-400 hover:border-red-500 transition-all"
@@ -93,7 +95,6 @@ const Multiplayer = () => {
         </button>
       </div>
 
-      {/* Chat Toggle Button */}
       {!openChat && (
         <div className="fixed z-20 bottom-6 right-6">
           <button
@@ -113,14 +114,9 @@ const Multiplayer = () => {
 
       {openChat && <Chat setOpenChat={setOpenChat} />}
 
-      {/* Game Area */}
       <div className="flex flex-col gap-6 z-10 w-full max-w-4xl px-4 items-center justify-center">
         <div className="w-full flex justify-center">
-          <Player
-            index={1}
-            playerName={opponent?.playerData?.userName}
-            image={opponent?.playerData?.image}
-          />
+          <Player player={opponent!} />
         </div>
 
         <div className="relative shadow-2xl shadow-black/50 rounded-lg overflow-hidden border-8 border-gray-800">
@@ -128,11 +124,7 @@ const Multiplayer = () => {
         </div>
 
         <div className="w-full flex justify-center">
-          <Player
-            index={0}
-            playerName={loggedUserInfo?.userName}
-            image={loggedUserInfo?.image}
-          />
+          <Player player={user!} />
         </div>
       </div>
 
