@@ -24,9 +24,10 @@ const initialGameState: Game = {
   elPassantMove: null,
   elPassantCaptureMove: null,
   movedPieces: [],
-  stalemate: false,
+  drawReason: null,
   drawOffererId: null,
   isCheck: false,
+  gameMode: "rapid",
 };
 
 export const useGameStore = create<GameState>((set) => ({

@@ -1,15 +1,6 @@
 import { useState } from "react";
 import Checkmate from "../modals/Checkmate";
-import Stalemate from "../modals/Stalemate";
-import Player from "../components/Player";
-import Board from "../components/Board";
-import Promotion from "../modals/Promotion";
-import Chat from "../components/Chat";
-import { AiFillFlag } from "react-icons/ai";
-import SoundButton from "../components/SoundButton";
-import Resign from "../modals/Resign";
-import { BsFillChatLeftDotsFill } from "react-icons/bs";
-import DrawOffer from "../modals/DrawOffer";
+import Draw from "../modals/Draw";
 import { useParams } from "react-router-dom";
 import Loader from "../components/Loader";
 import { useGameInvitesStore } from "../store/useGameInvitesStore";
@@ -19,11 +10,20 @@ import { useGameStatusQuery } from "../api/queries/game";
 import { useGameActions } from "../hooks/useGameActions";
 import { useAuthStore } from "../store/useAuthStore";
 import { FaHandshake } from "react-icons/fa";
+import Resign from "../modals/Resign";
+import DrawOffer from "../modals/DrawOffer";
+import SoundButton from "../components/SoundButton";
+import { BsFillChatLeftDotsFill } from "react-icons/bs";
+import { AiFillFlag } from "react-icons/ai";
+import Chat from "../components/Chat";
+import Player from "../components/Player";
+import Board from "../components/Board";
+import Promotion from "../modals/Promotion";
 
 const Multiplayer = () => {
   const [openChat, setOpenChat] = useState(false);
   const [openResignModal, setOpenResignModal] = useState(false);
-  const { isPromotion, checkmate, stalemate, players, drawOffererId } =
+  const { isPromotion, checkmate, drawReason, players, drawOffererId } =
     useGameStore();
   const { promotePawn } = useGameActions();
   const { offerDraw } = useMultiplayerActions();
@@ -65,7 +65,7 @@ const Multiplayer = () => {
       </div>
 
       {checkmate && <Checkmate />}
-      {stalemate && <Stalemate />}
+      {drawReason && <Draw reason={drawReason} />}
       {openResignModal && <Resign setOpenResignModal={setOpenResignModal} />}
       {drawOffererId === opponent?.playerData?.userId && <DrawOffer />}
 

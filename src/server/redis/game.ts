@@ -42,7 +42,7 @@ const createGame = async ({
     elPassantMove: null,
     elPassantCaptureMove: null,
     movedPieces: [],
-    stalemate: false,
+    drawReason: null,
     drawOffererId: null,
     isCheck: false,
     gameMode,

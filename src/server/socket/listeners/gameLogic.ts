@@ -38,7 +38,7 @@ class GameLogicListeners {
     const playerTurn = game.playerTurn;
 
     if (
-      game.stalemate ||
+      game.drawReason ||
       game.checkmate ||
       playerTurn?.playerData?.userId !== this.socket.userId
     ) {
@@ -82,7 +82,7 @@ class GameLogicListeners {
     const currentPlayerTurn = game.playerTurn;
 
     if (
-      game.stalemate ||
+      game.drawReason ||
       game.checkmate ||
       !game.activePiece ||
       currentPlayerTurn?.playerData?.userId !== this.socket.userId
@@ -119,7 +119,7 @@ class GameLogicListeners {
     const playerTurn = game.playerTurn;
 
     if (
-      game.stalemate ||
+      game.drawReason ||
       game.checkmate ||
       !game.activePiece ||
       playerTurn?.playerData?.userId !== this.socket.userId

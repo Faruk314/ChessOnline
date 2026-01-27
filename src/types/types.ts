@@ -55,11 +55,19 @@ export interface Game {
   elPassantMove: Position | null;
   elPassantCaptureMove: Position | null;
   movedPieces: Piece[];
-  stalemate: boolean;
+  drawReason: DrawReason;
   drawOffererId: number | null;
   isCheck: boolean;
   gameMode: GameModes;
 }
+
+export type DrawReason =
+  | "stalemate"
+  | "insufficientMaterial"
+  | "repetition"
+  | "50-move-rule"
+  | "agreement"
+  | null;
 
 export type PieceColor = "black" | "white";
 
@@ -111,6 +119,7 @@ export type MoveAction =
   | "stalemate"
   | "castling"
   | "drawOffer"
-  | "drawResponse";
+  | "drawResponse"
+  | "insufficientMaterial";
 
 export type GameModes = "rapid" | "blitz" | "long" | "bullet";

@@ -4,10 +4,11 @@ import {
   Position,
   MoveAction,
   GameModes,
+  DrawReason,
 } from "../../types/types";
 import { Piece } from "./Piece";
 import { Player } from "./Player";
-import { createPawn, getPlayerInitialTime } from "../methods/game";
+import { createPawn } from "../methods/game";
 import _ from "lodash";
 
 export class Game implements IGame {
@@ -24,7 +25,7 @@ export class Game implements IGame {
   elPassantMove: Position | null;
   elPassantCaptureMove: Position | null;
   movedPieces: Piece[];
-  stalemate: boolean;
+  drawReason: DrawReason;
   drawOffererId: number | null;
   isCheck: boolean;
   gameMode: GameModes;
@@ -60,8 +61,7 @@ export class Game implements IGame {
       this.elPassantMove = gameData.elPassantMove;
       this.elPassantCaptureMove = gameData.elPassantCaptureMove;
       this.movedPieces = gameData.movedPieces;
-      this.stalemate = gameData.stalemate;
-
+      this.drawReason = gameData.drawReason;
       this.drawOffererId = gameData.drawOffererId;
       this.isCheck = gameData.isCheck;
       this.gameMode = gameData.gameMode;
@@ -79,7 +79,7 @@ export class Game implements IGame {
       this.elPassantMove = null;
       this.elPassantCaptureMove = null;
       this.movedPieces = [];
-      this.stalemate = false;
+      this.drawReason = null;
       this.drawOffererId = null;
       this.isCheck = false;
       this.gameMode = "rapid";
@@ -212,7 +212,7 @@ export class Game implements IGame {
     }
 
     if (!kingInCheck && playerTurnPositions.length === 0) {
-      this.stalemate = true;
+      this.drawReason = "stalemate";
       return false;
     }
 
@@ -592,6 +592,38 @@ export class Game implements IGame {
     return safeMoves;
   }
 
+  checkInsufficientMaterial(board: (Piece | null)[][]): boolean {
+    const pieces: Piece[] = board.flat().filter((p): p is Piece => p !== null);
+
+    if (pieces.some((p) => ["pawn", "rook", "queen"].includes(p.type))) {
+      return false;
+    }
+
+    const whitePieces = pieces.filter((p) => p.color === "white");
+    const blackPieces = pieces.filter((p) => p.color === "black");
+
+    if (pieces.length === 2) return true;
+
+    if (pieces.length === 3) {
+      const minor = pieces.find(
+        (p) => p.type === "knight" || p.type === "bishop"
+      );
+      if (minor) return true;
+    }
+
+    if (
+      pieces.length === 4 &&
+      whitePieces.length === 2 &&
+      blackPieces.length === 2
+    ) {
+      const whiteMinor = whitePieces.find((p) => p.type === "bishop");
+      const blackMinor = blackPieces.find((p) => p.type === "bishop");
+      if (whiteMinor && blackMinor) return true;
+    }
+
+    return false;
+  }
+
   async movePiece(row: number, col: number) {
     let action: MoveAction = "move";
 
@@ -691,8 +723,16 @@ export class Game implements IGame {
 
     if (promotion === false) {
       isCheckmate = this.determineCheckmate(updatedBoard);
+
+      const isInsufficient = this.checkInsufficientMaterial(updatedBoard);
+
+      if (isInsufficient && !isCheckmate) {
+        this.drawReason = "insufficientMaterial";
+        action = "insufficientMaterial";
+      }
+
       if (this.isCheck) action = "check";
-      if (this.stalemate) action = "stalemate";
+      if (this.drawReason === "stalemate") action = "stalemate";
       if (isCheckmate) action = "checkmate";
     }
 
@@ -861,7 +901,7 @@ export class Game implements IGame {
     this.isPromotion = false;
     this.activePiece = null;
 
-    if (isCheckmate || this.stalemate) return;
+    if (isCheckmate || this.drawReason) return;
 
     await this.switchTurns();
   }

@@ -2,7 +2,7 @@ import { useContext, useRef } from "react";
 import Promotion from "../modals/Promotion";
 import Checkmate from "../modals/Checkmate";
 import Player from "../components/Player";
-import Stalemate from "../modals/Stalemate";
+import Draw from "../modals/Draw";
 import Board from "../components/Board";
 import { IoClose } from "react-icons/io5";
 import SoundButton from "../components/SoundButton";
@@ -12,7 +12,7 @@ import { useGameStore } from "../store/useGameStore";
 import { useGameActions } from "../hooks/useGameActions";
 
 const SinglePlayer = () => {
-  const { isPromotion, checkmate, stalemate, gameId } = useGameStore();
+  const { isPromotion, checkmate, drawReason, gameId } = useGameStore();
   const { promotePawn } = useGameActions();
   const { socket } = useContext(SocketContext);
   const navigate = useNavigate();
@@ -20,7 +20,7 @@ const SinglePlayer = () => {
   return (
     <section className="flex flex-col items-center justify-center h-[100vh] bg-amber-100 overflow-hidden">
       {checkmate && <Checkmate />}
-      {stalemate && <Stalemate />}
+      {drawReason && <Draw reason={drawReason} />}
 
       <div className="fixed flex space-x-2 top-4 right-4">
         <SoundButton />
