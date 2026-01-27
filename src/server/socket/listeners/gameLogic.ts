@@ -79,13 +79,13 @@ class GameLogicListeners {
 
     const game = response.gameState;
 
-    const playerTurn = game.playerTurn;
+    const currentPlayerTurn = game.playerTurn;
 
     if (
       game.stalemate ||
       game.checkmate ||
       !game.activePiece ||
-      playerTurn?.playerData?.userId !== this.socket.userId
+      currentPlayerTurn?.playerData?.userId !== this.socket.userId
     ) {
       return console.error("Invalid move");
     }
@@ -98,7 +98,7 @@ class GameLogicListeners {
 
     if (!isValidMove) return console.error("Invalid move");
 
-    const action = game.movePiece(row, col);
+    const action = await game.movePiece(row, col);
 
     await updateGame({
       newGameState: game,
@@ -129,7 +129,7 @@ class GameLogicListeners {
 
     if (!game.isPromotion) return console.error("Invalid move");
 
-    game.promotePawn(data.type);
+    await game.promotePawn(data.type);
 
     await updateGame({
       newGameState: game,

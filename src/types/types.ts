@@ -58,6 +58,7 @@ export interface Game {
   stalemate: boolean;
   drawOffererId: number | null;
   isCheck: boolean;
+  gameMode: GameModes;
 }
 
 export type PieceColor = "black" | "white";
@@ -78,6 +79,10 @@ export interface Player {
   enemyPieces: Piece[];
   color: string;
   playerData: UserInfo | null;
+  remainingTime: number;
+  isTimerActive: boolean;
+  hasTimerStarted: boolean;
+  turnStartTime: number | null;
 }
 
 export interface GameData {

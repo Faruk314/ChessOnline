@@ -1,5 +1,11 @@
 import { Server } from "socket.io";
-import { PieceColor, UserInfo, Game as IGame } from "../../types/types";
+import {
+  PieceColor,
+  UserInfo,
+  Game as IGame,
+  GameModes,
+  Player as IPlayer,
+} from "../../types/types";
 import { Piece } from "../classes/Piece";
 import { Player } from "../classes/Player";
 import query from "../db";
@@ -65,10 +71,12 @@ const assignSides = async ({
   players,
   io,
   gameId,
+  gameMode,
 }: {
   players: string[];
   io: Server;
   gameId: string;
+  gameMode: GameModes;
 }) => {
   const shuffledIds = players.sort(() => Math.random() - 0.5);
   let playersData: UserInfo[] = [];
@@ -89,10 +97,47 @@ const assignSides = async ({
     }
   }
 
-  const whitePlayer = new Player("white", playersData[0]);
-  const blackPlayer = new Player("black", playersData[1]);
+  const initialTimeMiliseconds = getPlayerInitialTime(gameMode);
+
+  const whitePlayer = new Player({
+    color: "white",
+    playerInfo: playersData[0],
+    remainingTime: initialTimeMiliseconds,
+    isTimerActive: false,
+    hasTimerStarted: false,
+    turnStartTime: null,
+    enemyPieces: [],
+  });
+  const blackPlayer = new Player({
+    color: "black",
+    playerInfo: playersData[1],
+    remainingTime: initialTimeMiliseconds,
+    isTimerActive: false,
+    hasTimerStarted: false,
+    turnStartTime: null,
+    enemyPieces: [],
+  });
 
   return { players: [whitePlayer, blackPlayer], playerTurn: whitePlayer };
+};
+
+const getPlayerInitialTime = (gameMode: GameModes): number => {
+  const minutes = (() => {
+    switch (gameMode) {
+      case "bullet":
+        return 1;
+      case "blitz":
+        return 3;
+      case "rapid":
+        return 10;
+      case "long":
+        return 60;
+      default:
+        return 10;
+    }
+  })();
+
+  return minutes * 60 * 1000;
 };
 
 const getGameStateForPlayer = (gameState: IGame, userId: number): IGame => {
@@ -102,14 +147,39 @@ const getGameStateForPlayer = (gameState: IGame, userId: number): IGame => {
 
   const isPlayersTurn = playerData.userId === userId;
 
-  if (isPlayersTurn) return gameState;
+  const now = Date.now();
+
+  const modifiedGameState = {
+    ...gameState,
+    players: gameState.players.map((player: IPlayer) => {
+      if (
+        player.isTimerActive &&
+        player.turnStartTime &&
+        player.hasTimerStarted
+      ) {
+        const elapsed = now - player.turnStartTime;
+        const liveRemainingTime = Math.max(0, player.remainingTime - elapsed);
+
+        return { ...player, remainingTime: liveRemainingTime };
+      }
+      return player;
+    }),
+  };
+
+  if (isPlayersTurn) return modifiedGameState;
 
   return {
-    ...gameState,
+    ...modifiedGameState,
     availablePositions: [],
     activePiece: null,
     isPromotion: false,
   };
 };
 
-export { createPawn, createBoard, assignSides, getGameStateForPlayer };
+export {
+  createPawn,
+  createBoard,
+  assignSides,
+  getGameStateForPlayer,
+  getPlayerInitialTime,
+};

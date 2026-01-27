@@ -1,7 +1,13 @@
-import { Game as IGame, Square, Position, MoveAction } from "../../types/types";
+import {
+  Game as IGame,
+  Square,
+  Position,
+  MoveAction,
+  GameModes,
+} from "../../types/types";
 import { Piece } from "./Piece";
 import { Player } from "./Player";
-import { createPawn } from "../methods/game";
+import { createPawn, getPlayerInitialTime } from "../methods/game";
 import _ from "lodash";
 
 export class Game implements IGame {
@@ -21,13 +27,30 @@ export class Game implements IGame {
   stalemate: boolean;
   drawOffererId: number | null;
   isCheck: boolean;
+  gameMode: GameModes;
 
   constructor(gameData?: IGame) {
     if (gameData) {
       this.gameId = gameData.gameId;
       this.board = gameData.board;
-      this.players = gameData.players;
-      this.playerTurn = gameData.playerTurn;
+      this.players = gameData.players.map(
+        (player) =>
+          new Player({
+            color: player.color,
+            playerInfo: player.playerData!,
+            remainingTime: player.remainingTime,
+            hasTimerStarted: player.hasTimerStarted,
+            isTimerActive: player.isTimerActive,
+            turnStartTime: player.turnStartTime,
+            enemyPieces: player.enemyPieces,
+          })
+      );
+      this.playerTurn = gameData.playerTurn
+        ? this.players.find(
+            (p) =>
+              p.playerData?.userId === gameData.playerTurn?.playerData?.userId
+          ) || null
+        : null;
       this.availablePositions = gameData.availablePositions;
       this.activePiece = gameData.activePiece;
       this.isPromotion = gameData.isPromotion;
@@ -41,6 +64,7 @@ export class Game implements IGame {
 
       this.drawOffererId = gameData.drawOffererId;
       this.isCheck = gameData.isCheck;
+      this.gameMode = gameData.gameMode;
     } else {
       this.gameId = "";
       this.board = [];
@@ -58,6 +82,7 @@ export class Game implements IGame {
       this.stalemate = false;
       this.drawOffererId = null;
       this.isCheck = false;
+      this.gameMode = "rapid";
     }
   }
 
@@ -69,12 +94,16 @@ export class Game implements IGame {
     return opponentId;
   }
 
-  switchTurns() {
+  async switchTurns() {
+    await this.playerTurn?.endTurn(this.gameId);
+
     const nextPlayer = this.players.find(
       (player) => player.color !== this.playerTurn?.color
     );
 
     this.playerTurn = nextPlayer!;
+
+    await this.playerTurn?.startTurn(this.gameId);
   }
 
   findKing(color: string, board: Square[][]) {
@@ -563,7 +592,7 @@ export class Game implements IGame {
     return safeMoves;
   }
 
-  movePiece(row: number, col: number) {
+  async movePiece(row: number, col: number) {
     let action: MoveAction = "move";
 
     this.isCheck = false;
@@ -669,7 +698,7 @@ export class Game implements IGame {
 
     if (promotion === false && isCheckmate === false) {
       this.board = updatedBoard;
-      this.switchTurns();
+      await this.switchTurns();
     } else {
       this.board = updatedBoard;
     }
@@ -798,7 +827,7 @@ export class Game implements IGame {
     return safeMoves;
   }
 
-  promotePawn(type: string) {
+  async promotePawn(type: string) {
     let newActivePiece: Piece | null = null;
     const row = this.activePiece?.position.row;
     const col = this.activePiece?.position.col;
@@ -834,7 +863,7 @@ export class Game implements IGame {
 
     if (isCheckmate || this.stalemate) return;
 
-    this.switchTurns();
+    await this.switchTurns();
   }
 
   elPassant(piece: Piece, validMoves: Position[]) {

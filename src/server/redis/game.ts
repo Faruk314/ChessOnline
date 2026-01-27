@@ -2,6 +2,7 @@ import { client } from "./config";
 import { GAMES_KEY } from "../constants/main";
 import {
   GameData,
+  GameModes,
   Game as IGame,
   MoveAction,
   Msg,
@@ -19,9 +20,11 @@ import { getIO } from "../socket/socket";
 const createGame = async ({
   players,
   io,
+  gameMode,
 }: {
   players: string[];
   io: Server;
+  gameMode: GameModes;
 }) => {
   const gameId = uuidv4();
 
@@ -42,11 +45,12 @@ const createGame = async ({
     stalemate: false,
     drawOffererId: null,
     isCheck: false,
+    gameMode,
   };
 
   gameState.board = createBoard();
 
-  const sidesData = await assignSides({ players, io, gameId });
+  const sidesData = await assignSides({ players, io, gameId, gameMode });
 
   if (!sidesData) return;
 

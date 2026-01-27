@@ -26,8 +26,14 @@ class GameRoomListeners {
     this.socket.on("sendMessage", this.onSendMessage.bind(this));
   }
 
-  async onCreateGameRoom({ players }: { players: string[] }) {
-    const response = await createGameRedis({ players, io: this.io });
+  async onCreateGameRoom({
+    players,
+    gameMode = "rapid",
+  }: {
+    players: string[];
+    gameMode: GameModes;
+  }) {
+    const response = await createGameRedis({ players, io: this.io, gameMode });
 
     if (response?.status !== "success") return;
 
@@ -63,6 +69,7 @@ class GameRoomListeners {
       const response = await createGameRedis({
         players: [playerId, opponent.playerId],
         io: this.io,
+        gameMode,
       });
 
       if (response?.status !== "success" || !response.data) {

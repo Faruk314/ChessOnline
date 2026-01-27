@@ -21,6 +21,7 @@
     "@types/uuid": "^9.0.3",
     "axios": "^1.5.0",
     "bcrypt": "^5.1.1",
+    "bullmq": "^5.67.1",
     "classnames": "^2.3.2",
     "connection-string": "^4.4.0",
     "cookie-parser": "^1.4.6",
