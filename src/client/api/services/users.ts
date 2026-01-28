@@ -1,11 +1,21 @@
-import axios from "axios";
+import apiClient from "../apiClient";
 import { UserInfo } from "../../../types/types";
 
-export const findUsers = async (searchQuery: string): Promise<UserInfo[]> => {
+const API_URL = "/api/users/";
+
+async function findUsers(searchQuery: string): Promise<UserInfo[]> {
   if (searchQuery.length < 1) return [];
 
-  const response = await axios.get(
-    `${import.meta.env.VITE_BACKEND_URL}/api/game/findUsers?search=${searchQuery}`
+  const res = await apiClient.get<UserInfo[]>(
+    API_URL + `findUsers?search=${searchQuery}`
   );
-  return response.data;
-};
+  return res.data;
+}
+
+async function updateAvatar(avatar: string): Promise<void> {
+  await apiClient.post(API_URL + "changeAvatar", {
+    avatar,
+  });
+}
+
+export { findUsers, updateAvatar };

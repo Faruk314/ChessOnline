@@ -4,6 +4,7 @@ import authRoutes from "./routes/auth";
 import gameRoutes from "./routes/game";
 import friendRoutes from "./routes/friends";
 import inviteRoutes from "./routes/invite";
+import userRoutes from "./routes/users";
 import errorHandler from "./utils/error";
 import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
@@ -41,5 +42,6 @@ app.use("/api/auth", authRoutes);
 app.use("/api/game", gameRoutes);
 app.use("/api/friends", friendRoutes);
 app.use("/api/invite", inviteRoutes);
+app.use("/api/users", userRoutes);
 
 app.use(errorHandler);

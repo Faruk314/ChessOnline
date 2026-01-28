@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { IoClose } from "react-icons/io5";
 import giant from "../assets/images/giant.png";
 import barbarian from "../assets/images/barbarian.png";
@@ -6,50 +6,37 @@ import persian from "../assets/images/avatar.png";
 import valkyrie from "../assets/images/valkyrie.png";
 import goblin from "../assets/images/goblin.png";
 import wizard from "../assets/images/wizard.png";
-import classNames from "classnames";
-import axios from "axios";
 import { useAuthStore } from "../store/useAuthStore";
 import { FaUserCircle } from "react-icons/fa";
 import { useModalStore } from "../store/useModalStore";
+import { useUpdateAvatarMutation } from "../api/queries/users";
+import { cn } from "../lib/utils";
+import { Button } from "../components/ui/Button";
 
 const ChangeAvatar = () => {
   const avatars = [persian, giant, barbarian, valkyrie, goblin, wizard];
-  const { setLoggedUserInfo, loggedUserInfo } = useAuthStore();
+  const { loggedUserInfo } = useAuthStore();
   const { setOpenChangeAvatar } = useModalStore();
   const [avatar, setAvatar] = useState("");
+  const { mutate: updateAvatar, isPending } = useUpdateAvatarMutation();
 
   useEffect(() => {
     if (loggedUserInfo && loggedUserInfo.image) {
       setAvatar(loggedUserInfo.image);
     }
-  }, []);
+  }, [loggedUserInfo]);
 
-  const updateAvatar = async () => {
-    try {
-      await axios.post(
-        import.meta.env.VITE_BACKEND_URL + "/game/changeAvatar",
-        {
-          avatar: avatar,
-        }
-      );
-
-      // Optimistically update the store if needed, or rely on refetch
-      // But for now, just close the modal as per original logic
-
-      // If the store needs manual updating (commented out in original):
-      const updatedUser = { ...loggedUserInfo!, image: avatar };
-      setLoggedUserInfo(updatedUser);
-
-      setOpenChangeAvatar(false);
-    } catch (error) {
-      console.log(error);
-    }
+  const handleSave = () => {
+    updateAvatar(avatar, {
+      onSuccess: () => {
+        setOpenChangeAvatar(false);
+      },
+    });
   };
 
   return (
     <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
       <div className="w-full max-w-lg bg-gray-800 rounded-2xl shadow-2xl border border-gray-700 transform transition-all scale-100">
-        {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-gray-700">
           <div className="flex items-center gap-3">
             <FaUserCircle className="text-emerald-500 text-2xl" />
@@ -65,7 +52,6 @@ const ChangeAvatar = () => {
           </button>
         </div>
 
-        {/* Content */}
         <div className="p-6">
           <div className="grid grid-cols-3 gap-4">
             {avatars.map((imageUrl, index) => (
@@ -75,14 +61,11 @@ const ChangeAvatar = () => {
                 className="group relative outline-none"
               >
                 <div
-                  className={classNames(
+                  className={cn(
                     "relative aspect-square rounded-xl overflow-hidden border-4 transition-all duration-200",
-                    {
-                      "border-emerald-500 shadow-[0_0_15px_rgba(16,185,129,0.4)] scale-105":
-                        avatar === imageUrl,
-                      "border-gray-700 hover:border-gray-500":
-                        avatar !== imageUrl,
-                    }
+                    avatar === imageUrl
+                      ? "border-emerald-500 shadow-[0_0_15px_rgba(16,185,129,0.4)] scale-105"
+                      : "border-gray-700 hover:border-gray-500"
                   )}
                 >
                   <img
@@ -91,7 +74,6 @@ const ChangeAvatar = () => {
                     className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
                   />
 
-                  {/* Selected Overlay */}
                   {avatar === imageUrl && (
                     <div className="absolute inset-0 bg-emerald-500/10 z-10" />
                   )}
@@ -101,7 +83,6 @@ const ChangeAvatar = () => {
           </div>
         </div>
 
-        {/* Footer */}
         <div className="p-6 border-t border-gray-700 bg-gray-800/50 rounded-b-2xl flex justify-end gap-3">
           <button
             onClick={() => setOpenChangeAvatar(false)}
@@ -109,12 +90,15 @@ const ChangeAvatar = () => {
           >
             Cancel
           </button>
-          <button
-            onClick={updateAvatar}
-            className="px-6 py-2.5 bg-gradient-to-r from-emerald-600 to-emerald-800 hover:from-emerald-500 hover:to-emerald-700 text-white font-bold rounded-xl shadow-lg shadow-emerald-900/20 transform transition-all duration-200 active:scale-[0.98]"
-          >
-            Save Changes
-          </button>
+          <div className="w-40">
+            <Button
+              onClick={handleSave}
+              isLoading={isPending}
+              loadingText="Saving..."
+            >
+              Save Changes
+            </Button>
+          </div>
         </div>
       </div>
     </div>

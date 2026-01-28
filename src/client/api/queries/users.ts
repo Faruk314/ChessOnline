@@ -1,6 +1,8 @@
 import { useMutation } from "@tanstack/react-query";
-import { findUsers } from "../services/users";
+import { findUsers, updateAvatar } from "../services/users";
 import { useUserStore } from "../../store/useUserStore";
+import { useAuthStore } from "../../store/useAuthStore";
+import { useToast } from "../../hooks/useToast";
 import { getErrorMessage } from "../../lib/utils";
 
 export function useFindUsersMutation() {
@@ -13,6 +15,24 @@ export function useFindUsersMutation() {
     },
     onError: (error) => {
       console.error(getErrorMessage(error));
+    },
+  });
+}
+
+export function useUpdateAvatarMutation() {
+  const { loggedUserInfo, setLoggedUserInfo } = useAuthStore();
+  const { toastSuccess, toastError } = useToast();
+
+  return useMutation({
+    mutationFn: updateAvatar,
+    onSuccess: (_, avatar) => {
+      if (loggedUserInfo) {
+        setLoggedUserInfo({ ...loggedUserInfo, image: avatar });
+      }
+      toastSuccess("Avatar updated successfully");
+    },
+    onError: (error) => {
+      toastError(getErrorMessage(error));
     },
   });
 }
