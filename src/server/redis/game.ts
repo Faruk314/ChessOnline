@@ -46,6 +46,7 @@ const createGame = async ({
     drawOffererId: null,
     isCheck: false,
     gameMode,
+    winner: null,
   };
 
   gameState.board = createBoard();
@@ -156,10 +157,19 @@ const updateGame = async ({
     });
   });
 
-  await saveGameState({
-    gameId,
-    newGameState,
-  });
+  const isGameOver =
+    newGameState.winner ||
+    newGameState.drawReason ||
+    newGameState.checkmate;
+
+  if (isGameOver) {
+    await deleteGameState(gameId);
+  } else {
+    await saveGameState({
+      gameId,
+      newGameState,
+    });
+  }
 };
 
 export {
