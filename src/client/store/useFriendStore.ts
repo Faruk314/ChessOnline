@@ -8,10 +8,8 @@ interface FriendState {
   setFriends: (friends: UserRequest[]) => void;
   setFriendRequests: (requests: UserRequest[]) => void;
 
-  // Helper to add a single friend (used for real-time updates)
   addFriend: (userInfo: UserRequest) => void;
 
-  // Helper to remove request (used when accepted/deleted)
   removeFriendRequest: (requestId: number) => void;
 
   addFriendRequest: (request: UserRequest) => void;

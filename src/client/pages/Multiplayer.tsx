@@ -2,7 +2,7 @@ import { useState } from "react";
 import GameResult from "../modals/GameResult";
 import Draw from "../modals/Draw";
 import { useParams } from "react-router-dom";
-import Loader from "../components/Loader";
+import Loader from "../components/ui/Loader";
 import { useGameInvitesStore } from "../store/useGameInvitesStore";
 import { useMultiplayerActions } from "../hooks/useMultiplayerActions";
 import { useGameStore } from "../store/useGameStore";
@@ -46,7 +46,11 @@ const Multiplayer = () => {
   };
 
   if (isLoading) {
-    return <Loader />;
+    return (
+      <div className="flex justify-center bg-gray-900 items-center h-[100vh]">
+        <Loader size="lg" />
+      </div>
+    );
   }
 
   return (

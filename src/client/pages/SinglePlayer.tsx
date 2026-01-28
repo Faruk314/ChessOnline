@@ -1,4 +1,4 @@
-import { useContext, useRef } from "react";
+import { useContext } from "react";
 import Promotion from "../modals/Promotion";
 import GameResult from "../modals/GameResult";
 import Player from "../components/Player";

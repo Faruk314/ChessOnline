@@ -2,6 +2,7 @@ import React, { useEffect, useRef } from "react";
 import { useGameInvitesStore } from "../store/useGameInvitesStore";
 import InviteCard from "../components/InviteCard";
 import { FaGamepad } from "react-icons/fa";
+import { useGameInvitesQuery } from "../api/queries/gameInvites";
 
 interface Props {
   setOpenInvites: React.Dispatch<React.SetStateAction<boolean>>;
@@ -10,6 +11,8 @@ interface Props {
 const Invites = ({ setOpenInvites }: Props) => {
   const modalRef: any = useRef();
   const { gameInvites } = useGameInvitesStore();
+
+  useGameInvitesQuery();
 
   useEffect(() => {
     const handleOutsideClick = (event: any) => {

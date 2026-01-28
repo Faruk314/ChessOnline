@@ -6,7 +6,7 @@ import Multiplayer from "./pages/Multiplayer";
 import SinglePlayer from "./pages/SinglePlayer";
 import ProtectedAuthPages from "./protection/ProtectedAuthPages";
 import ProtectedRoutes from "./protection/ProtectedRoutes";
-import Loader from "./components/Loader";
+import Loader from "./components/ui/Loader";
 import { useFriendEvents } from "./hooks/useFriendEvents";
 import { useGameEvents } from "./hooks/useGameEvents";
 import { useLoginStatusQuery } from "./api/queries/auth";
