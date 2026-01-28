@@ -23,7 +23,7 @@ const SocialHub = ({ onClose }: Props) => {
 
   return (
     <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
-      <div className="w-full max-w-md bg-gray-800 rounded-2xl shadow-2xl border border-gray-700 h-[32rem] flex flex-col">
+      <div className="w-full max-w-lg bg-gray-800 rounded-2xl shadow-2xl border border-gray-700 h-[36rem] flex flex-col">
         <div className="flex items-center justify-between p-5 border-b border-gray-700">
           <div className="flex items-center gap-3">
             <FaUserFriends className="text-emerald-500 text-2xl" />
