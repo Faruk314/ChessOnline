@@ -616,9 +616,17 @@ export class Game implements IGame {
       whitePieces.length === 2 &&
       blackPieces.length === 2
     ) {
-      const whiteMinor = whitePieces.find((p) => p.type === "bishop");
-      const blackMinor = blackPieces.find((p) => p.type === "bishop");
-      if (whiteMinor && blackMinor) return true;
+      const whiteBishop = whitePieces.find((p) => p.type === "bishop");
+      const blackBishop = blackPieces.filter((p) => p.type === "bishop")[0];
+
+      if (whiteBishop && blackBishop) {
+        const whiteIsLight =
+          (whiteBishop.position.row + whiteBishop.position.col) % 2 !== 0;
+        const blackIsLight =
+          (blackBishop.position.row + blackBishop.position.col) % 2 !== 0;
+
+        if (whiteIsLight === blackIsLight) return true;
+      }
     }
 
     return false;
