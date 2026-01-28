@@ -1,6 +1,6 @@
 import { useContext, useRef } from "react";
 import Promotion from "../modals/Promotion";
-import Checkmate from "../modals/Checkmate";
+import GameResult from "../modals/GameResult";
 import Player from "../components/Player";
 import Draw from "../modals/Draw";
 import Board from "../components/Board";
@@ -10,6 +10,7 @@ import { useNavigate } from "react-router-dom";
 import { SocketContext } from "../context/SocketContext";
 import { useGameStore } from "../store/useGameStore";
 import { useGameActions } from "../hooks/useGameActions";
+import { Player as IPlayer } from "../../types/types";
 
 const SinglePlayer = () => {
   const { isPromotion, checkmate, drawReason, gameId } = useGameStore();
@@ -17,9 +18,29 @@ const SinglePlayer = () => {
   const { socket } = useContext(SocketContext);
   const navigate = useNavigate();
 
+  const dummyWhitePlayer: IPlayer = {
+    color: "white",
+    playerData: { userId: 0, userName: "Player One", image: null },
+    remainingTime: 600,
+    isTimerActive: false,
+    hasTimerStarted: false,
+    turnStartTime: null,
+    enemyPieces: [],
+  };
+
+  const dummyBlackPlayer: IPlayer = {
+    color: "black",
+    playerData: { userId: 1, userName: "Player Two", image: null },
+    remainingTime: 600,
+    isTimerActive: false,
+    hasTimerStarted: false,
+    turnStartTime: null,
+    enemyPieces: [],
+  };
+
   return (
     <section className="flex flex-col items-center justify-center h-[100vh] bg-amber-100 overflow-hidden">
-      {checkmate && <Checkmate />}
+      <GameResult />
       {drawReason && <Draw reason={drawReason} />}
 
       <div className="fixed flex space-x-2 top-4 right-4">
@@ -36,11 +57,11 @@ const SinglePlayer = () => {
       </div>
 
       <div>
-        <Player index={1} playerName={"Player Two"} />
+        <Player player={dummyBlackPlayer} />
 
         <Board />
 
-        <Player index={0} playerName={"Player One"} />
+        <Player player={dummyWhitePlayer} />
       </div>
 
       {isPromotion && <Promotion promotePawn={promotePawn} />}

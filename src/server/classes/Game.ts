@@ -5,6 +5,7 @@ import {
   MoveAction,
   GameModes,
   DrawReason,
+  Winner,
 } from "../../types/types";
 import { Piece } from "./Piece";
 import { Player } from "./Player";
@@ -29,6 +30,7 @@ export class Game implements IGame {
   drawOffererId: number | null;
   isCheck: boolean;
   gameMode: GameModes;
+  winner: Winner | null;
 
   constructor(gameData?: IGame) {
     if (gameData) {
@@ -65,6 +67,7 @@ export class Game implements IGame {
       this.drawOffererId = gameData.drawOffererId;
       this.isCheck = gameData.isCheck;
       this.gameMode = gameData.gameMode;
+      this.winner = gameData.winner;
     } else {
       this.gameId = "";
       this.board = [];
@@ -83,6 +86,7 @@ export class Game implements IGame {
       this.drawOffererId = null;
       this.isCheck = false;
       this.gameMode = "rapid";
+      this.winner = null;
     }
   }
 
@@ -741,7 +745,13 @@ export class Game implements IGame {
 
       if (this.isCheck) action = "check";
       if (this.drawReason === "stalemate") action = "stalemate";
-      if (isCheckmate) action = "checkmate";
+      if (isCheckmate) {
+        action = "checkmate";
+        this.winner = {
+          userId: this.playerTurn?.playerData?.userId!,
+          method: "checkmate",
+        };
+      }
     }
 
     if (promotion === false && isCheckmate === false) {
@@ -908,6 +918,13 @@ export class Game implements IGame {
 
     this.isPromotion = false;
     this.activePiece = null;
+
+    if (isCheckmate) {
+      this.winner = {
+        userId: this.playerTurn?.playerData?.userId!,
+        method: "checkmate",
+      };
+    }
 
     if (isCheckmate || this.drawReason) return;
 

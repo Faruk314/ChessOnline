@@ -28,6 +28,7 @@ const initialGameState: Game = {
   drawOffererId: null,
   isCheck: false,
   gameMode: "rapid",
+  winner: null,
 };
 
 export const useGameStore = create<GameState>((set) => ({

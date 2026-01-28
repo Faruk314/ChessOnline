@@ -1,22 +1,17 @@
-import { useState } from "react";
 import Menu from "./pages/Menu";
 import { Routes, Route } from "react-router-dom";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Multiplayer from "./pages/Multiplayer";
 import SinglePlayer from "./pages/SinglePlayer";
-import OpponentLeft from "./modals/OpponentLeft";
-import DrawAccept from "./modals/DrawAccept";
 import ProtectedAuthPages from "./protection/ProtectedAuthPages";
 import ProtectedRoutes from "./protection/ProtectedRoutes";
 import Loader from "./components/Loader";
 import { useFriendEvents } from "./hooks/useFriendEvents";
 import { useGameEvents } from "./hooks/useGameEvents";
 import { useLoginStatusQuery } from "./api/queries/auth";
-import { useModalStore } from "./store/useModalStore";
 
 function App() {
-  const { openResignModal, openDrawAcceptModal } = useModalStore();
   const { isLoading } = useLoginStatusQuery();
 
   useFriendEvents();
@@ -42,9 +37,6 @@ function App() {
           <Route path="/singlePlayer/:gameId" element={<SinglePlayer />} />
         </Route>
       </Routes>
-
-      {openResignModal && <OpponentLeft />}
-      {openDrawAcceptModal && <DrawAccept />}
     </div>
   );
 }

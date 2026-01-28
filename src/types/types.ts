@@ -59,6 +59,12 @@ export interface Game {
   drawOffererId: number | null;
   isCheck: boolean;
   gameMode: GameModes;
+  winner: Winner | null;
+}
+
+export interface Winner {
+  userId: number;
+  method: "checkmate" | "time" | "resignation" | "opponentLeft";
 }
 
 export type DrawReason =
@@ -120,6 +126,9 @@ export type MoveAction =
   | "castling"
   | "drawOffer"
   | "drawResponse"
-  | "insufficientMaterial";
+  | "insufficientMaterial"
+  | "resignation"
+  | "time"
+  | "opponentLeft";
 
 export type GameModes = "rapid" | "blitz" | "long" | "bullet";

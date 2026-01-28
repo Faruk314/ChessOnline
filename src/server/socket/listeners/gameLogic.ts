@@ -162,23 +162,42 @@ class GameLogicListeners {
 
     let res = await retrieveGameState(gameId);
     if (res.status !== "success" || !res.gameState) return;
+
     const game = res.gameState;
+    game.drawOffererId = null;
 
     if (data.accept) {
-      let result = await deleteGameState(gameId);
-      if (result.status === "success") this.io.to(gameId).emit("drawAccept");
+      const game = res.gameState;
+      game.drawReason = "agreement";
+
+      await updateGame({ gameId, newGameState: game, action: "drawResponse" });
       return;
     }
 
-    game.drawOffererId = null;
     await updateGame({ gameId, newGameState: game, action: "drawResponse" });
   }
 
   async onResign(gameId: string) {
-    let result = await deleteGameState(gameId);
-    this.socket.leave(gameId);
-    if (result.status === "success")
-      this.io.to(gameId).emit("opponentResigned");
+    const response = await retrieveGameState(gameId);
+    if (response.status !== "success" || !response.gameState) return;
+
+    const game = response.gameState;
+    const senderId = this.socket.userId;
+
+    const winner = game.players.find(
+      (player) => player.playerData?.userId !== senderId
+    );
+
+    game.winner = {
+      userId: winner?.playerData?.userId!,
+      method: "resignation",
+    };
+
+    await updateGame({
+      newGameState: game,
+      gameId,
+      action: "resignation",
+    });
   }
 }
 

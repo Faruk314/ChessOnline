@@ -1,5 +1,5 @@
 import { useState } from "react";
-import Checkmate from "../modals/Checkmate";
+import GameResult from "../modals/GameResult";
 import Draw from "../modals/Draw";
 import { useParams } from "react-router-dom";
 import Loader from "../components/Loader";
@@ -23,8 +23,7 @@ import Promotion from "../modals/Promotion";
 const Multiplayer = () => {
   const [openChat, setOpenChat] = useState(false);
   const [openResignModal, setOpenResignModal] = useState(false);
-  const { isPromotion, checkmate, drawReason, players, drawOffererId } =
-    useGameStore();
+  const { isPromotion, drawReason, players, drawOffererId } = useGameStore();
   const { promotePawn } = useGameActions();
   const { offerDraw } = useMultiplayerActions();
   const { setMsgNotif, msgNotif } = useGameInvitesStore();
@@ -64,7 +63,7 @@ const Multiplayer = () => {
         ></div>
       </div>
 
-      {checkmate && <Checkmate />}
+      <GameResult />
       {drawReason && <Draw reason={drawReason} />}
       {openResignModal && <Resign setOpenResignModal={setOpenResignModal} />}
       {drawOffererId === opponent?.playerData?.userId && <DrawOffer />}

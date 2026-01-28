@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { useContext } from "react";
 import { useSocketEvent } from "./useSocketEvent";
 import { SocketContext } from "../context/SocketContext";
 import { useNavigate } from "react-router-dom";
@@ -7,13 +7,11 @@ import { Game, MoveAction, Msg, UserInfo } from "../../types/types";
 import { useGameStore } from "../store/useGameStore";
 import { toast } from "react-toastify";
 import { useSoundStore } from "../store/useSoundStore";
-import { useModalStore } from "../store/useModalStore";
 
 export const useGameEvents = () => {
   const { socket } = useContext(SocketContext);
   const { addGameInvite, setMsgNotif } = useGameInvitesStore();
   const { updateGame, addMessage } = useGameStore();
-  const { setOpenResignModal, setOpenDrawAcceptModal } = useModalStore();
 
   const navigate = useNavigate();
   const {
@@ -56,19 +54,6 @@ export const useGameEvents = () => {
   useSocketEvent(socket, "newMessage", (message: Msg) => {
     addMessage(message);
     setMsgNotif(true);
-  });
-
-  useSocketEvent(socket, "opponentResigned", () => {
-    setOpenResignModal(true);
-
-    navigate("/menu");
-  });
-
-  useSocketEvent(socket, "drawAccept", () => {
-    console.log("hej");
-    setOpenDrawAcceptModal(true);
-
-    navigate("/menu");
   });
 
   useSocketEvent(
