@@ -94,16 +94,18 @@ export const acceptFriendRequest = asyncHandler(
 
     res.status(200).json({ status: 2, id: requestId });
 
-    // getIO().to(`user:${row.sender}`).emit("friend:accepted", {
-    //   userId: row.receiver,
-    //   userName: row.receiverName,
-    //   image: row.receiverImage,
-    // });
-
+    // Notify the receiver (who accepted) - update their UI to show new friend
     getIO().to(`user:${row.receiver}`).emit("friendRequestAccepted", {
       userId: row.sender,
       userName: row.senderName,
       image: row.senderImage,
+    });
+
+    // Notify the sender (who sent the request) - update their UI to show request accepted
+    getIO().to(`user:${row.sender}`).emit("friendRequestAccepted", {
+      userId: row.receiver,
+      userName: row.receiverName,
+      image: row.receiverImage,
     });
   }
 );

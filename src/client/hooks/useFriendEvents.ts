@@ -12,7 +12,7 @@ export const useFriendEvents = () => {
     addFriend(userInfo);
   });
 
-  useSocketEvent(socket, "getFriendRequest", (request: UserRequest) => {
+  useSocketEvent(socket, "friend:incoming", (request: UserRequest) => {
     addFriendRequest(request);
   });
 
