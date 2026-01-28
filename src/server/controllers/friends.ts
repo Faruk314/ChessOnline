@@ -8,6 +8,16 @@ export const sendFriendRequest = asyncHandler(
     const loggedUser = req.user?.userId;
     const personB: number = req.body.receiverId;
 
+    if (!loggedUser || !personB) {
+      res.status(400);
+      throw new Error("Missing sender or receiver ID");
+    }
+
+    if (loggedUser === personB) {
+      res.status(400);
+      throw new Error("Cannot send friend request to yourself");
+    }
+
     let q = `
       SELECT fr.id
       FROM friend_requests fr
@@ -26,8 +36,8 @@ export const sendFriendRequest = asyncHandler(
     ]);
 
     if (result.length > 0) {
-      res.status(400);
-      throw new Error("Friend request already exists");
+      res.status(409);
+      throw new Error("Friend request already exists or you are already friends");
     }
 
     q =
@@ -35,7 +45,7 @@ export const sendFriendRequest = asyncHandler(
     const insertResult: any = await query(q, [loggedUser, personB, "pending"]);
 
     if (insertResult.affectedRows !== 1) {
-      res.status(400);
+      res.status(500);
       throw new Error("Failed to send friend request");
     }
 
@@ -43,6 +53,11 @@ export const sendFriendRequest = asyncHandler(
       "SELECT userId, userName, image FROM users WHERE userId = ?",
       [loggedUser]
     );
+
+    if (!sender) {
+      res.status(404);
+      throw new Error("Sender user not found");
+    }
 
     res.status(200).json("Friend request sent");
 
@@ -59,12 +74,19 @@ export const sendFriendRequest = asyncHandler(
 export const acceptFriendRequest = asyncHandler(
   async (req: Request, res: Response) => {
     const requestId: number = req.body.id;
+    const loggedUser = req.user?.userId;
+
+    if (!requestId) {
+      res.status(400);
+      throw new Error("Request ID is required");
+    }
 
     const [row]: any = await query(
       `
       SELECT
         fr.sender,
         fr.receiver,
+        fr.status,
         s.userName AS senderName,
         s.image AS senderImage,
         r.userName AS receiverName,
@@ -82,26 +104,36 @@ export const acceptFriendRequest = asyncHandler(
       throw new Error("Friend request not found");
     }
 
+    if (row.receiver !== loggedUser) {
+      res.status(403);
+      throw new Error("Not authorized to accept this request");
+    }
+
+    if (row.status !== "pending") {
+      res.status(400);
+      throw new Error("Friend request is not pending");
+    }
+
     const updateResult: any = await query(
       "UPDATE friend_requests SET status = ? WHERE id = ?",
       ["accepted", requestId]
     );
 
     if (updateResult.affectedRows !== 1) {
-      res.status(400);
+      res.status(500);
       throw new Error("Failed to accept friend request");
     }
 
     res.status(200).json({ status: 2, id: requestId });
 
-    // Notify the receiver (who accepted) - update their UI to show new friend
+    // Notify the receiver (who accepted)
     getIO().to(`user:${row.receiver}`).emit("friendRequestAccepted", {
       userId: row.sender,
       userName: row.senderName,
       image: row.senderImage,
     });
 
-    // Notify the sender (who sent the request) - update their UI to show request accepted
+    // Notify the sender (who sent the request)
     getIO().to(`user:${row.sender}`).emit("friendRequestAccepted", {
       userId: row.receiver,
       userName: row.receiverName,
@@ -115,6 +147,11 @@ export const checkFriendRequestStatus = asyncHandler(
     const loggedUser = req.user?.userId;
     const personB: number = req.body.personB;
 
+    if (!loggedUser || !personB) {
+      res.status(400);
+      throw new Error("Missing user IDs");
+    }
+
     let q = `SELECT fr.status, fr.sender, fr.receiver FROM friend_requests fr WHERE (fr.sender=? OR fr.receiver=?) AND (fr.sender=? OR fr.receiver= ?) AND (fr.status=? OR fr.status=?)`;
     let result: any = await query(q, [
       loggedUser,
@@ -126,27 +163,26 @@ export const checkFriendRequestStatus = asyncHandler(
     ]);
 
     if (result.length === 0) {
-      //zero indicates that friend request is not sent
       res.json({ status: 0 });
       return;
     }
 
-    if (result && result[0].status === "pending") {
-      //1 indicates that friend request is sent
+    const request = result[0];
+
+    if (request.status === "pending") {
       res.json({
         status: 1,
-        sender: result[0].sender,
-        receiver: result[0].receiver,
+        sender: request.sender,
+        receiver: request.receiver,
       });
       return;
     }
 
-    if (result && result[0].status === "accepted") {
-      //2 indicates that logged user and person B are already friends
+    if (request.status === "accepted") {
       res.json({
         status: 2,
-        sender: result[0].sender,
-        receiver: result[0].receiver,
+        sender: request.sender,
+        receiver: request.receiver,
       });
     }
   }
@@ -155,16 +191,23 @@ export const checkFriendRequestStatus = asyncHandler(
 export const deleteFriendRequest = asyncHandler(
   async (req: Request, res: Response) => {
     const requestId: number = req.body.id;
+    const loggedUser = req.user?.userId;
 
-    let q = "DELETE FROM friend_requests WHERE `id` = ?";
+    if (!requestId) {
+      res.status(400);
+      throw new Error("Request ID is required");
+    }
 
-    let result: any = await query(q, [requestId]);
+    // Only allow deletion if the logged-in user is the sender or receiver
+    let q = "DELETE FROM friend_requests WHERE `id` = ? AND (sender = ? OR receiver = ?)";
+
+    let result: any = await query(q, [requestId, loggedUser, loggedUser]);
 
     if (result.affectedRows === 1) {
       res.status(200).json({ status: 0, id: requestId });
     } else {
-      res.status(400);
-      throw new Error("Failed to delete friend request");
+      res.status(404);
+      throw new Error("Friend request not found or not authorized");
     }
   }
 );
@@ -173,20 +216,28 @@ export const getFriendRequests = asyncHandler(
   async (req: Request, res: Response) => {
     const loggedUser = req.user?.userId;
 
+    if (!loggedUser) {
+      res.status(401);
+      throw new Error("Not authenticated");
+    }
+
     let q = `SELECT u.userId, u.userName, u.image, fr.id, fr.status
          FROM friend_requests fr JOIN users u ON u.userId = fr.sender
         WHERE fr.receiver = ? AND fr.status = ?`;
 
     let results: any = await query(q, [loggedUser, "pending"]);
 
-    if (results) {
-      res.status(200).json(results);
-    }
+    res.status(200).json(results || []);
   }
 );
 
 export const getFriends = asyncHandler(async (req: Request, res: Response) => {
   const loggedUser = req.user?.userId;
+
+  if (!loggedUser) {
+    res.status(401);
+    throw new Error("Not authenticated");
+  }
 
   let q = `SELECT u.userId, u.userName, u.image, fr.id, fr.status
          FROM friend_requests fr JOIN users u ON (u.userId = fr.sender OR u.userId = fr.receiver) AND u.userId != ?
@@ -199,7 +250,5 @@ export const getFriends = asyncHandler(async (req: Request, res: Response) => {
     "accepted",
   ]);
 
-  if (results) {
-    res.status(200).json(results);
-  }
+  res.status(200).json(results || []);
 });

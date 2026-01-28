@@ -2,25 +2,47 @@ import asyncHandler from "express-async-handler";
 import { Request, Response } from "express";
 import query from "../db";
 
-export const changeAvatar = asyncHandler(async (req, res) => {
-  const { avatar } = req.body;
-  const userId = req.user?.userId;
+export const changeAvatar = asyncHandler(
+  async (req: Request, res: Response) => {
+    const { avatar } = req.body;
+    const userId = req.user?.userId;
 
-  try {
+    if (!userId) {
+      res.status(401);
+      throw new Error("Not authenticated");
+    }
+
+    if (!avatar) {
+      res.status(400);
+      throw new Error("Avatar image URL is required");
+    }
+
     let q = "UPDATE users SET `image`= ? WHERE `userId`= ?";
 
-    await query(q, [avatar, userId]);
+    const result: any = await query(q, [avatar, userId]);
+
+    if (result.affectedRows === 0) {
+      res.status(404);
+      throw new Error("User not found or avatar not updated");
+    }
 
     res.status(200).json("Avatar updated");
-  } catch (err) {
-    res.status(400);
-    throw new Error("Could not update avatar");
   }
-});
+);
 
 export const findUsers = asyncHandler(async (req: Request, res: Response) => {
   const { search } = req.query;
   const loggedUser = req.user?.userId;
+
+  if (!loggedUser) {
+    res.status(401);
+    throw new Error("Not authenticated");
+  }
+
+  if (!search || typeof search !== "string" || search.trim().length === 0) {
+    res.status(400);
+    throw new Error("Search term is required");
+  }
 
   const searchTerm = `%${search}%`;
 
@@ -29,5 +51,5 @@ export const findUsers = asyncHandler(async (req: Request, res: Response) => {
 
   let data = await query(q, [searchTerm, searchTerm, loggedUser]);
 
-  res.status(200).json(data);
+  res.status(200).json(data || []);
 });
