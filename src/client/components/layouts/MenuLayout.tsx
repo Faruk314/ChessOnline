@@ -29,15 +29,13 @@ export const MenuLayout: React.FC<MenuLayoutProps> = ({
         ></div>
       </div>
 
-      <div className="fixed top-0 left-0 w-full p-4 md:p-6 z-30 flex justify-between items-start pointer-events-none">
+      <div className="fixed top-0 left-0 w-full p-4 md:p-6 z-10 flex justify-between items-start pointer-events-none">
         <div className="flex items-center space-x-2 md:space-x-4 pointer-events-auto">
           {headerContent}
         </div>
-        
+
         {topRightContent && (
-          <div className="pointer-events-auto">
-            {topRightContent}
-          </div>
+          <div className="pointer-events-auto">{topRightContent}</div>
         )}
       </div>
 
