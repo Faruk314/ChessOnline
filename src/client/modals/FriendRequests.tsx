@@ -3,6 +3,7 @@ import { useFriendStore } from "../store/useFriendStore";
 import { useFriendRequestsQuery } from "../api/queries/friends";
 import { FaUserPlus } from "react-icons/fa";
 import FriendRequestCard from "../components/social/FriendRequestCard";
+import Loader from "../components/ui/Loader";
 
 interface Props {
   setOpenFriendReq: React.Dispatch<React.SetStateAction<boolean>>;
@@ -11,8 +12,7 @@ interface Props {
 const FriendRequests = ({ setOpenFriendReq }: Props) => {
   const modalRef: any = useRef();
   const { friendRequests } = useFriendStore();
-
-  useFriendRequestsQuery();
+  const { isLoading } = useFriendRequestsQuery();
 
   useEffect(() => {
     const handleOutsideClick = (event: any) => {
@@ -45,8 +45,13 @@ const FriendRequests = ({ setOpenFriendReq }: Props) => {
         </div>
       </div>
 
-      <div className="p-4 max-h-[20rem] overflow-y-auto custom-scrollbar bg-gray-800">
-        {friendRequests.length === 0 ? (
+      <div className="p-4 h-[15rem] overflow-y-auto custom-scrollbar bg-gray-800">
+        {isLoading && (
+          <div className="flex flex-col items-center justify-center py-8 text-gray-500 space-y-2">
+            <Loader />
+          </div>
+        )}
+        {friendRequests.length === 0 && !isLoading ? (
           <div className="flex flex-col items-center justify-center py-8 text-gray-500 space-y-2">
             <FaUserPlus size={32} className="opacity-20" />
             <p className="text-sm font-medium">No pending requests</p>
