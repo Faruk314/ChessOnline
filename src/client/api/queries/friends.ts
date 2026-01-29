@@ -9,7 +9,6 @@ import {
 import { useFriendStore } from "../../store/useFriendStore";
 import { useToast } from "../../hooks/useToast";
 import { getErrorMessage } from "../../lib/utils";
-import { FriendRequestStatus } from "../../../types/types";
 
 export function useFriendsQuery() {
   const { setFriends } = useFriendStore();
@@ -52,11 +51,14 @@ export function useFriendRequestsQuery() {
 }
 
 export function useSendFriendRequestMutation() {
+  const queryClient = useQueryClient();
   const { toastError, toastSuccess } = useToast();
 
   return useMutation({
     mutationFn: sendFriendRequest,
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["users"] });
+      queryClient.invalidateQueries({ queryKey: ["friendRequests"] });
       toastSuccess("Friend request sent");
     },
     onError: (error) => {
@@ -68,26 +70,15 @@ export function useSendFriendRequestMutation() {
 export function useAcceptFriendRequestMutation() {
   const queryClient = useQueryClient();
   const { toastError, toastSuccess } = useToast();
-  const { addFriend, removeFriendRequest, friendRequests } = useFriendStore();
 
   return useMutation({
     mutationFn: acceptFriendRequest,
-    onSuccess: (data, variables) => {
-      const requestId = variables;
-      const status = data.status;
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["friends"] });
+      queryClient.invalidateQueries({ queryKey: ["friendRequests"] });
+      queryClient.invalidateQueries({ queryKey: ["users"] });
 
-      if (status === 2) {
-        const request = friendRequests.find((req) => req.id === requestId);
-        if (request) {
-          removeFriendRequest(requestId);
-          addFriend({ ...request, status: "accepted" });
-
-          queryClient.invalidateQueries({ queryKey: ["friends"] });
-          queryClient.invalidateQueries({ queryKey: ["friendRequests"] });
-
-          toastSuccess("Friend request accepted");
-        }
-      }
+      toastSuccess("Friend request accepted");
     },
     onError: (error) => {
       toastError(getErrorMessage(error));
@@ -97,25 +88,14 @@ export function useAcceptFriendRequestMutation() {
 
 export function useDeleteFriendRequestMutation() {
   const queryClient = useQueryClient();
-  const { toastError, toastSuccess } = useToast();
-  const { removeFriendRequest, setFriends, friends } = useFriendStore();
+  const { toastError } = useToast();
 
   return useMutation({
     mutationFn: deleteFriendRequest,
-    onSuccess: (data, variables) => {
-      const requestId = data.id || variables;
-      const status: FriendRequestStatus = data.status;
-
-      if (status === "accepted") {
-        removeFriendRequest(requestId);
-
-        setFriends(friends.filter((f) => f.id !== requestId));
-
-        queryClient.invalidateQueries({ queryKey: ["friends"] });
-        queryClient.invalidateQueries({ queryKey: ["friendRequests"] });
-
-        toastSuccess("Friend request deleted");
-      }
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["friends"] });
+      queryClient.invalidateQueries({ queryKey: ["friendRequests"] });
+      queryClient.invalidateQueries({ queryKey: ["users"] });
     },
     onError: (error) => {
       toastError(getErrorMessage(error));
