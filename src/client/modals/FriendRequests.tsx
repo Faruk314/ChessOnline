@@ -1,8 +1,8 @@
 import React, { useEffect, useRef } from "react";
 import { useFriendStore } from "../store/useFriendStore";
 import { useFriendRequestsQuery } from "../api/queries/friends";
-import PlayerCard from "../components/PlayerCard";
 import { FaUserPlus } from "react-icons/fa";
+import FriendRequestCard from "../components/social/FriendRequestCard";
 
 interface Props {
   setOpenFriendReq: React.Dispatch<React.SetStateAction<boolean>>;
@@ -11,6 +11,7 @@ interface Props {
 const FriendRequests = ({ setOpenFriendReq }: Props) => {
   const modalRef: any = useRef();
   const { friendRequests } = useFriendStore();
+
   useFriendRequestsQuery();
 
   useEffect(() => {
@@ -53,7 +54,7 @@ const FriendRequests = ({ setOpenFriendReq }: Props) => {
         ) : (
           <div className="flex flex-col space-y-3">
             {friendRequests.map((friendReq) => (
-              <PlayerCard key={friendReq.id} friendRequestInfo={friendReq} />
+              <FriendRequestCard key={friendReq.id} playerInfo={friendReq} />
             ))}
           </div>
         )}
