@@ -1,12 +1,12 @@
 import apiClient from "../apiClient";
-import { UserInfo } from "../../../types/types";
+import { UserRequest } from "../../../types/types";
 
 const API_URL = "/api/users/";
 
-async function findUsers(searchQuery: string): Promise<UserInfo[]> {
+async function findUsers(searchQuery: string): Promise<UserRequest[]> {
   if (searchQuery.length < 1) return [];
 
-  const res = await apiClient.get<UserInfo[]>(
+  const res = await apiClient.get<UserRequest[]>(
     API_URL + `findUsers?search=${searchQuery}`
   );
   return res.data;

@@ -1,9 +1,9 @@
 import { create } from "zustand";
-import { UserInfo } from "../../types/types";
+import { UserRequest } from "../../types/types";
 
 interface UserStore {
-  foundUsers: UserInfo[];
-  setFoundUsers: (users: UserInfo[]) => void;
+  foundUsers: UserRequest[];
+  setFoundUsers: (users: UserRequest[]) => void;
 }
 
 export const useUserStore = create<UserStore>((set) => ({

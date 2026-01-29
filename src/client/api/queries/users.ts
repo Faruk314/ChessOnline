@@ -1,21 +1,23 @@
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { findUsers, updateAvatar } from "../services/users";
 import { useUserStore } from "../../store/useUserStore";
 import { useAuthStore } from "../../store/useAuthStore";
 import { useToast } from "../../hooks/useToast";
 import { getErrorMessage } from "../../lib/utils";
 
-export function useFindUsersMutation() {
+export function useFindUsersQuery(searchQuery: string) {
   const { setFoundUsers } = useUserStore();
 
-  return useMutation({
-    mutationFn: findUsers,
-    onSuccess: (data) => {
-      setFoundUsers(data);
+  return useQuery({
+    queryKey: ["users", searchQuery],
+    queryFn: async () => {
+      if (!searchQuery) return [];
+      const data = await findUsers(searchQuery);
+      setFoundUsers(data || []);
+      return data || [];
     },
-    onError: (error) => {
-      console.error(getErrorMessage(error));
-    },
+    enabled: searchQuery.trim().length > 0,
+    staleTime: 1000 * 60,
   });
 }
 
