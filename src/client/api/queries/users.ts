@@ -17,7 +17,7 @@ export function useFindUsersQuery(searchQuery: string) {
       return data || [];
     },
     enabled: searchQuery.trim().length > 0,
-    staleTime: 1000 * 60,
+    staleTime: 250,
   });
 }
 

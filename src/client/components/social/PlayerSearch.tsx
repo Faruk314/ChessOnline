@@ -29,7 +29,9 @@ const PlayerSearch = () => {
 
       <div className="flex-1 overflow-y-auto space-y-3">
         {isLoading ? (
-          <Loader />
+          <div className="flex h-full items-center justify-center">
+            <Loader />
+          </div>
         ) : (
           foundUsers.map((user) => (
             <PlayerCard key={user.userId} playerInfo={user} />
