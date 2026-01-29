@@ -25,7 +25,7 @@ const FriendList = () => {
         </div>
       ) : (
         friends.map((user) => (
-          <PlayerCard key={user.id} friendRequestInfo={user} />
+          <PlayerCard key={user.userId} playerInfo={user} />
         ))
       )}
     </div>

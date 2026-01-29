@@ -24,8 +24,9 @@ export interface UserInfo {
 }
 
 export interface UserRequest extends UserInfo {
-  id?: number;
-  status?: FriendRequestStatus;
+  id: number;
+  friendshipStatus?: FriendRequestStatus;
+  requestSender?: string | null;
 }
 
 export interface Position {
