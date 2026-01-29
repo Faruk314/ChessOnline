@@ -37,7 +37,9 @@ export const sendFriendRequest = asyncHandler(
 
     if (result.length > 0) {
       res.status(409);
-      throw new Error("Friend request already exists or you are already friends");
+      throw new Error(
+        "Friend request already exists or you are already friends"
+      );
     }
 
     q =
@@ -142,52 +144,6 @@ export const acceptFriendRequest = asyncHandler(
   }
 );
 
-export const checkFriendRequestStatus = asyncHandler(
-  async (req: Request, res: Response) => {
-    const loggedUser = req.user?.userId;
-    const personB: number = req.body.personB;
-
-    if (!loggedUser || !personB) {
-      res.status(400);
-      throw new Error("Missing user IDs");
-    }
-
-    let q = `SELECT fr.status, fr.sender, fr.receiver FROM friend_requests fr WHERE (fr.sender=? OR fr.receiver=?) AND (fr.sender=? OR fr.receiver= ?) AND (fr.status=? OR fr.status=?)`;
-    let result: any = await query(q, [
-      loggedUser,
-      loggedUser,
-      personB,
-      personB,
-      "pending",
-      "accepted",
-    ]);
-
-    if (result.length === 0) {
-      res.json({ status: 0 });
-      return;
-    }
-
-    const request = result[0];
-
-    if (request.status === "pending") {
-      res.json({
-        status: 1,
-        sender: request.sender,
-        receiver: request.receiver,
-      });
-      return;
-    }
-
-    if (request.status === "accepted") {
-      res.json({
-        status: 2,
-        sender: request.sender,
-        receiver: request.receiver,
-      });
-    }
-  }
-);
-
 export const deleteFriendRequest = asyncHandler(
   async (req: Request, res: Response) => {
     const requestId: number = req.body.id;
@@ -198,8 +154,8 @@ export const deleteFriendRequest = asyncHandler(
       throw new Error("Request ID is required");
     }
 
-    // Only allow deletion if the logged-in user is the sender or receiver
-    let q = "DELETE FROM friend_requests WHERE `id` = ? AND (sender = ? OR receiver = ?)";
+    let q =
+      "DELETE FROM friend_requests WHERE `id` = ? AND (sender = ? OR receiver = ?)";
 
     let result: any = await query(q, [requestId, loggedUser, loggedUser]);
 

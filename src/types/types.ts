@@ -25,7 +25,7 @@ export interface UserInfo {
 
 export interface UserRequest extends UserInfo {
   id?: number;
-  status?: string;
+  status?: FriendRequestStatus;
 }
 
 export interface Position {
@@ -104,11 +104,7 @@ export interface GameData {
   messages: Msg[];
 }
 
-export interface FriendRequestStatus {
-  status: number;
-  sender?: number;
-  receiver?: number;
-}
+export type FriendRequestStatus = "pending" | "accepted";
 
 export interface PromotionData {
   gameId: string;

@@ -3,13 +3,13 @@ import {
   getFriends,
   getFriendRequests,
   sendFriendRequest,
-  checkFriendRequestStatus,
   acceptFriendRequest,
   deleteFriendRequest,
 } from "../services/friends";
 import { useFriendStore } from "../../store/useFriendStore";
 import { useToast } from "../../hooks/useToast";
 import { getErrorMessage } from "../../lib/utils";
+import { FriendRequestStatus } from "../../../types/types";
 
 export function useFriendsQuery() {
   const { setFriends } = useFriendStore();
@@ -65,12 +65,6 @@ export function useSendFriendRequestMutation() {
   });
 }
 
-export function useCheckFriendRequestStatusMutation() {
-  return useMutation({
-    mutationFn: checkFriendRequestStatus,
-  });
-}
-
 export function useAcceptFriendRequestMutation() {
   const queryClient = useQueryClient();
   const { toastError, toastSuccess } = useToast();
@@ -110,9 +104,9 @@ export function useDeleteFriendRequestMutation() {
     mutationFn: deleteFriendRequest,
     onSuccess: (data, variables) => {
       const requestId = data.id || variables;
-      const status = data.status;
+      const status: FriendRequestStatus = data.status;
 
-      if (status === 0) {
+      if (status === "accepted") {
         removeFriendRequest(requestId);
 
         setFriends(friends.filter((f) => f.id !== requestId));

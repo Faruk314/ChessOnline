@@ -1,5 +1,5 @@
 import apiClient from "../apiClient";
-import { FriendRequestStatus, UserRequest } from "../../../types/types";
+import { UserRequest } from "../../../types/types";
 
 const API_URL = "/api/friends/";
 
@@ -20,14 +20,6 @@ async function sendFriendRequest(receiverId: number) {
   return res.data;
 }
 
-async function checkFriendRequestStatus(personB: number) {
-  const res = await apiClient.post<FriendRequestStatus>(
-    API_URL + "checkFriendRequestStatus",
-    { personB }
-  );
-  return res.data;
-}
-
 async function acceptFriendRequest(id: number) {
   const res = await apiClient.put(API_URL + "acceptFriendRequest", { id });
   return res.data;
@@ -42,7 +34,6 @@ export {
   getFriends,
   getFriendRequests,
   sendFriendRequest,
-  checkFriendRequestStatus,
   acceptFriendRequest,
   deleteFriendRequest,
 };
