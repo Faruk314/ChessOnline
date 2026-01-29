@@ -46,10 +46,28 @@ export const findUsers = asyncHandler(async (req: Request, res: Response) => {
 
   const searchTerm = `%${search}%`;
 
-  let q =
-    "SELECT `userId`, `userName`, `image` FROM users WHERE (`userName` LIKE ? OR `userId` LIKE ?) AND `userId` <> ?";
+  let q = `
+    SELECT 
+      u.userId, 
+      u.userName, 
+      u.image,
+      fr.id,  
+      fr.status AS friendshipStatus,
+      fr.sender AS requestSender
+    FROM users u
+    LEFT JOIN friend_requests fr ON 
+      (fr.sender = ? AND fr.receiver = u.userId) OR 
+      (fr.sender = u.userId AND fr.receiver = ?)
+    WHERE (u.userName LIKE ? OR u.userId LIKE ?) 
+    AND u.userId <> ?`;
 
-  let data = await query(q, [searchTerm, searchTerm, loggedUser]);
+  let data = await query(q, [
+    loggedUser,
+    loggedUser,
+    searchTerm,
+    searchTerm,
+    loggedUser,
+  ]);
 
   res.status(200).json(data || []);
 });
