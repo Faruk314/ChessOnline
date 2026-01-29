@@ -3,6 +3,7 @@ import { useGameInvitesStore } from "../store/useGameInvitesStore";
 import InviteCard from "../components/InviteCard";
 import { FaGamepad } from "react-icons/fa";
 import { useGameInvitesQuery } from "../api/queries/gameInvites";
+import Loader from "../components/ui/Loader";
 
 interface Props {
   setOpenInvites: React.Dispatch<React.SetStateAction<boolean>>;
@@ -11,8 +12,7 @@ interface Props {
 const Invites = ({ setOpenInvites }: Props) => {
   const modalRef: any = useRef();
   const { gameInvites } = useGameInvitesStore();
-
-  useGameInvitesQuery();
+  const { isLoading } = useGameInvitesQuery();
 
   useEffect(() => {
     const handleOutsideClick = (event: any) => {
@@ -45,17 +45,24 @@ const Invites = ({ setOpenInvites }: Props) => {
         </div>
       </div>
 
-      <div className="p-4 max-h-[20rem] overflow-y-auto custom-scrollbar bg-gray-800">
-        {gameInvites.length === 0 ? (
+      <div className="p-4 h-[15rem] overflow-y-auto custom-scrollbar bg-gray-800">
+        {isLoading && (
+          <div className="flex flex-col items-center justify-center py-8 text-gray-500 space-y-2">
+            <Loader />
+          </div>
+        )}
+
+        {gameInvites.length === 0 && !isLoading ? (
           <div className="flex flex-col items-center justify-center py-8 text-gray-500 space-y-2">
             <FaGamepad size={32} className="opacity-20" />
             <p className="text-sm font-medium">No pending invites</p>
           </div>
         ) : (
           <div className="flex flex-col space-y-3">
-            {gameInvites?.map((invite) => (
-              <InviteCard key={invite.userId} inviter={invite} />
-            ))}
+            {!isLoading &&
+              gameInvites?.map((invite) => (
+                <InviteCard key={invite.userId} inviter={invite} />
+              ))}
           </div>
         )}
       </div>
