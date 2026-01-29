@@ -4,7 +4,7 @@ import {
   getInvites,
   invite,
   rejectInvite,
-} from "../controllers/invite";
+} from "../controllers/gameInvites";
 import { protect } from "../utils/protect";
 
 const router = express.Router();

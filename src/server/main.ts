@@ -3,7 +3,7 @@ import ViteExpress from "vite-express";
 import authRoutes from "./routes/auth";
 import gameRoutes from "./routes/game";
 import friendRoutes from "./routes/friends";
-import inviteRoutes from "./routes/invite";
+import inviteRoutes from "./routes/gameInvites";
 import userRoutes from "./routes/users";
 import errorHandler from "./utils/error";
 import dotenv from "dotenv";
@@ -41,7 +41,7 @@ app.use(cookieParser());
 app.use("/api/auth", authRoutes);
 app.use("/api/game", gameRoutes);
 app.use("/api/friends", friendRoutes);
-app.use("/api/invite", inviteRoutes);
+app.use("/api/gameInvites", inviteRoutes);
 app.use("/api/users", userRoutes);
 
 app.use(errorHandler);

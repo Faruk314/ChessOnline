@@ -42,14 +42,24 @@ export const invite = asyncHandler(async (req: Request, res: Response) => {
 export const getInvites = asyncHandler(async (req: Request, res: Response) => {
   const loggedUser = req.user?.userId;
 
-  let q = `SELECT u.userId, u.userName, u.image
-         FROM invites i JOIN users u ON u.userId = i.sender
-        WHERE i.receiver = ?`;
+  if (!loggedUser) {
+    res.status(401);
+    throw new Error("Unauthorized: User session not found");
+  }
 
-  let results: any = await query(q, [loggedUser]);
+  try {
+    const q = `
+      SELECT u.userId, u.userName, u.image
+      FROM invites i 
+      JOIN users u ON u.userId = i.sender
+      WHERE i.receiver = ?`;
 
-  if (results.length > 0) {
-    res.status(200).json(results);
+    const results: any = await query(q, [loggedUser]);
+
+    res.status(200).json(results || []);
+  } catch (dbError) {
+    res.status(500);
+    throw new Error("Failed to fetch game invites from database");
   }
 });
 

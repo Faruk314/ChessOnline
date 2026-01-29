@@ -1,7 +1,7 @@
 import apiClient from "../apiClient";
 import { UserInfo } from "../../../types/types";
 
-const API_URL = "/api/invite/";
+const API_URL = "/api/gameInvites/";
 
 async function getGameInvites() {
   const res = await apiClient.get<UserInfo[]>(API_URL + "getInvites");
@@ -27,9 +27,4 @@ async function rejectGameInvite(senderId: number) {
   return res.data;
 }
 
-export {
-  getGameInvites,
-  sendGameInvite,
-  acceptGameInvite,
-  rejectGameInvite,
-};
+export { getGameInvites, sendGameInvite, acceptGameInvite, rejectGameInvite };

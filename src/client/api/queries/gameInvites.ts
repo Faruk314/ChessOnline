@@ -1,4 +1,4 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import {
   getGameInvites,
   sendGameInvite,
@@ -17,6 +17,7 @@ export function useGameInvitesQuery() {
     queryFn: async () => {
       try {
         const data = await getGameInvites();
+
         setGameInvites(data || []);
         return data || [];
       } catch (error) {
