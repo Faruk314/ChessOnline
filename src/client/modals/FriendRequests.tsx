@@ -58,9 +58,10 @@ const FriendRequests = ({ setOpenFriendReq }: Props) => {
           </div>
         ) : (
           <div className="flex flex-col space-y-3">
-            {friendRequests.map((friendReq) => (
-              <FriendRequestCard key={friendReq.id} playerInfo={friendReq} />
-            ))}
+            {!isLoading &&
+              friendRequests.map((friendReq) => (
+                <FriendRequestCard key={friendReq.id} playerInfo={friendReq} />
+              ))}
           </div>
         )}
       </div>
