@@ -128,14 +128,12 @@ export const acceptFriendRequest = asyncHandler(
 
     res.status(200).json({ status: 2, id: requestId });
 
-    // Notify the receiver (who accepted)
     getIO().to(`user:${row.receiver}`).emit("friendRequestAccepted", {
       userId: row.sender,
       userName: row.senderName,
       image: row.senderImage,
     });
 
-    // Notify the sender (who sent the request)
     getIO().to(`user:${row.sender}`).emit("friendRequestAccepted", {
       userId: row.receiver,
       userName: row.receiverName,
@@ -195,9 +193,17 @@ export const getFriends = asyncHandler(async (req: Request, res: Response) => {
     throw new Error("Not authenticated");
   }
 
-  let q = `SELECT u.userId, u.userName, u.image, fr.id, fr.status
-         FROM friend_requests fr JOIN users u ON (u.userId = fr.sender OR u.userId = fr.receiver) AND u.userId != ?
-        WHERE (fr.receiver = ? OR fr.sender = ?) AND fr.status = ?`;
+  let q = `
+    SELECT 
+      u.userId, 
+      u.userName, 
+      u.image, 
+      fr.id, 
+      fr.status AS friendshipStatus,
+      fr.sender AS requestSender
+    FROM friend_requests fr 
+    JOIN users u ON (u.userId = fr.sender OR u.userId = fr.receiver) AND u.userId != ?
+    WHERE (fr.receiver = ? OR fr.sender = ?) AND fr.status = ?`;
 
   let results: any = await query(q, [
     loggedUser,
