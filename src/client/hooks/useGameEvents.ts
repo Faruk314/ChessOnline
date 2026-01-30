@@ -3,16 +3,14 @@ import { useSocketEvent } from "./useSocketEvent";
 import { SocketContext } from "../context/SocketContext";
 import { useNavigate } from "react-router-dom";
 import { useGameInvitesStore } from "../store/useGameInvitesStore";
-import { Game, MoveAction, Msg, UserInfo } from "../../types/types";
+import { Game, GameModes, MoveAction, Msg, UserInfo } from "../../types/types";
 import { useGameStore } from "../store/useGameStore";
-import { toast } from "react-toastify";
 import { useSoundStore } from "../store/useSoundStore";
 
 export const useGameEvents = () => {
   const { socket } = useContext(SocketContext);
   const { addGameInvite, setMsgNotif } = useGameInvitesStore();
   const { updateGame, addMessage } = useGameStore();
-
   const navigate = useNavigate();
   const {
     playMoveSound,
@@ -36,20 +34,17 @@ export const useGameEvents = () => {
     navigate(`/multiplayer/${gameId}`);
   });
 
-  useSocketEvent(socket, "inviteAccepted", ({ players }) => {
-    socket?.emit("createRoom", { players });
-  });
+  useSocketEvent(
+    socket,
+    "receiveInvite",
+    (data: { from: UserInfo; gameMode: GameModes }) => {
+      const { from, gameMode } = data;
 
-  useSocketEvent(socket, "receiveInvite", (userInfo: UserInfo) => {
-    addGameInvite(userInfo);
-  });
+      const gameInvite = { ...from, gameMode };
 
-  useSocketEvent(socket, "invalidInvite", () => {
-    toast.error("This invite is no longer valid", {
-      position: "top-center",
-      progressClassName: "bar",
-    });
-  });
+      addGameInvite(gameInvite);
+    }
+  );
 
   useSocketEvent(socket, "newMessage", (message: Msg) => {
     addMessage(message);

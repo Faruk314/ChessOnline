@@ -133,3 +133,8 @@ export type MoveAction =
   | "opponentLeft";
 
 export type GameModes = "rapid" | "blitz" | "long" | "bullet";
+
+export interface RedisGameInvite {
+  senderId: string;
+  gameMode: GameModes;
+}

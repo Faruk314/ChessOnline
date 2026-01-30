@@ -1,119 +1,178 @@
-import { Request, Response } from "express";
+import e, { Request, Response } from "express";
 import asyncHandler from "express-async-handler";
 import query from "../db";
 import { getIO } from "../socket/socket";
+import { GameModes, RedisGameInvite } from "../../types/types";
+import { client } from "../redis/config";
+import { INVITE_TTL } from "../constants/main";
+import { getUserSession, updateSessionField } from "../redis/user";
+import { createGame as createGameRedis } from "../redis/game";
 
-export const invite = asyncHandler(async (req: Request, res: Response) => {
-  const userId = req.user?.userId;
-  const personB: number = req.body.receiverId;
+export const sendGameInvite = asyncHandler(
+  async (req: Request, res: Response) => {
+    const senderId = req.user?.userId;
+    const {
+      receiverId,
+      gameMode,
+    }: { receiverId: number; gameMode: GameModes } = req.body;
 
-  const checkQuery =
-    "SELECT i.id FROM invites i WHERE i.sender = ? AND i.receiver = ?";
+    if (!senderId) {
+      res.status(401);
+      throw new Error("Unauthorized: User session not found");
+    }
 
-  const checkResult: any = await query(checkQuery, [userId, personB]);
+    if (senderId === receiverId) {
+      res.status(400);
+      throw new Error("You cannot invite yourself");
+    }
 
-  if (checkResult.length > 0) {
-    res.json("Invite already exists");
-    return;
-  }
+    const inboxKey = `user:invites:active:${receiverId}`;
+    const metaKey = `invite:${receiverId}:${senderId}`;
 
-  const q = "INSERT INTO invites (sender, receiver) VALUES (?, ?)";
-  const result: any = await query(q, [userId, personB]);
+    const existing = await client.exists(metaKey);
 
-  if (result.affectedRows === 1) {
+    if (existing) {
+      res.status(409).json({ message: "You have already invited this user" });
+      return;
+    }
+
+    await Promise.all([
+      client.sadd(inboxKey, senderId.toString()),
+      client.hset(metaKey, {
+        senderId: senderId.toString(),
+        gameMode: gameMode || "rapid",
+        createdAt: Date.now().toString(),
+      }),
+      client.expire(metaKey, INVITE_TTL),
+    ]);
+
     const [sender]: any = await query(
       "SELECT userId, userName, image FROM users WHERE userId = ?",
-      [userId]
+      [senderId]
     );
 
-    getIO().to(`user:${personB}`).emit("receiveInvite", {
-      userId: sender.userId,
-      userName: sender.userName,
-      image: sender.image,
-    });
+    getIO()
+      .to(`user:${receiverId}`)
+      .emit("receiveInvite", {
+        from: sender,
+        gameMode: gameMode || "rapid",
+      });
 
-    res.status(200).json("Invite sent");
-  } else {
-    res.status(400);
-    throw new Error("Failed to invite");
+    res.status(201).json({ message: "Invite sent" });
   }
-});
+);
 
-export const getInvites = asyncHandler(async (req: Request, res: Response) => {
-  const loggedUser = req.user?.userId;
+export const getGameInvites = asyncHandler(
+  async (req: Request, res: Response) => {
+    const loggedUser = req.user?.userId;
+    const inboxKey = `user:invites:active:${loggedUser}`;
 
-  if (!loggedUser) {
-    res.status(401);
-    throw new Error("Unauthorized: User session not found");
+    const senderIds = await client.smembers(inboxKey);
+    if (senderIds.length === 0) {
+      res.status(200).json([]);
+      return;
+    }
+
+    const activeInvites: RedisGameInvite[] = [];
+
+    for (const sId of senderIds) {
+      const meta = await client.hgetall(`invite:${loggedUser}:${sId}`);
+      if (Object.keys(meta).length === 0) {
+        await client.srem(inboxKey, sId);
+      } else {
+        activeInvites.push({
+          senderId: sId,
+          gameMode: meta.gameMode as GameModes,
+        });
+      }
+    }
+
+    if (activeInvites.length === 0) {
+      res.status(200).json([]);
+      return;
+    }
+
+    const placeholders = activeInvites.map(() => "?").join(",");
+
+    const sIds = activeInvites.map((i) => i.senderId);
+    const users: any = await query(
+      `SELECT userId, userName, image FROM users WHERE userId IN (${placeholders})`,
+      sIds
+    );
+
+    const results = users.map((u: any) => ({
+      ...u,
+      gameMode: activeInvites.find((i) => i.senderId == u.userId)?.gameMode,
+    }));
+
+    res.status(200).json(results);
   }
+);
 
-  try {
-    const q = `
-      SELECT u.userId, u.userName, u.image
-      FROM invites i 
-      JOIN users u ON u.userId = i.sender
-      WHERE i.receiver = ?`;
-
-    const results: any = await query(q, [loggedUser]);
-
-    res.status(200).json(results || []);
-  } catch (dbError) {
-    res.status(500);
-    throw new Error("Failed to fetch game invites from database");
-  }
-});
-
-export const acceptInvite = asyncHandler(
+export const acceptGameInvite = asyncHandler(
   async (req: Request, res: Response) => {
     const userId = req.user?.userId;
+    const { senderId } = req.body;
+    const io = getIO();
 
-    try {
-      let q = "SELECT i.sender FROM invites i WHERE i.receiver = ?";
-      let data: any = await query(q, [userId]);
+    const metaKey = `invite:${userId}:${senderId}`;
+    const invite = await client.hgetall(metaKey);
 
-      if (data.length === 0) {
-        res.status(400);
-        throw new Error("Invite expired");
-      }
+    if (Object.keys(invite).length === 0) {
+      res.status(400);
+      throw new Error("Invite expired or not found");
+    }
 
-      const senderId = data[0].sender;
+    const [mySession, senderSession] = await Promise.all([
+      getUserSession(userId!),
+      getUserSession(senderId),
+    ]);
 
-      // delete my outgoing invites
-      q = `DELETE FROM invites WHERE sender = ?`;
-      await query(q, [userId]);
+    if (!senderSession || !senderSession.connected) {
+      throw new Error("Sender is offline");
+    }
 
-      // delete accepted invite
-      q = `DELETE FROM invites WHERE sender = ? AND receiver = ?`;
-      await query(q, [data[0].sender, userId]);
+    if (mySession?.inMultiplayer || senderSession?.inMultiplayer) {
+      res.status(409);
+      throw new Error("One of the players is already in a match");
+    }
 
-      // notify sender
-      getIO()
-        .to(`user:${data[0].sender}`)
-        .emit("inviteAccepted", {
-          players: [senderId, userId],
-        });
+    const response = await createGameRedis({
+      players: [userId, senderId],
+      io,
+      gameMode: invite.gameMode as GameModes,
+    });
 
-      res.status(200).json("Invites deleted");
-    } catch (error) {
-      console.log(error);
-      throw new Error("Could not handle the invitation");
+    if (response.status === "success" && response.data) {
+      await Promise.all([
+        client.del(metaKey),
+        client.srem(`user:invites:active:${userId}`, senderId.toString()),
+        updateSessionField(userId!, "inMultiplayer", "true"),
+        updateSessionField(senderId, "inMultiplayer", "true"),
+      ]);
+
+      io.to(response.data.gameId).emit("gameStart", {
+        gameId: response.data.gameId,
+      });
+
+      res.status(200).json({ message: "Invite accepted" });
+    } else {
+      res.status(400);
+      throw new Error("Unexpected error");
     }
   }
 );
 
-export const rejectInvite = asyncHandler(
+export const rejectGameInvite = asyncHandler(
   async (req: Request, res: Response) => {
     const receiverId = req.user?.userId;
-    const senderId = req.body.senderId;
+    const { senderId } = req.body;
 
-    try {
-      let q = "DELETE FROM invites WHERE sender = ? AND receiver = ?";
+    await Promise.all([
+      client.del(`invite:${receiverId}:${senderId}`),
+      client.srem(`user:invites:active:${receiverId}`, senderId.toString()),
+    ]);
 
-      await query(q, [senderId, receiverId]);
-
-      res.status(200).json("Invite deleted");
-    } catch (error) {
-      res.status(400).json("Could not delete invite");
-    }
+    res.status(200).json({ message: "Invite deleted" });
   }
 );

@@ -20,29 +20,10 @@ class GameRoomListeners {
   }
 
   registerListeners() {
-    this.socket.on("createRoom", this.onCreateGameRoom.bind(this));
     this.socket.on("findGameRoom", this.onFindGameRoom.bind(this));
     this.socket.on("cancelFindGameRoom", this.onCancelFindGameRoom.bind(this));
     this.socket.on("reconnectToRoom", this.onReconnectToRoom.bind(this));
     this.socket.on("sendMessage", this.onSendMessage.bind(this));
-  }
-
-  async onCreateGameRoom({
-    players,
-    gameMode = "rapid",
-  }: {
-    players: string[];
-    gameMode: GameModes;
-  }) {
-    const response = await createGameRedis({ players, io: this.io, gameMode });
-
-    if (response?.status !== "success") return;
-
-    if (!response.data) return;
-
-    this.io
-      .to(response.data.gameId)
-      .emit("gameStart", { gameId: response.data.gameId });
   }
 
   async onFindGameRoom({ gameMode }: { gameMode: GameModes }) {

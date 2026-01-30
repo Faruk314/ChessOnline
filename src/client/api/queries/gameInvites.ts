@@ -44,9 +44,13 @@ export function useSendGameInviteMutation() {
 
 export function useAcceptGameInviteMutation() {
   const { toastError } = useToast();
+  const { removeGameInvite } = useGameInvitesStore();
 
   return useMutation({
     mutationFn: acceptGameInvite,
+    onSuccess: (_, data) => {
+      removeGameInvite(data.senderId);
+    },
     onError: (error) => {
       toastError(getErrorMessage(error));
     },
@@ -59,8 +63,8 @@ export function useRejectGameInviteMutation() {
 
   return useMutation({
     mutationFn: rejectGameInvite,
-    onSuccess: (_, senderId) => {
-      removeGameInvite(senderId);
+    onSuccess: (_, data) => {
+      removeGameInvite(data.senderId);
     },
     onError: (error) => {
       toastError(getErrorMessage(error));

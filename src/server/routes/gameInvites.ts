@@ -1,20 +1,20 @@
 import express from "express";
 import {
-  acceptInvite,
-  getInvites,
-  invite,
-  rejectInvite,
+  acceptGameInvite,
+  getGameInvites,
+  sendGameInvite,
+  rejectGameInvite,
 } from "../controllers/gameInvites";
 import { protect } from "../utils/protect";
 
 const router = express.Router();
 
-router.post("/sendInvite", protect, invite);
+router.post("/sendGameInvite", protect, sendGameInvite);
 
-router.get("/getInvites", protect, getInvites);
+router.get("/getGameInvites", protect, getGameInvites);
 
-router.post("/acceptInvite", protect, acceptInvite);
+router.post("/acceptGameInvite", protect, acceptGameInvite);
 
-router.post("/rejectInvite", protect, rejectInvite);
+router.post("/rejectGameInvite", protect, rejectGameInvite);
 
 export default router;

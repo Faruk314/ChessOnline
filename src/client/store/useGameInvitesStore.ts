@@ -1,14 +1,14 @@
 import { create } from "zustand";
-import { UserInfo } from "../../types/types";
+import { GameInvite, UserInfo } from "../../types/types";
 
 interface GameInviteState {
-  gameInvites: UserInfo[];
+  gameInvites: GameInvite[];
   msgNotif: boolean;
 
-  setGameInvites: (invites: UserInfo[]) => void;
+  setGameInvites: (invites: GameInvite[]) => void;
   setMsgNotif: (notif: boolean) => void;
 
-  addGameInvite: (userInfo: UserInfo) => void;
+  addGameInvite: (userInfo: GameInvite) => void;
   removeGameInvite: (senderId: number) => void;
 }
 
