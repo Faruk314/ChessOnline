@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from "react";
 import { useGameInvitesStore } from "../store/useGameInvitesStore";
-import InviteCard from "../components/InviteCard";
+import GameInviteCard from "../components/GameInviteCard";
 import { FaGamepad } from "react-icons/fa";
 import { useGameInvitesQuery } from "../api/queries/gameInvites";
 import Loader from "../components/ui/Loader";
@@ -9,7 +9,7 @@ interface Props {
   setOpenInvites: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const Invites = ({ setOpenInvites }: Props) => {
+const GameInvites = ({ setOpenInvites }: Props) => {
   const modalRef: any = useRef();
   const { gameInvites } = useGameInvitesStore();
   const { isLoading } = useGameInvitesQuery();
@@ -61,7 +61,7 @@ const Invites = ({ setOpenInvites }: Props) => {
           <div className="flex flex-col space-y-3">
             {!isLoading &&
               gameInvites?.map((invite) => (
-                <InviteCard key={invite.userId} inviter={invite} />
+                <GameInviteCard key={invite.userId} gameInvite={invite} />
               ))}
           </div>
         )}
@@ -70,4 +70,4 @@ const Invites = ({ setOpenInvites }: Props) => {
   );
 };
 
-export default Invites;
+export default GameInvites;

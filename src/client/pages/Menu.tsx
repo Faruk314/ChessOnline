@@ -8,7 +8,7 @@ import FindMatch from "../modals/FindMatch";
 import ChangeAvatar from "../modals/ChangeAvatar";
 import FriendRequests from "../modals/FriendRequests";
 import SocialHub from "../modals/SocialHub";
-import Invites from "../modals/Invites";
+import GameInvites from "../modals/GameInvites";
 import { SocketContext } from "../context/SocketContext";
 import { useSoundStore } from "../store/useSoundStore";
 import { useGameInvitesStore } from "../store/useGameInvitesStore";
@@ -103,10 +103,9 @@ const Menu = () => {
       {openChangeAvatar && <ChangeAvatar />}
       {openSocialHub && <SocialHub onClose={() => setOpenSocialHub(false)} />}
       {openFriendReq && <FriendRequests setOpenFriendReq={setOpenFriendReq} />}
-      {openInvites && <Invites setOpenInvites={setOpenInvites} />}
+      {openInvites && <GameInvites setOpenInvites={setOpenInvites} />}
     </MenuLayout>
   );
 };
-
 
 export default Menu;

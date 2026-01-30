@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { UserRequest } from "../../types/types";
+import { GameModes, UserRequest } from "../../types/types";
 import { IoClose, IoCheckmarkSharp } from "react-icons/io5";
 import whiteDefault from "../assets/images/whiteDefault.png";
 import { MdDeleteForever, MdPersonAdd } from "react-icons/md";
@@ -11,6 +11,7 @@ import {
   useSendFriendRequestMutation,
 } from "../api/queries/friends";
 import { useSendGameInviteMutation } from "../api/queries/gameInvites";
+import GameInviteDropdown from "../modals/GameInviteDropdown";
 
 interface Props {
   playerInfo: UserRequest;
@@ -18,14 +19,20 @@ interface Props {
 
 const PlayerCard = ({ playerInfo }: Props) => {
   const { loggedUserInfo } = useAuthStore();
-  const { mutateAsync: addInviteToDb } = useSendGameInviteMutation();
+  const { mutateAsync: sendGameInvite } = useSendGameInviteMutation();
   const { mutateAsync: sendFriendRequest } = useSendFriendRequestMutation();
   const { mutateAsync: acceptFriendRequest } = useAcceptFriendRequestMutation();
   const { mutateAsync: deleteFriendRequest } = useDeleteFriendRequestMutation();
   const [isHovering, setIsHovering] = useState(false);
+  const [showInviteMenu, setShowInviteMenu] = useState(false);
 
   const status = playerInfo.friendshipStatus;
   const isSender = loggedUserInfo?.userId === playerInfo.requestSender;
+
+  const handleSelectMode = async (mode: GameModes) => {
+    await sendGameInvite({ receiverId: playerInfo.userId, gameMode: mode });
+    setShowInviteMenu(false);
+  };
 
   return (
     <div className="flex items-center bg-gray-700/50 border border-gray-600 w-full justify-between p-3 rounded-xl transition-all hover:border-gray-500 hover:bg-gray-700">
@@ -109,13 +116,27 @@ const PlayerCard = ({ playerInfo }: Props) => {
           </div>
         )}
         <div className="h-6 w-[1px] bg-gray-600 mx-1" />{" "}
-        <button
-          onClick={() => addInviteToDb(playerInfo.userId)}
-          className="p-2 rounded-lg bg-blue-600/20 text-blue-400 hover:bg-blue-600 hover:text-white transition-all"
-          title="Invite to Game"
-        >
-          <FaGamepad size={20} />
-        </button>
+        <div className="relative">
+          <button
+            onClick={(e) => {
+              setShowInviteMenu(true);
+            }}
+            className={`p-2 rounded-lg transition-all ${
+              showInviteMenu
+                ? "bg-blue-600 text-white"
+                : "bg-blue-600/20 text-blue-400 hover:bg-blue-600 hover:text-white"
+            }`}
+          >
+            <FaGamepad size={20} />
+          </button>
+
+          {showInviteMenu && (
+            <GameInviteDropdown
+              onSelect={handleSelectMode}
+              onClose={() => setShowInviteMenu(false)}
+            />
+          )}
+        </div>
       </div>
     </div>
   );

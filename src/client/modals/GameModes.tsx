@@ -10,60 +10,55 @@ interface GameModeConfig {
   id: GameModes;
   label: string;
   time: string;
-  minutes: number;
   icon: IconType;
   color: string;
   bg: string;
   border: string;
 }
 
-const GameModes = ({ onSelect }: Props) => {
-  const gameModes: GameModeConfig[] = [
-    {
-      id: "bullet",
-      label: "Bullet",
-      time: "1 min",
-      minutes: 1,
-      icon: FaBolt,
-      color: "text-yellow-400",
-      bg: "bg-yellow-400/10",
-      border: "hover:border-yellow-400",
-    },
-    {
-      id: "blitz",
-      label: "Blitz",
-      time: "3 min",
-      minutes: 3,
-      icon: FaFire,
-      color: "text-orange-500",
-      bg: "bg-orange-500/10",
-      border: "hover:border-orange-500",
-    },
-    {
-      id: "rapid",
-      label: "Rapid",
-      time: "10 min",
-      minutes: 10,
-      icon: FaStopwatch,
-      color: "text-emerald-400",
-      bg: "bg-emerald-400/10",
-      border: "hover:border-emerald-400",
-    },
-    {
-      id: "long",
-      label: "Long",
-      time: "60 min",
-      minutes: 60,
-      icon: FaHourglassHalf,
-      color: "text-blue-400",
-      bg: "bg-blue-400/10",
-      border: "hover:border-blue-400",
-    },
-  ];
+export const gameModeConfigs: GameModeConfig[] = [
+  {
+    id: "bullet",
+    label: "Bullet",
+    time: "1m",
+    icon: FaBolt,
+    color: "text-yellow-400",
+    bg: "bg-yellow-400/10",
+    border: "hover:border-yellow-400",
+  },
+  {
+    id: "blitz",
+    label: "Blitz",
+    time: "3m",
+    icon: FaFire,
+    color: "text-orange-500",
+    bg: "bg-orange-500/10",
+    border: "hover:border-orange-500",
+  },
+  {
+    id: "rapid",
+    label: "Rapid",
+    time: "10m",
+    icon: FaStopwatch,
+    color: "text-emerald-400",
+    bg: "bg-emerald-400/10",
+    border: "hover:border-emerald-400",
+  },
+  {
+    id: "long",
+    label: "Long",
+    time: "60m",
+    icon: FaHourglassHalf,
+    color: "text-blue-400",
+    bg: "bg-blue-400/10",
+    border: "hover:border-blue-400",
+  },
+];
 
+const GameModes = ({ onSelect }: Props) => {
   return (
     <div className="grid grid-cols-2 gap-3 md:gap-4">
-      {gameModes.map((mode) => (
+      {gameModeConfigs.map((mode) => (
         <button
           key={mode.id}
           onClick={() => onSelect(mode.id)}
