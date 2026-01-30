@@ -29,6 +29,10 @@ export interface UserRequest extends UserInfo {
   requestSender?: string | null;
 }
 
+export interface GameInvite extends UserInfo {
+  gameMode: GameModes;
+}
+
 export interface Position {
   row: number;
   col: number;
