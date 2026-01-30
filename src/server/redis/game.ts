@@ -16,6 +16,7 @@ import {
 } from "../methods/game";
 import { Server } from "socket.io";
 import { getIO } from "../socket/socket";
+import { updateSessionField } from "./user";
 
 const createGame = async ({
   players,
@@ -146,21 +147,24 @@ const updateGame = async ({
 }) => {
   const io = getIO();
   const sockets = await io.in(gameId).fetchSockets();
-
-  sockets.forEach((socket: any) => {
-    const userId = socket.userId;
-    const playerView = getGameStateForPlayer(newGameState, userId);
-
-    io.to(socket.id).emit("updateGame", {
-      gameState: playerView,
-      action,
-    });
-  });
-
   const isGameOver =
-    newGameState.winner ||
-    newGameState.drawReason ||
-    newGameState.checkmate;
+    newGameState.winner || newGameState.drawReason || newGameState.checkmate;
+
+  await Promise.all(
+    sockets.map(async (socket: any) => {
+      const userId = socket.userId;
+      const playerView = getGameStateForPlayer(newGameState, userId);
+
+      if (isGameOver) {
+        await updateSessionField(userId, "inMultiplayer", false);
+      }
+
+      io.to(socket.id).emit("updateGame", {
+        gameState: playerView,
+        action,
+      });
+    })
+  );
 
   if (isGameOver) {
     await deleteGameState(gameId);
