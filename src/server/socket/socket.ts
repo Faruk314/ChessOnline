@@ -6,6 +6,7 @@ import dotenv from "dotenv";
 import GameLogicListeners from "./listeners/gameLogic";
 import GameRoomListeners from "./listeners/gameRoom";
 import { cancelFindMatch } from "../redis/gameRoom";
+import { createUserSession, updateSessionField } from "../redis/user";
 dotenv.config();
 
 let io: ServerIO;
@@ -44,10 +45,13 @@ function setupSocket(httpServer: import("http").Server) {
     }
   });
 
-  io.on("connection", (socket: Socket) => {
+  io.on("connection", async (socket: Socket) => {
     const userId = socket.userId;
 
-    socket.join(`user:${userId}`);
+    if (userId) {
+      await createUserSession(userId);
+      socket.join(`user:${userId}`);
+    }
 
     console.log(socket.userId, "user connected");
 
@@ -63,6 +67,8 @@ function setupSocket(httpServer: import("http").Server) {
       const userId = socket.userId;
 
       if (!userId) return console.error("user id missing");
+
+      await updateSessionField(userId, "connected", false);
 
       await cancelFindMatch({ userId, silent: true });
     });
