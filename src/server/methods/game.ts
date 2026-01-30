@@ -78,47 +78,66 @@ const assignSides = async ({
   gameId: string;
   gameMode: GameModes;
 }) => {
-  const shuffledIds = players.sort(() => Math.random() - 0.5);
-  let playersData: UserInfo[] = [];
+  try {
+    const shuffledIds = [...players].sort(() => Math.random() - 0.5);
 
-  for (let i = 0; i < shuffledIds.length; i++) {
-    const playerId = shuffledIds[i];
+    const playersDataResults = await Promise.allSettled(
+      shuffledIds.map(async (id) => {
+        const res: any = await query(
+          "SELECT u.userName, u.userId, u.image FROM users u WHERE u.userId = ?",
+          [id]
+        );
+        if (!res?.[0]) throw new Error(`User ${id} not found`);
+        return res[0] as UserInfo;
+      })
+    );
 
-    const playerInfoQuery =
-      "SELECT u.userName, u.userId, u.image FROM users u WHERE u.userId = ?";
-    const playerData: any = await query(playerInfoQuery, [playerId]);
+    const playersData = playersDataResults
+      .filter(
+        (r): r is PromiseFulfilledResult<UserInfo> => r.status === "fulfilled"
+      )
+      .map((r) => r.value);
 
-    playersData.push(playerData[0]);
-
-    const sockets = await io.in(`user:${playerId}`).fetchSockets();
-
-    for (const socket of sockets) {
-      socket.join(gameId);
+    if (playersData.length !== players.length) {
+      return { success: false, error: "Missing player data" };
     }
+
+    await Promise.allSettled(
+      shuffledIds.map(async (id) => {
+        const sockets = await io.in(`user:${id}`).fetchSockets();
+        sockets.forEach((s) => s.join(gameId));
+      })
+    );
+
+    const initialTime = getPlayerInitialTime(gameMode);
+
+    const whitePlayer = new Player({
+      color: "white",
+      playerInfo: playersData[0],
+      remainingTime: initialTime,
+      isTimerActive: false,
+      hasTimerStarted: false,
+      turnStartTime: null,
+      enemyPieces: [],
+    });
+    const blackPlayer = new Player({
+      color: "black",
+      playerInfo: playersData[1],
+      remainingTime: initialTime,
+      isTimerActive: false,
+      hasTimerStarted: false,
+      turnStartTime: null,
+      enemyPieces: [],
+    });
+
+    return {
+      success: true,
+      data: { players: [whitePlayer, blackPlayer], playerTurn: whitePlayer },
+    };
+  } catch (err) {
+    console.error("assignSides failed:", err);
+    return { success: false, error: "Internal initialization error" };
   }
-
-  const initialTimeMiliseconds = getPlayerInitialTime(gameMode);
-
-  const whitePlayer = new Player({
-    color: "white",
-    playerInfo: playersData[0],
-    remainingTime: initialTimeMiliseconds,
-    isTimerActive: false,
-    hasTimerStarted: false,
-    turnStartTime: null,
-    enemyPieces: [],
-  });
-  const blackPlayer = new Player({
-    color: "black",
-    playerInfo: playersData[1],
-    remainingTime: initialTimeMiliseconds,
-    isTimerActive: false,
-    hasTimerStarted: false,
-    turnStartTime: null,
-    enemyPieces: [],
-  });
-
-  return { players: [whitePlayer, blackPlayer], playerTurn: whitePlayer };
 };
 
 const getPlayerInitialTime = (gameMode: GameModes): number => {

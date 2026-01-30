@@ -29,11 +29,30 @@ const createGame = async ({
 }) => {
   const gameId = uuidv4();
 
+  const result = await assignSides({ players, io, gameId, gameMode });
+
+  const cleanupSessions = async () => {
+    await Promise.allSettled(
+      players.map((id) => updateSessionField(id, "inMultiplayer", false))
+    );
+  };
+
+  if (!result.success || !result.data) {
+    await cleanupSessions();
+
+    return {
+      status: "error",
+      message: result.error || "Failed to create game",
+    };
+  }
+
+  const { players: assignedPlayers, playerTurn } = result.data;
+
   const gameState: IGame = {
     gameId,
-    board: [],
-    players: [],
-    playerTurn: null,
+    board: createBoard(),
+    players: assignedPlayers,
+    playerTurn: playerTurn,
     availablePositions: [],
     activePiece: null,
     isPromotion: false,
@@ -50,22 +69,16 @@ const createGame = async ({
     winner: null,
   };
 
-  gameState.board = createBoard();
-
-  const sidesData = await assignSides({ players, io, gameId, gameMode });
-
-  if (!sidesData) return;
-
-  gameState.players = sidesData.players;
-  gameState.playerTurn = sidesData.playerTurn;
-
-  const gameData: GameData = { gameState, messages: [] };
-
   try {
+    const gameData: GameData = { gameState, messages: [] };
     await client.set(`${GAMES_KEY}:${gameId}`, JSON.stringify(gameData));
     return { status: "success", data: { gameId } };
-  } catch {
-    return { status: "error", message: "Failed to create game" };
+  } catch (err) {
+    console.error("Redis save failed:", err);
+
+    await cleanupSessions();
+
+    return { status: "error", message: "Database storage failure" };
   }
 };
 
