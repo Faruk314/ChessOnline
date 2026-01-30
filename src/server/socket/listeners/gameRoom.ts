@@ -8,6 +8,7 @@ import {
 import { GameModes } from "../../../types/types";
 import { client } from "../../redis/config";
 import { cancelFindMatch } from "../../redis/gameRoom";
+import { getUserSession, updateSessionField } from "../../redis/user";
 
 class GameRoomListeners {
   io: Server;
@@ -46,25 +47,58 @@ class GameRoomListeners {
 
   async onFindGameRoom({ gameMode }: { gameMode: GameModes }) {
     const playerId = this.socket.userId;
+
+    if (!playerId) return console.error("Missing player id");
+
     if (!gameMode) return console.error("Missing game mode");
 
     const QUEUE_KEY = `queue:${gameMode}`;
-    const SEARCH_TRACKER_KEY = `searching:${playerId}`;
 
-    const alreadySearching = await client.get(SEARCH_TRACKER_KEY);
+    const session = await getUserSession(playerId);
 
-    if (alreadySearching) {
-      return this.socket.emit("error", { message: "Already in a queue" });
+    if (session) {
+      if (session.inMultiplayer) {
+        return this.socket.emit("matchmakingError", {
+          message: "Already in a match",
+        });
+      }
+
+      if (session.inQueue !== "none" && session.inQueue !== gameMode) {
+        console.log(
+          `User ${playerId} switching from ${session.inQueue} to ${gameMode}`
+        );
+        await cancelFindMatch({ userId: playerId, silent: true });
+      } else if (session.inQueue === gameMode) {
+        return this.socket.emit("matchmakingError", {
+          message: "Already in this queue",
+        });
+      }
     }
 
-    const opponentData = await client.lpop(QUEUE_KEY);
+    let opponentFound = false;
+    let opponentData: string | null = null;
+    const MAX_ATTEMPTS = 10;
 
-    if (opponentData) {
+    for (let i = 0; i < MAX_ATTEMPTS; i++) {
+      opponentData = await client.lpop(QUEUE_KEY);
+      if (!opponentData) break;
+
       const opponent = JSON.parse(opponentData);
 
       if (opponent.playerId === playerId) {
-        return await client.rpush(QUEUE_KEY, opponentData);
+        continue;
       }
+
+      const oppSession = await getUserSession(opponent.playerId);
+
+      if (oppSession && oppSession.connected && !oppSession.inMultiplayer) {
+        opponentFound = true;
+        break;
+      }
+    }
+
+    if (opponentFound && opponentData) {
+      const opponent = JSON.parse(opponentData);
 
       const response = await createGameRedis({
         players: [playerId, opponent.playerId],
@@ -74,14 +108,16 @@ class GameRoomListeners {
 
       if (response?.status !== "success" || !response.data) {
         await client.lpush(QUEUE_KEY, opponentData);
-        const playerData = JSON.stringify({ playerId: playerId });
-        await client.rpush(QUEUE_KEY, playerData);
-        return;
+        return this.socket.emit("matchmakingError", {
+          message: "Matchmaking failed",
+        });
       }
 
       await Promise.all([
-        client.del(SEARCH_TRACKER_KEY),
-        client.del(`searching:${opponent.playerId}`),
+        updateSessionField(playerId, "inQueue", "none"),
+        updateSessionField(playerId, "inMultiplayer", "true"),
+        updateSessionField(opponent.playerId, "inQueue", "none"),
+        updateSessionField(opponent.playerId, "inMultiplayer", "true"),
       ]);
 
       this.io
@@ -89,9 +125,10 @@ class GameRoomListeners {
         .emit("gameStart", { gameId: response.data.gameId });
     } else {
       const playerData = JSON.stringify({ playerId: playerId });
-
-      await client.set(SEARCH_TRACKER_KEY, gameMode, "EX", 3600);
-      await client.rpush(QUEUE_KEY, playerData);
+      await Promise.all([
+        updateSessionField(playerId, "inQueue", gameMode),
+        client.rpush(QUEUE_KEY, playerData),
+      ]);
     }
   }
 
