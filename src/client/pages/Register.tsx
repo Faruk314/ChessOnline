@@ -60,7 +60,7 @@ const Register = () => {
         <Input
           label="Email"
           type="email"
-          placeholder="poker@example.com"
+          placeholder="grandmaster@example.com"
           icon={FaEnvelope}
           registration={register("email")}
           error={errors.email}
