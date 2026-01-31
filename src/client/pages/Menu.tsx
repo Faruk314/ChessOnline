@@ -15,22 +15,32 @@ import { useGameInvitesStore } from "../store/useGameInvitesStore";
 import { useFriendStore } from "../store/useFriendStore";
 import { useModalStore } from "../store/useModalStore";
 import { useLogoutMutation } from "../api/queries/auth";
+import { useFriendRequestsQuery } from "../api/queries/friends";
+import { useGameInvitesQuery } from "../api/queries/gameInvites";
 import { MenuButton } from "../components/ui/MenuButton";
 import { IconButton } from "../components/ui/IconButton";
 import { MenuLayout } from "../components/layouts/MenuLayout";
+import MainLoader from "../components/ui/MainLoader";
 
 const Menu = () => {
   const { mutate: logoutUser } = useLogoutMutation();
   const { socket } = useContext(SocketContext);
   const { playMoveSound } = useSoundStore();
   const { friendRequests } = useFriendStore();
-
   const { gameInvites } = useGameInvitesStore();
+
+  const { isLoading: isLoadingFriends } = useFriendRequestsQuery();
+  const { isLoading: isLoadingInvites } = useGameInvitesQuery();
+
   const [openFindMatch, setOpenFindMatch] = useState(false);
   const [openInvites, setOpenInvites] = useState(false);
   const [openSocialHub, setOpenSocialHub] = useState(false);
   const { openChangeAvatar } = useModalStore();
   const [openFriendReq, setOpenFriendReq] = useState(false);
+
+  if (isLoadingFriends || isLoadingInvites) {
+    return <MainLoader />;
+  }
 
   const headerContent = (
     <>
