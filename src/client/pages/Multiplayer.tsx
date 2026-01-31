@@ -2,7 +2,6 @@ import { useState } from "react";
 import GameResult from "../modals/GameResult";
 import Draw from "../modals/Draw";
 import { useParams } from "react-router-dom";
-import Loader from "../components/ui/Loader";
 import { useGameInvitesStore } from "../store/useGameInvitesStore";
 import { useMultiplayerActions } from "../hooks/useMultiplayerActions";
 import { useGameStore } from "../store/useGameStore";
@@ -19,6 +18,7 @@ import Chat from "../components/Chat";
 import Player from "../components/Player";
 import Board from "../components/Board";
 import Promotion from "../modals/Promotion";
+import MainLoader from "../components/ui/MainLoader";
 
 const Multiplayer = () => {
   const [openChat, setOpenChat] = useState(false);
@@ -46,11 +46,7 @@ const Multiplayer = () => {
   };
 
   if (isLoading) {
-    return (
-      <div className="flex justify-center bg-gray-900 items-center h-[100vh]">
-        <Loader size="lg" />
-      </div>
-    );
+    return <MainLoader />;
   }
 
   return (
