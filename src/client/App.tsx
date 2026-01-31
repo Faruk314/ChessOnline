@@ -3,7 +3,6 @@ import { Routes, Route } from "react-router-dom";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Multiplayer from "./pages/Multiplayer";
-import SinglePlayer from "./pages/SinglePlayer";
 import ProtectedAuthPages from "./protection/ProtectedAuthPages";
 import ProtectedRoutes from "./protection/ProtectedRoutes";
 import { useFriendEvents } from "./hooks/useFriendEvents";
@@ -34,7 +33,6 @@ function App() {
         <Route element={<ProtectedRoutes />}>
           <Route path="/menu" element={<Menu />} />
           <Route path="/multiplayer/:gameId" element={<Multiplayer />} />
-          <Route path="/singlePlayer/:gameId" element={<SinglePlayer />} />
         </Route>
       </Routes>
     </div>

@@ -1,5 +1,5 @@
-import { useContext, useState } from "react";
-import { ImUser, ImUsers } from "react-icons/im";
+import { useState } from "react";
+import { ImUsers } from "react-icons/im";
 import { BiEnvelope, BiEnvelopeOpen, BiSearch } from "react-icons/bi";
 import { FaSignOutAlt } from "react-icons/fa";
 import SoundButton from "../components/SoundButton";
@@ -9,7 +9,6 @@ import ChangeAvatar from "../modals/ChangeAvatar";
 import FriendRequests from "../modals/FriendRequests";
 import SocialHub from "../modals/SocialHub";
 import GameInvites from "../modals/GameInvites";
-import { SocketContext } from "../context/SocketContext";
 import { useSoundStore } from "../store/useSoundStore";
 import { useGameInvitesStore } from "../store/useGameInvitesStore";
 import { useFriendStore } from "../store/useFriendStore";
@@ -24,7 +23,6 @@ import MainLoader from "../components/ui/MainLoader";
 
 const Menu = () => {
   const { mutate: logoutUser } = useLogoutMutation();
-  const { socket } = useContext(SocketContext);
   const { playMoveSound } = useSoundStore();
   const { friendRequests } = useFriendStore();
   const { gameInvites } = useGameInvitesStore();
@@ -74,15 +72,6 @@ const Menu = () => {
 
   return (
     <MenuLayout headerContent={headerContent} topRightContent={<UserInfo />}>
-      <MenuButton
-        icon={ImUser}
-        label="PLAY LOCAL"
-        onHover={() => playMoveSound()}
-        onClick={() => {
-          socket?.emit("startSinglePlayer");
-        }}
-      />
-
       <MenuButton
         icon={BiSearch}
         label="FIND MATCH"
