@@ -2,12 +2,11 @@ import { Server as ServerIO, Socket } from "socket.io";
 import jwt from "jsonwebtoken";
 import { parse } from "cookie";
 import { VerifiedToken } from "../types/types";
-import dotenv from "dotenv";
+import "../../loadEnv";
 import GameLogicListeners from "./listeners/gameLogic";
 import GameRoomListeners from "./listeners/gameRoom";
 import { cancelFindMatch } from "../redis/gameRoom";
 import { createUserSession, updateSessionField } from "../redis/user";
-dotenv.config();
 
 let io: ServerIO;
 
@@ -15,11 +14,10 @@ function setupSocket(httpServer: import("http").Server) {
   io = new ServerIO(httpServer, {
     path: "/ws",
     cors: {
-      origin: [
-        "http://localhost:3000",
-        "https://chess-ws.farukspahic.com",
-        "https://chess.farukspahic.com",
-      ],
+      origin:
+        process.env.CORS_ORIGINS && process.env.CORS_ORIGINS !== "*"
+          ? process.env.CORS_ORIGINS.split(",")
+          : "*",
       methods: ["GET", "POST"],
       credentials: true,
     },
@@ -33,6 +31,10 @@ function setupSocket(httpServer: import("http").Server) {
       token = cookies.token;
     }
 
+    if (!token) {
+      return next(new Error("Authentication error: Token not provided"));
+    }
+
     try {
       const decodedToken = jwt.verify(
         token,
@@ -42,6 +44,7 @@ function setupSocket(httpServer: import("http").Server) {
       next();
     } catch (error) {
       console.error(error);
+      next(new Error("Authentication error"));
     }
   });
 

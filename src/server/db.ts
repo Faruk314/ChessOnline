@@ -1,7 +1,6 @@
 import mysql from "mysql2/promise";
 import { ConnectionString } from "connection-string";
-import dotenv from "dotenv";
-dotenv.config();
+import "../loadEnv";
 
 const dsn = new ConnectionString(process.env.DATABASE_URL);
 

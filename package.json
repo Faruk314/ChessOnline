@@ -4,8 +4,8 @@
   "version": "0.0.0",
   "scripts": {
     "dev": "nodemon src/server/main.ts -w src/server",
-    "build": "vite build",
-    "start": "yarn build && NODE_ENV=production ts-node src/server/main.ts"
+    "build-frontend": "vite build",
+    "build-backend": "NODE_ENV=production tsc -p tsconfig.server.json"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",

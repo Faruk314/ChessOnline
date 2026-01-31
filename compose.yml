@@ -1,26 +1,9 @@
 version: "3.8"
 services:
-  chess-app:
-    container_name: chess-app
-    build:
-      context: .
-      dockerfile: Dockerfile
-    ports:
-      - "3000:3000"
-      - "5001:5001"
-    links:
-      - chess-mysql
-      - chess-redis
-    env_file:
-      - .env.docker
-    volumes:
-      - .:/app
-      - chess-node-modules:/app/node_modules
-    entrypoint: ["yarn", "start"]
-
   chess-mysql:
     image: mysql:8.0.35
     container_name: chess-mysql
+    restart: no
     ports:
       - "8081:3306"
     environment:
@@ -35,6 +18,7 @@ services:
       - "8082:6379"
     image: redis:latest
     container_name: chess-redis
+    restart: no
     environment:
       - REDIS_PASSWORD=cx34CGDhFuz4XfDjWjBXQa3xzsyQWy
     volumes:
@@ -43,4 +27,3 @@ services:
 volumes:
   chess-mysql-data:
   chess-redis-data:
-  chess-node-modules:

@@ -64,6 +64,9 @@ export const register = asyncHandler(async (req, res) => {
         httpOnly: true,
         sameSite: "none",
         secure: true,
+        ...(process.env.NODE_ENV === "production" && {
+          domain: ".farukspahic.com",
+        }),
       })
       .status(200)
       .json({
@@ -121,12 +124,15 @@ export const login = asyncHandler(async (req, res) => {
     throw new Error("Something went wrong with token creation");
   }
 
-  res
-    .cookie("token", token, {
-      httpOnly: true,
-      sameSite: "none",
-      secure: true,
-    })
+    res
+      .cookie("token", token, {
+        httpOnly: true,
+        sameSite: "none",
+        secure: true,
+        ...(process.env.NODE_ENV === "production" && {
+          domain: ".farukspahic.com",
+        }),
+      })
     .status(200)
     .json({
       userInfo: {
@@ -139,11 +145,14 @@ export const login = asyncHandler(async (req, res) => {
 });
 
 export const logout = asyncHandler(async (req, res) => {
-  res
+    res
     .clearCookie("token", {
       httpOnly: true,
       sameSite: "none",
       secure: true,
+      ...(process.env.NODE_ENV === "production" && {
+        domain: ".farukspahic.com",
+      }),
     })
     .status(200)
     .json("successfully logged out");

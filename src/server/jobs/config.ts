@@ -1,5 +1,4 @@
-import dotenv from "dotenv";
-dotenv.config();
+import "../../loadEnv";
 
 const redisPort = parseInt(
   process.env.REDIS_PORT ? process.env.REDIS_PORT : "6379"

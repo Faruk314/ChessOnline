@@ -1,0 +1,11 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "module": "CommonJS",
+    "outDir": "./dist-backend",
+    "noEmit": false,
+    "isolatedModules": false,
+    "skipLibCheck": true
+  },
+  "include": ["src/server/**/*", "src/loadEnv.ts", "src/ecosystem.config.ts"]
+}

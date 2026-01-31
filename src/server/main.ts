@@ -1,3 +1,4 @@
+import "../loadEnv";
 import express from "express";
 import ViteExpress from "vite-express";
 import authRoutes from "./routes/auth";
@@ -6,20 +7,21 @@ import friendRoutes from "./routes/friends";
 import inviteRoutes from "./routes/gameInvites";
 import userRoutes from "./routes/users";
 import errorHandler from "./utils/error";
-import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
 import cors from "cors";
 import http from "http";
 import { setupSocket } from "./socket/socket";
-
-dotenv.config();
 
 const app = express();
 const port = Number(process.env.SERVER_PORT) || 3000;
 
 app.use(
   cors({
-    origin: ["http://localhost:3000", "https://chess.farukspahic.com"],
+    origin:
+      process.env.CORS_ORIGINS && process.env.CORS_ORIGINS !== "*"
+        ? process.env.CORS_ORIGINS.split(",")
+        : "*",
+    methods: ["GET", "POST", "PUT", "OPTIONS", "PATCH", "DELETE"],
     credentials: true,
   })
 );
