@@ -89,14 +89,13 @@ const Menu = () => {
         onClick={() => setOpenSocialHub(true)}
       />
 
-      <button
+      <MenuButton
+        icon={FaSignOutAlt}
+        label="EXIT GAME"
+        variant="danger"
+        onHover={() => playMoveSound()}
         onClick={() => logoutUser()}
-        onMouseEnter={() => playMoveSound()}
-        className="mt-4 flex items-center justify-center px-6 py-3 md:px-8 md:py-4 space-x-2 text-base md:text-lg text-gray-400 hover:text-red-400 transition-colors"
-      >
-        <FaSignOutAlt />
-        <span>Exit Game</span>
-      </button>
+      />
 
       {openFindMatch && <FindMatch setOpenFindMatch={setOpenFindMatch} />}
       {openChangeAvatar && <ChangeAvatar />}

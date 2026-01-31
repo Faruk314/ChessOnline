@@ -6,7 +6,7 @@ import { cn } from "../../lib/utils";
 interface MenuButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   icon: IconType;
   label: string;
-  variant?: "primary" | "secondary";
+  variant?: "primary" | "secondary" | "danger";
   onHover?: () => void;
 }
 
@@ -19,6 +19,7 @@ export const MenuButton: React.FC<MenuButtonProps> = ({
   ...props
 }) => {
   const isPrimary = variant === "primary";
+  const isDanger = variant === "danger";
 
   return (
     <button
@@ -27,6 +28,8 @@ export const MenuButton: React.FC<MenuButtonProps> = ({
         "group relative flex items-center justify-between px-6 py-4 md:px-8 md:py-5 text-lg md:text-xl font-bold rounded-2xl transition-all duration-300 hover:-translate-y-1 border-2",
         isPrimary
           ? "text-white bg-emerald-600 border-emerald-500 hover:bg-emerald-500 hover:border-emerald-400 hover:shadow-[0_0_40px_-5px_rgba(16,185,129,0.5)]"
+          : isDanger
+          ? "text-white bg-gray-800 border-gray-700 hover:border-red-500 hover:shadow-[0_0_30px_-5px_rgba(239,68,68,0.3)]"
           : "text-white bg-gray-800 border-gray-700 hover:border-emerald-500 hover:shadow-[0_0_30px_-5px_rgba(16,185,129,0.3)]",
         className
       )}
@@ -38,17 +41,20 @@ export const MenuButton: React.FC<MenuButtonProps> = ({
             "p-2 rounded-lg transition-colors",
             isPrimary
               ? "bg-emerald-700/50 text-white group-hover:bg-emerald-600"
+              : isDanger
+              ? "bg-gray-700 text-red-400 group-hover:bg-red-500 group-hover:text-white"
               : "bg-gray-700 text-emerald-400 group-hover:bg-emerald-500 group-hover:text-white"
           )}
         >
           <Icon size={24} />
         </div>
-        <span className="tracking-wide">{label}</span>
+        <span className={cn("tracking-wide", isDanger && "group-hover:text-red-400 transition-colors")}>{label}</span>
       </div>
       <div
         className={cn(
           "opacity-0 group-hover:opacity-100 transition-opacity",
-          !isPrimary && "text-emerald-500"
+          !isPrimary && !isDanger && "text-emerald-500",
+          isDanger && "text-red-500"
         )}
       >
         <FaChessPawn className="transform rotate-90" />
