@@ -3,7 +3,6 @@ import GameResult from "../modals/GameResult";
 import Draw from "../modals/Draw";
 import { useParams } from "react-router-dom";
 import { useGameInvitesStore } from "../store/useGameInvitesStore";
-import { useMultiplayerActions } from "../hooks/useMultiplayerActions";
 import { useGameStore } from "../store/useGameStore";
 import { useGameStatusQuery } from "../api/queries/game";
 import { useGameActions } from "../hooks/useGameActions";
@@ -24,8 +23,7 @@ const Multiplayer = () => {
   const [openChat, setOpenChat] = useState(false);
   const [openResignModal, setOpenResignModal] = useState(false);
   const { isPromotion, drawReason, players, drawOffererId } = useGameStore();
-  const { promotePawn } = useGameActions();
-  const { offerDraw } = useMultiplayerActions();
+  const { promotePawn, offerDraw } = useGameActions();
   const { setMsgNotif, msgNotif } = useGameInvitesStore();
   const { loggedUserInfo } = useAuthStore();
   const { gameId } = useParams();
@@ -45,7 +43,7 @@ const Multiplayer = () => {
     }
   };
 
-  if (isLoading) {
+  if (isLoading || !user || !opponent) {
     return <MainLoader />;
   }
 
@@ -115,7 +113,7 @@ const Multiplayer = () => {
 
       <div className="flex flex-col gap-6 z-10 w-full max-w-4xl px-4 items-center justify-center">
         <div className="w-full flex justify-center">
-          <Player player={opponent!} />
+          <Player player={opponent} />
         </div>
 
         <div className="relative shadow-2xl shadow-black/50 rounded-lg overflow-hidden border-8 border-gray-800">
@@ -123,7 +121,7 @@ const Multiplayer = () => {
         </div>
 
         <div className="w-full flex justify-center">
-          <Player player={user!} />
+          <Player player={user} />
         </div>
       </div>
 
