@@ -96,9 +96,9 @@ class GameRoomListeners {
 
       await Promise.all([
         updateSessionField(playerId, "inQueue", "none"),
-        updateSessionField(playerId, "inMultiplayer", "true"),
+        updateSessionField(playerId, "inMultiplayer", response.data.gameId),
         updateSessionField(opponent.playerId, "inQueue", "none"),
-        updateSessionField(opponent.playerId, "inMultiplayer", "true"),
+        updateSessionField(opponent.playerId, "inMultiplayer", response.data.gameId),
       ]);
 
       this.io

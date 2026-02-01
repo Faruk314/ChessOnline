@@ -147,8 +147,8 @@ export const acceptGameInvite = asyncHandler(
       await Promise.all([
         client.del(metaKey),
         client.srem(`user:invites:active:${userId}`, senderId.toString()),
-        updateSessionField(userId!, "inMultiplayer", "true"),
-        updateSessionField(senderId, "inMultiplayer", "true"),
+        updateSessionField(userId!, "inMultiplayer", response.data.gameId),
+        updateSessionField(senderId, "inMultiplayer", response.data.gameId),
       ]);
 
       io.to(response.data.gameId).emit("gameStart", {

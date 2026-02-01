@@ -33,7 +33,7 @@ const createGame = async ({
 
   const cleanupSessions = async () => {
     await Promise.allSettled(
-      players.map((id) => updateSessionField(id, "inMultiplayer", false))
+      players.map((id) => updateSessionField(id, "inMultiplayer", ""))
     );
   };
 
@@ -168,10 +168,6 @@ const updateGame = async ({
       const userId = socket.userId;
       const playerView = getGameStateForPlayer(newGameState, userId);
 
-      if (isGameOver) {
-        await updateSessionField(userId, "inMultiplayer", false);
-      }
-
       io.to(socket.id).emit("updateGame", {
         gameState: playerView,
         action,
@@ -181,6 +177,17 @@ const updateGame = async ({
 
   if (isGameOver) {
     await deleteGameState(gameId);
+    await updateSessionField(
+      newGameState.players[0].playerData!.userId,
+      "inMultiplayer",
+      ""
+    );
+
+    await updateSessionField(
+      newGameState.players[1].playerData!.userId,
+      "inMultiplayer",
+      ""
+    );
   } else {
     await saveGameState({
       gameId,

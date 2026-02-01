@@ -1,10 +1,6 @@
 import { client } from "./config";
 
-type SessionField =
-  | "connected"
-  | "inMultiplayer"
-  | "inSingleplayer"
-  | "inQueue";
+type SessionField = "connected" | "inMultiplayer" | "inQueue";
 
 type QueueMode = "bullet" | "blitz" | "rapid" | "long" | "none";
 
@@ -19,8 +15,7 @@ const createUserSession = async (userId: number) => {
     await client.hset(sessionKey, {
       userId: userId.toString(),
       connected: "true",
-      inMultiplayer: "false",
-      inSingleplayer: "false",
+      inMultiplayer: "",
       inQueue: "false",
       createdAt: Date.now().toString(),
     });
@@ -38,7 +33,6 @@ const getUserSession = async (userId: string | number) => {
     ...session,
     connected: session.connected === "true",
     inMultiplayer: session.inMultiplayer === "true",
-    inSingleplayer: session.inSingleplayer === "true",
     inQueue: (session.inQueue as QueueMode) || "none",
     userId: Number(session.userId),
   };
