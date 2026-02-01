@@ -9,12 +9,16 @@ import { useFriendEvents } from "./hooks/useFriendEvents";
 import { useGameEvents } from "./hooks/useGameEvents";
 import { useLoginStatusQuery } from "./api/queries/auth";
 import MainLoader from "./components/ui/MainLoader";
+import { useInviteEvents } from "./hooks/useInviteEvents";
+import { useGameRoomEvents } from "./hooks/useGameRoomEvents";
 
 function App() {
   const { isLoading } = useLoginStatusQuery();
 
   useFriendEvents();
+  useInviteEvents();
   useGameEvents();
+  useGameRoomEvents();
 
   if (isLoading) {
     return <MainLoader />;

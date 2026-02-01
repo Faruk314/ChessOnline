@@ -1,16 +1,16 @@
 import React from "react";
 import { useGameStore } from "../store/useGameStore";
 import { useNavigate } from "react-router-dom";
-import { useMultiplayerActions } from "../hooks/useMultiplayerActions";
 import { FaFlag } from "react-icons/fa";
+import { useGameActions } from "../hooks/useGameActions";
 
 interface Props {
   setOpenResignModal: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const Resign = ({ setOpenResignModal }: Props) => {
-  const { gameId } = useGameStore();
-  const { resign } = useMultiplayerActions();
+  const { gameId, resetGame } = useGameStore();
+  const { resign } = useGameActions();
   const navigate = useNavigate();
 
   return (
@@ -34,6 +34,7 @@ const Resign = ({ setOpenResignModal }: Props) => {
           <button
             onClick={() => {
               resign(gameId);
+              resetGame();
               navigate("/menu");
             }}
             className="flex-1 py-2.5 rounded-xl font-bold text-white bg-red-600 hover:bg-red-500 shadow-lg shadow-red-900/20 transition-all"

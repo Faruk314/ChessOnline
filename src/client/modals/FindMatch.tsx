@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useSoundStore } from "../store/useSoundStore";
 import { FaSearch } from "react-icons/fa";
 import { IoClose } from "react-icons/io5";
-import { useMultiplayerActions } from "../hooks/useMultiplayerActions";
+import { useGameRoomActions } from "../hooks/useGameRoomActions";
 import type { GameModes as GameModesType } from "../../types/types";
 import GameModes from "./GameModes";
 
@@ -12,7 +12,7 @@ interface Props {
 
 const FindMatch = ({ setOpenFindMatch }: Props) => {
   const { playMoveSound } = useSoundStore();
-  const { emitFindGameRoom, emitCancelFindGameRoom } = useMultiplayerActions();
+  const { emitFindGameRoom, emitCancelFindGameRoom } = useGameRoomActions();
   const [isSearching, setIsSearching] = useState(false);
   const [selectedMode, setSelectedMode] = useState<string | null>(null);
 

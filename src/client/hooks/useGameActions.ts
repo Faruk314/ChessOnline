@@ -17,5 +17,24 @@ export const useGameActions = () => {
     socket?.emit("promotePawn", data);
   };
 
-  return { movePiece, highlight, promotePawn };
+  const resign = (gameId: string) => {
+    socket?.emit("resign", gameId);
+  };
+
+  const offerDraw = (receiverId: number, gameId: string) => {
+    socket?.emit("drawOffer", { receiverId, gameId });
+  };
+
+  const emitDrawOfferResponse = (data: { gameId: string; accept: boolean }) => {
+    socket?.emit("drawOfferResponse", data);
+  };
+
+  return {
+    movePiece,
+    highlight,
+    promotePawn,
+    resign,
+    offerDraw,
+    emitDrawOfferResponse,
+  };
 };

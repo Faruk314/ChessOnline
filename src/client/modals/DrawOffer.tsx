@@ -1,9 +1,9 @@
 import { useGameStore } from "../store/useGameStore";
-import { useMultiplayerActions } from "../hooks/useMultiplayerActions";
 import { FaHandshake } from "react-icons/fa";
+import { useGameActions } from "../hooks/useGameActions";
 
 const DrawOffer = () => {
-  const { emitDrawOfferResponse } = useMultiplayerActions();
+  const { emitDrawOfferResponse } = useGameActions();
   const { gameId } = useGameStore();
 
   return (
@@ -13,7 +13,7 @@ const DrawOffer = () => {
           <FaHandshake className="text-emerald-400 text-2xl" />
           <h2 className="text-lg font-bold text-white">Draw Offered</h2>
         </div>
-        
+
         <p className="text-gray-400 text-sm mb-6 text-center">
           Your opponent has offered a draw. Do you accept?
         </p>

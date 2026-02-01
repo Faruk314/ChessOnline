@@ -4,6 +4,7 @@ import { useToast } from "../../hooks/useToast";
 import { useNavigate } from "react-router-dom";
 import { getErrorMessage } from "../../lib/utils";
 import { useAuthStore } from "../../store/useAuthStore";
+import { useGameStore } from "../../store/useGameStore";
 
 export function useRegisterMutation() {
   const queryClient = useQueryClient();
@@ -52,6 +53,7 @@ export function useLoginMutation() {
 
 export function useLogoutMutation() {
   const { setLoggedUserInfo, setIsLoggedIn } = useAuthStore();
+  const { resetGame } = useGameStore();
   const navigate = useNavigate();
 
   const queryClient = useQueryClient();
@@ -61,6 +63,7 @@ export function useLogoutMutation() {
       queryClient.removeQueries({ queryKey: ["auth", "user"] });
       setLoggedUserInfo(null);
       setIsLoggedIn(false);
+      resetGame();
       navigate("/");
     },
   });

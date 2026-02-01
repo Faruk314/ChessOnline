@@ -1,10 +1,9 @@
-import React, { useContext, useState } from "react";
-import { SocketContext } from "../context/SocketContext";
+import React, { useState } from "react";
 import { IoClose, IoSend } from "react-icons/io5";
 import { useAuthStore } from "../store/useAuthStore";
 import { useGameStore } from "../store/useGameStore";
 import { BsChatDotsFill } from "react-icons/bs";
-import { useMultiplayerActions } from "../hooks/useMultiplayerActions";
+import { useGameRoomActions } from "../hooks/useGameRoomActions";
 
 interface Props {
   setOpenChat: React.Dispatch<React.SetStateAction<boolean>>;
@@ -14,7 +13,7 @@ const Chat = ({ setOpenChat }: Props) => {
   const { messages, gameId } = useGameStore();
   const { loggedUserInfo } = useAuthStore();
   const [message, setMessage] = useState("");
-  const { sendMessage } = useMultiplayerActions();
+  const { sendMessage } = useGameRoomActions();
 
   const messageHandler = () => {
     if (message.length === 0) return;
