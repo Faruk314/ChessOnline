@@ -1,6 +1,12 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { ImUsers } from "react-icons/im";
-import { BiEnvelope, BiEnvelopeOpen, BiSearch } from "react-icons/bi";
+import {
+  BiEnvelope,
+  BiEnvelopeOpen,
+  BiSearch,
+  BiJoystick,
+} from "react-icons/bi";
 import { FaSignOutAlt } from "react-icons/fa";
 import SoundButton from "../components/SoundButton";
 import UserInfo from "../components/UserInfo";
@@ -20,15 +26,19 @@ import { MenuButton } from "../components/ui/MenuButton";
 import { IconButton } from "../components/ui/IconButton";
 import { MenuLayout } from "../components/layouts/MenuLayout";
 import MainLoader from "../components/ui/MainLoader";
+import { useGameStore } from "../store/useGameStore";
 
 const Menu = () => {
   const { mutate: logoutUser } = useLogoutMutation();
   const { playMoveSound } = useSoundStore();
   const { friendRequests } = useFriendStore();
   const { gameInvites } = useGameInvitesStore();
+  const { gameId } = useGameStore();
 
   const { isLoading: isLoadingFriends } = useFriendRequestsQuery();
   const { isLoading: isLoadingInvites } = useGameInvitesQuery();
+
+  const navigate = useNavigate();
 
   const [openFindMatch, setOpenFindMatch] = useState(false);
   const [openInvites, setOpenInvites] = useState(false);
@@ -72,15 +82,25 @@ const Menu = () => {
 
   return (
     <MenuLayout headerContent={headerContent} topRightContent={<UserInfo />}>
-      <MenuButton
-        icon={BiSearch}
-        label="FIND MATCH"
-        variant="primary"
-        onHover={() => playMoveSound()}
-        onClick={() => {
-          setOpenFindMatch(true);
-        }}
-      />
+      {gameId ? (
+        <MenuButton
+          icon={BiJoystick}
+          label="RECONNECT"
+          variant="primary"
+          onHover={() => playMoveSound()}
+          onClick={() => navigate(`/multiplayer/${gameId}`)}
+        />
+      ) : (
+        <MenuButton
+          icon={BiSearch}
+          label="FIND MATCH"
+          variant="primary"
+          onHover={() => playMoveSound()}
+          onClick={() => {
+            setOpenFindMatch(true);
+          }}
+        />
+      )}
 
       <MenuButton
         icon={ImUsers}
