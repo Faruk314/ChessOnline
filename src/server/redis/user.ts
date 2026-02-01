@@ -32,7 +32,7 @@ const getUserSession = async (userId: string | number) => {
   return {
     ...session,
     connected: session.connected === "true",
-    inMultiplayer: session.inMultiplayer === "true",
+    inMultiplayer: session.inMultiplayer,
     inQueue: (session.inQueue as QueueMode) || "none",
     userId: Number(session.userId),
   };

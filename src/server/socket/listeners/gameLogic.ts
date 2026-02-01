@@ -193,6 +193,8 @@ class GameLogicListeners {
       method: "resignation",
     };
 
+    this.socket.leave(gameId);
+
     await updateGame({
       newGameState: game,
       gameId,

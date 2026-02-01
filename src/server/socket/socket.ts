@@ -6,7 +6,11 @@ import "../../loadEnv";
 import GameLogicListeners from "./listeners/gameLogic";
 import GameRoomListeners from "./listeners/gameRoom";
 import { cancelFindMatch } from "../redis/gameRoom";
-import { createUserSession, updateSessionField } from "../redis/user";
+import {
+  createUserSession,
+  getUserSession,
+  updateSessionField,
+} from "../redis/user";
 
 let io: ServerIO;
 
@@ -53,6 +57,17 @@ function setupSocket(httpServer: import("http").Server) {
 
     if (userId) {
       await createUserSession(userId);
+
+      const session = await getUserSession(userId);
+
+      const gameId = session?.inMultiplayer;
+
+      if (gameId) {
+        socket.join(gameId);
+
+        socket.emit("gameSession", { gameId });
+      }
+
       socket.join(`user:${userId}`);
     }
 

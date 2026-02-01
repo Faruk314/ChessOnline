@@ -22,7 +22,6 @@ class GameRoomListeners {
   registerListeners() {
     this.socket.on("findGameRoom", this.onFindGameRoom.bind(this));
     this.socket.on("cancelFindGameRoom", this.onCancelFindGameRoom.bind(this));
-    this.socket.on("reconnectToRoom", this.onReconnectToRoom.bind(this));
     this.socket.on("sendMessage", this.onSendMessage.bind(this));
   }
 
@@ -98,7 +97,11 @@ class GameRoomListeners {
         updateSessionField(playerId, "inQueue", "none"),
         updateSessionField(playerId, "inMultiplayer", response.data.gameId),
         updateSessionField(opponent.playerId, "inQueue", "none"),
-        updateSessionField(opponent.playerId, "inMultiplayer", response.data.gameId),
+        updateSessionField(
+          opponent.playerId,
+          "inMultiplayer",
+          response.data.gameId
+        ),
       ]);
 
       this.io
@@ -119,10 +122,6 @@ class GameRoomListeners {
     if (!userId) return console.error("User id missing");
 
     await cancelFindMatch({ userId });
-  }
-
-  async onReconnectToRoom(gameId: string) {
-    this.socket.join(gameId);
   }
 
   async onSendMessage(data: {
