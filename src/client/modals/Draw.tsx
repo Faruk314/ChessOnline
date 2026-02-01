@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { FaBalanceScale, FaHandshake } from "react-icons/fa";
 import { DrawReason } from "../../types/types";
+import { useGameStore } from "../store/useGameStore";
 
 interface DrawProps {
   reason: DrawReason;
@@ -8,6 +9,7 @@ interface DrawProps {
 
 const Draw = ({ reason }: DrawProps) => {
   const navigate = useNavigate();
+  const { resetGame } = useGameStore();
 
   const getReasonText = (reason: DrawReason) => {
     switch (reason) {
@@ -39,9 +41,11 @@ const Draw = ({ reason }: DrawProps) => {
         <div className="p-4 bg-gray-600/20 rounded-full mb-4 shadow-inner border border-gray-600/30">
           {getIcon(reason)}
         </div>
-        
+
         <div className="text-center mb-8">
-          <h2 className="text-2xl font-bold text-white tracking-wide mb-2">Draw</h2>
+          <h2 className="text-2xl font-bold text-white tracking-wide mb-2">
+            Draw
+          </h2>
           <span className="text-gray-400 font-medium">
             {getReasonText(reason)}
           </span>
@@ -49,6 +53,7 @@ const Draw = ({ reason }: DrawProps) => {
 
         <button
           onClick={() => {
+            resetGame();
             navigate("/menu");
           }}
           className="w-full py-3 px-6 text-lg font-bold text-white rounded-xl bg-gray-700 hover:bg-gray-600 border border-gray-600 shadow-lg transition-all active:scale-[0.98]"

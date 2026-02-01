@@ -3,7 +3,7 @@ import { useGameStore } from "../store/useGameStore";
 import { FaCrown, FaClock, FaFlag, FaUserSlash } from "react-icons/fa";
 
 const GameResult = () => {
-  const { winner, players } = useGameStore();
+  const { winner, players, resetGame } = useGameStore();
   const navigate = useNavigate();
 
   if (!winner) return null;
@@ -65,6 +65,7 @@ const GameResult = () => {
 
         <button
           onClick={() => {
+            resetGame();
             navigate("/menu");
           }}
           className="w-full py-3 px-6 text-lg font-bold text-white rounded-xl bg-gradient-to-r from-emerald-600 to-emerald-800 hover:from-emerald-500 hover:to-emerald-700 shadow-lg shadow-emerald-900/20 transform transition-all active:scale-[0.98] z-10"
